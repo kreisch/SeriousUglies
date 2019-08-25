@@ -34,15 +34,19 @@ mountainhideoutHell = SPAWN:New("Rebel Hideout_Hell #004")
 mountainhideoutHell2 = SPAWN:New("Rebel Hideout_Hell #003")
 mountainhideoutHell3 = SPAWN:New("Rebel Hideout_Hell")
 
+local ShipDronesUnarmed = SPAWN:New("TgtShipDrones")
 
-strike1 = false
-defense = false
-boghammer = false
-roy = -1
-zaymi = -1
-convoy = -1
-convoyMovingboolean = -1
-mountain = -1
+
+local strike1 = false
+local defense = false
+local boghammer = false
+local roy = -1
+local zaymi = -1
+local convoy = -1
+local convoyMovingboolean = -1
+local mountain = -1
+
+local shipDrones = -1
 
 
 
@@ -440,12 +444,12 @@ mountain = difficult
         mountainhideoutHell:ReSpawn()
         mountainhideoutHell2:ReSpawn()
         mountainhideoutHell3:ReSpawn()
-        local BlueVictory = USERSOUND:New( "HighwayDangerzone.ogg" )
-        BlueVictory:ToAll()
+--        local BlueVictory = USERSOUND:New( "HighwayDangerzone.ogg" )
+--        BlueVictory:ToAll()
         
       end
       ctld.JTACAutoLase('Misty_Mountain', 1688)
-      MessageToAll("A army patrol spotted a hidden rebel outpost in the mountain, SE of Al Ain city - Our patrol had to leave the area after the report. Coordinate: N23 27'8, E56 16'43, ALT: 2562ft.",60,"Mountain")
+      MessageToAll("A army patrol spotted a hidden rebel outpost in the mountain, SE of Al Ain city - Our patrol had to leave the area after the report. Coordinate: N23 57'8, E56 16'43, ALT: 2562ft.",60,"Mountain")
 end
 
 
@@ -469,6 +473,35 @@ local function RebelMountainEnd()
 end
 
 
+local function ShipDronesStart(difficult)
+shipDrones = difficult
+        if difficult >= 1 then
+          ShipDronesUnarmed:ReSpawn()
+        end
+        if difficult >= 2 then
+          
+
+        end
+        if difficult >= 3 then
+
+        end
+        MessageToAll("Ships Spawned!",60,"Ships-Active")
+end
+
+local function ShipDronesEnd()
+  if shipDrones >= 1 then
+      ShipDronesUnarmed:GetLastAliveGroup():Destroy()
+  end
+   if shipDrones >= 2 then
+
+ end
+   if shipDrones >= 3 then
+
+ end  
+      MessageToAll("Ships De-Spawned",60,"Marcos 2-inactive")
+      shipDrones = -1
+end
+
 ------ Red Menue
 local MenuCoalitionRedA2G = MENU_COALITION:New( coalition.side.RED, "Iran MissionSetup A2G" )
 local MenuCoalitionRedMissionSetupA2GGDefense = MENU_COALITION:New( coalition.side.RED, "Global Defense", MenuCoalitionRedA2G)
@@ -487,21 +520,26 @@ MenuCoalitionBlueA2G = MENU_COALITION:New( coalition.side.BLUE, "MissionSetup A2
 local MenuCoalitionBlueA2A = MENU_COALITION:New( coalition.side.BLUE, "MissionSetup A2A" )
 local MenuCoalitionBluePvP = MENU_COALITION:New( coalition.side.BLUE, "PvP Setup" )
 
-local MenuCoalitionBlueMissionSetupA2GGDefense = MENU_COALITION:New( coalition.side.BLUE, "Global Defense", MenuCoalitionBlueA2G)
-local MenuCoalitionBlueMissionSetupA2GRebels = MENU_COALITION:New( coalition.side.BLUE, "Rebel Outpost Sub", MenuCoalitionBlueA2G)
-local MenuCoalitionBlueMissionSetupA2GStrike1 = MENU_COALITION:New( coalition.side.BLUE, "Strike 1 - Factory Strike", MenuCoalitionBlueA2G)
-local MenuCoalitionBlueMissionSetupA2GBoghammer = MENU_COALITION:New( coalition.side.BLUE, "Boghammer-Speedboats", MenuCoalitionBlueA2G)
+local MenuCoalitionBlueMissionSetupA2GGDefense = MENU_COALITION:New( coalition.side.BLUE, "Global Defense...", MenuCoalitionBlueA2G)
+local MenuCoalitionBlueMissionSetupA2GRebels = MENU_COALITION:New( coalition.side.BLUE, "Rebel Outpost Sub...", MenuCoalitionBlueA2G)
+local MenuCoalitionBlueMissionSetupA2GStrike1 = MENU_COALITION:New( coalition.side.BLUE, "Strike 1 - Factory Strike...", MenuCoalitionBlueA2G)
+local MenuCoalitionBlueMissionSetupA2GShips = MENU_COALITION:New( coalition.side.BLUE, "Ships...", MenuCoalitionBlueA2G)
 
-local MenuCoalitionBlueMissionSetupA2GRebelsConvoy = MENU_COALITION:New( coalition.side.BLUE, "Convoy", MenuCoalitionBlueMissionSetupA2GRebels)
-local MenuCoalitionBlueMissionSetupA2GRebelsZaymi = MENU_COALITION:New( coalition.side.BLUE, "Zaymi", MenuCoalitionBlueMissionSetupA2GRebels)
-local MenuCoalitionBlueMissionSetupA2GRebelsMountain = MENU_COALITION:New( coalition.side.BLUE, "Mountain Outpost", MenuCoalitionBlueMissionSetupA2GRebels)
-local MenuCoalitionBlueMissionSetupA2GRebelsRoy = MENU_COALITION:New( coalition.side.BLUE, "Royy Outpost", MenuCoalitionBlueMissionSetupA2GRebels)
+local MenuCoalitionBlueMissionSetupA2GShipDrones = MENU_COALITION:New( coalition.side.BLUE, "Drones...", MenuCoalitionBlueMissionSetupA2GShips)
+local MenuCoalitionBlueMissionSetupA2GShipBoghammers = MENU_COALITION:New( coalition.side.BLUE, "Boghammers...", MenuCoalitionBlueMissionSetupA2GShips)
 
-local MenuCoalitionBlueMissionSetupA2ADroneWest = MENU_COALITION:New( coalition.side.BLUE, "Drones West", MenuCoalitionBlueA2A)
-local MenuCoalitionBlueMissionSetupA2ADroneEast = MENU_COALITION:New( coalition.side.BLUE, "Drones East", MenuCoalitionBlueA2A)
-local MenuCoalitionBlueMissionSetupA2ACAP = MENU_COALITION:New( coalition.side.BLUE, "CAP", MenuCoalitionBlueA2A)
+local MenuCoalitionBlueMissionSetupA2GRebelsConvoy = MENU_COALITION:New( coalition.side.BLUE, "Convoy...", MenuCoalitionBlueMissionSetupA2GRebels)
+local MenuCoalitionBlueMissionSetupA2GRebelsZaymi = MENU_COALITION:New( coalition.side.BLUE, "Zaymi...", MenuCoalitionBlueMissionSetupA2GRebels)
+local MenuCoalitionBlueMissionSetupA2GRebelsMountain = MENU_COALITION:New( coalition.side.BLUE, "Mountain Outpost...", MenuCoalitionBlueMissionSetupA2GRebels)
+local MenuCoalitionBlueMissionSetupA2GRebelsRoy = MENU_COALITION:New( coalition.side.BLUE, "Royy Outpost...", MenuCoalitionBlueMissionSetupA2GRebels)
 
-local MenuCoalitionBlueMissionSetupPvP1 = MENU_COALITION:New( coalition.side.BLUE, "PvP : Strike 1", MenuCoalitionBluePvP)
+
+
+local MenuCoalitionBlueMissionSetupA2ADroneWest = MENU_COALITION:New( coalition.side.BLUE, "Drones West...", MenuCoalitionBlueA2A)
+local MenuCoalitionBlueMissionSetupA2ADroneEast = MENU_COALITION:New( coalition.side.BLUE, "Drones East...", MenuCoalitionBlueA2A)
+local MenuCoalitionBlueMissionSetupA2ACAP = MENU_COALITION:New( coalition.side.BLUE, "CAP...", MenuCoalitionBlueA2A)
+
+local MenuCoalitionBlueMissionSetupPvP1 = MENU_COALITION:New( coalition.side.BLUE, "PvP : Strike 1...", MenuCoalitionBluePvP)
 
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Global Defense : Start", MenuCoalitionBlueMissionSetupA2GGDefense, GlobalDefenseStart )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Global Defense : End", MenuCoalitionBlueMissionSetupA2GGDefense, GlobalDefenseEnd )
@@ -512,8 +550,10 @@ local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "CAP East : End
 
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Strike 1 : Start", MenuCoalitionBlueMissionSetupA2GStrike1, Strike1Start )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Strike 1 : End", MenuCoalitionBlueMissionSetupA2GStrike1, Strike1End )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Boghammers : Start", MenuCoalitionBlueMissionSetupA2GBoghammer, BoghammerSpawn )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Boghammers : End", MenuCoalitionBlueMissionSetupA2GBoghammer, BoghammerEnd )
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Boghammers : Start", MenuCoalitionBlueMissionSetupA2GShipBoghammers, BoghammerSpawn )
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Boghammers : End", MenuCoalitionBlueMissionSetupA2GShipBoghammers, BoghammerEnd )
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Tankers : Start", MenuCoalitionBlueMissionSetupA2GShipDrones, ShipDronesStart, 1 )
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Tankers : End", MenuCoalitionBlueMissionSetupA2GShipDrones, ShipDronesEnd )
 
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Mig29DroneWest : Start", MenuCoalitionBlueMissionSetupA2ADroneWest, Mig29DroneWestStart )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Mig29DroneWest : End", MenuCoalitionBlueMissionSetupA2ADroneWest, Mig29DroneWestEnd )

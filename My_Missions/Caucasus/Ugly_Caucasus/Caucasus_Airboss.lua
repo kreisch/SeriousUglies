@@ -1,14 +1,14 @@
 -- S-3B Recovery Tanker spawning in air. Groupname
 local tanker=RECOVERYTANKER:New("CVN-74 Stennis", "ShellCarrier")
-tanker:SetRadio(261.100)
+tanker:SetRadio(267)
 tanker:SetModex(911)
-tanker:SetTACAN(51, "SHL")
+tanker:SetTACAN(67, "SHL11")
 tanker:Start()
 
 ---- E-2D AWACS spawning on Stennis.
 local awacs=RECOVERYTANKER:New("CVN-74 Stennis", "E-2D Wizard")
 awacs:SetAWACS()
-awacs:SetRadio(251)
+awacs:SetRadio(240.100)
 awacs:SetAltitude(20000)
 awacs:SetCallsign(CALLSIGN.AWACS.Wizard)
 awacs:SetRacetrackDistances(30, 15)

@@ -68,12 +68,11 @@ AirbossStennis:SetTrapSheet()
 AirbossStennis:SetRecoveryTanker(tanker)
 
 ---- Set AWACS.
---AirbossStennis:SetAWACS(awacs)
+AirbossStennis:SetAWACS(awacs)
 
 AirbossStennis:SetHandleAION()
 
 AirbossStennis:SetInitialMaxAlt(1500)
-AirbossStennis:SetRefuelAI(15)
 AirbossStennis:SetStaticWeather(false)
 
 -- Start airboss class.
