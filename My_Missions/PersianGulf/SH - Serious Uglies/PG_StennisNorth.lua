@@ -1,9 +1,10 @@
+
 -- S-3B Recovery Tanker spawning in air. Groupname
 local tanker2=RECOVERYTANKER:New("CVN-73 George Washington", "ShellCarrier GWashington")
 --tanker:SetTakeoffAir()
-tanker2:SetRadio(261.200)
+tanker2:SetRadio(267)
 tanker2:SetModex(912)
-tanker2:SetTACAN(62, "SHL")
+tanker2:SetTACAN(67, "SHL")
 tanker2:Start()
 
 ---- E-2D AWACS spawning on Stennis.
@@ -27,6 +28,7 @@ rescuehelo2:__Start(1)
 
 -- Create AIRBOSS object. Use Unit name
 local AirbossGWashington=AIRBOSS:New("CVN-73 George Washington")
+AirbossGWashington:SetDebugModeON()
 
 AirbossGWashington:SetICLS(7,"STN")
 AirbossGWashington:SetTACAN(73,"X","STN")
@@ -42,7 +44,7 @@ AirbossGWashington:SetLSORadio(250.800,"AM")
 
 -- Radio relay units.
 AirbossGWashington:SetRadioRelayLSO(tanker2:GetUnitName())
-AirbossGWashington:SetRadioRelayMarshal(awacs2:GetUnitName())
+AirbossGWashington:SetRadioRelayMarshal("E-2D Wizard North")
 
 -- Set folder of airboss sound files within miz file.
 AirbossGWashington:SetSoundfilesFolder("Airboss Soundfiles/")
@@ -68,14 +70,15 @@ AirbossGWashington:SetTrapSheet()
 -- Set recovery tanker.
 AirbossGWashington:SetRecoveryTanker(tanker2)
 
----- Set AWACS.
+-- Set AWACS.
 AirbossGWashington:SetAWACS(awacs2)
 
-AirbossGWashington:SetHandleAION()
+--AirbossGWashington:SetHandleAION()
 
 AirbossGWashington:SetInitialMaxAlt(1500)
 AirbossGWashington:SetRefuelAI(15)
 AirbossGWashington:SetStaticWeather(false)
+
 
 -- Start airboss class.
 AirbossGWashington:Start()

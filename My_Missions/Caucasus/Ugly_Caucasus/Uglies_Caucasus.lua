@@ -32,7 +32,10 @@ local MarcosUnitsEasy13 = SPAWN:New("S2_Tanks #001")
 local MarcosUnitsMedium1 = SPAWN:New("S2_SA8")
 local MarcosUnitsMedium2 = SPAWN:New("S2_AAA_Medium #002")
 local MarcosUnitsMedium3 = SPAWN:New("S2_AAA_Medium")
+local MarcosUnitsMedium4 = SPAWN:New("S2_SA2_Medium")
+
 local MarcosUnitsHard1 = SPAWN:New("S2_SA2_Hard #001")
+local MarcosUnitsHard2 = SPAWN:New("S2_SA11_Hard")
 
 local Marcos2UnitsEasy1 = SPAWN:New("S3_Easy")
 local Marcos2UnitsEasy2 = SPAWN:New("S3_Troops_Easy")
@@ -339,9 +342,11 @@ marcos = difficult
           MarcosUnitsMedium1:ReSpawn()
           MarcosUnitsMedium2:ReSpawn()
           MarcosUnitsMedium3:ReSpawn()
+          MarcosUnitsMedium4:ReSpawn()
         end
         if difficult >= 3 then
           MarcosUnitsHard1:ReSpawn()
+          MarcosUnitsHard2:ReSpawn()
         end
         MessageToAll("marcos Spawned!",60,"marcos-Active")
 end
@@ -366,9 +371,11 @@ local function MarcosEnd()
     MarcosUnitsMedium1:GetLastAliveGroup():Destroy()
     MarcosUnitsMedium2:GetLastAliveGroup():Destroy()
     MarcosUnitsMedium3:GetLastAliveGroup():Destroy()
+    MarcosUnitsMedium4:GetLastAliveGroup():Destroy()
  end
    if marcos >= 3 then
     MarcosUnitsHard1:GetLastAliveGroup():Destroy()
+    MarcosUnitsHard2:GetLastAliveGroup():Destroy()
  end  
       MessageToAll("marcos De-Spawned",60,"marcos-inactive")
       carlos = -1

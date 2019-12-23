@@ -1,9 +1,10 @@
 -- S-3B Recovery Tanker spawning in air. Groupname
 local tanker=RECOVERYTANKER:New("CVN-74 Stennis", "ShellCarrier")
+
 --tanker:SetTakeoffAir()
-tanker:SetRadio(261)
+tanker:SetRadio(266)
 tanker:SetModex(911)
-tanker:SetTACAN(61, "SHL")
+tanker:SetTACAN(66, "SHE")
 tanker:Start()
 
 ---- E-2D AWACS spawning on Stennis.
@@ -18,7 +19,7 @@ awacs:__Start(1)
 
 -- Rescue Helo with home base Lake Erie. Has to be a global object! Group name for helo
 rescuehelo=RESCUEHELO:New("CVN-74 Stennis", "Rescue Helo")
-rescuehelo:SetHomeBase(AIRBASE:FindByName("Al Dhafra AB"))
+rescuehelo:SetHomeBase(AIRBASE:FindByName("Unit #392"))
 rescuehelo:SetModex(42)
 rescuehelo:SetTakeoffAir()
 rescuehelo:__Start(1)
@@ -38,7 +39,7 @@ AirbossStennis:SetMaxLandingPattern(6)
 AirbossStennis:SetMarshalRadio(250.200,"AM")
 AirbossStennis:SetLSORadio(250.400,"AM")
 
-
+AirbossStennis:SetMenuSingleCarrier(false)
 -- Radio relay units.
 AirbossStennis:SetRadioRelayLSO(tanker:GetUnitName())
 AirbossStennis:SetRadioRelayMarshal("Rescue Helo")
@@ -77,4 +78,8 @@ AirbossStennis:SetStaticWeather(false)
 
 -- Start airboss class.
 AirbossStennis:Start()
+
+
+-- ##############################################
+
 

@@ -1,8 +1,8 @@
 -- S-3B Recovery Tanker spawning in air. Groupname
 local tanker=RECOVERYTANKER:New("CVN-74 Stennis", "ShellCarrier")
-tanker:SetRadio(267)
+tanker:SetRadio(266)
 tanker:SetModex(911)
-tanker:SetTACAN(67, "SHL11")
+tanker:SetTACAN(66, "SHL11")
 tanker:Start()
 
 ---- E-2D AWACS spawning on Stennis.
@@ -77,10 +77,6 @@ AirbossStennis:SetHandleAION()
 AirbossStennis:SetInitialMaxAlt(1500)
 --AirbossStennis:SetRefuelAI(20)
 AirbossStennis:SetStaticWeather(false)
-
-function AirbossStennis:OnEventLand(EventData)
-  MessageToAll("Bauchlandung!",10,"DebugLandung")
-end
 
 
 
