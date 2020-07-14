@@ -1,9 +1,3 @@
-RedClients = SET_CLIENT:New():FilterCoalitions("red"):FilterStart()
-BlueClients = SET_CLIENT:New():FilterCoalitions("blue"):FilterStart()
-
-boghammerGroupSpawn = SPAWN:New("Boghammer")
-iranian_AWACS_North = SPAWN:New("S1_AAA_Helipad")
-iranian_Tanker_North = SPAWN:New("AWACS_North")
 -- Units for Rebel Mission Roy
 royEasy = SPAWN:New("Royy #006")
 royMedium1 = SPAWN:New("Royy Medium")
@@ -34,7 +28,7 @@ mountainhideoutHell = SPAWN:New("Rebel Hideout_Hell #004")
 mountainhideoutHell2 = SPAWN:New("Rebel Hideout_Hell #003")
 mountainhideoutHell3 = SPAWN:New("Rebel Hideout_Hell")
 
-local ShipDronesUnarmed = SPAWN:New("TgtShipDrones")
+
 
 
 local strike1 = false
@@ -45,12 +39,12 @@ local zaymi = -1
 local convoy = -1
 local convoyMovingboolean = -1
 local mountain = -1
+local RU_EWR_Initialized = false
 
 local shipDrones = -1
 
 
 
-local GroupBlue = SET_GROUP:New():FilterCoalitions( "blue" ):FilterStart()
 local HQBlue = GROUP:FindByName("HQBlue")
 local CommandCenterBlue = COMMANDCENTER:New( HQBlue, "Overlord" )
 local HQRed = GROUP:FindByName("HQRed")
@@ -79,92 +73,24 @@ end
 _SETTINGS:SetPlayerMenuOff()
 
 
-local function Strike1Start()
-  if strike1 == false then
-    --Spawn Units
-    strike1_group1 = SPAWN:New("S1_AAA_Helipad"):ReSpawn()
-    strike1_group2 = SPAWN:New("S1_AAA_North"):ReSpawn()
-    strike1_group3 = SPAWN:New("S1_AAA_South"):ReSpawn()
-    strike1_group4 = SPAWN:New("S1_SA11_East"):ReSpawn()
-    strike1_group5 = SPAWN:New("S1_SA6_West"):ReSpawn()
-    strike1_group6 = SPAWN:New("S1_Shiraz_SA11 #002"):ReSpawn()
-    strike1_group7 = SPAWN:New("S1_Shiraz_SA6 #001"):ReSpawn()
-    
-    strike1_group8 = SPAWN:New("S1_SA6_West #001"):ReSpawn()
-    strike1_group9 = SPAWN:New("S1_SA6_West #002"):ReSpawn()
-    strike1_group10 = SPAWN:New("S1_SA11_East #001"):ReSpawn()
-    strike1_group11 = SPAWN:New("S1_Factory_T1"):ReSpawn()
-    
-    strike1_group12 = SPAWN:New("S1_Widow"):ReSpawn()
-    strike1_group13 = SPAWN:New("S1_Slingshot_1-3"):ReSpawn()
-    strike1_group14 = SPAWN:New("S1_Slingshot_1-2"):ReSpawn()
-    strike1_group15 = SPAWN:New("S1_Slingshot_1-1"):ReSpawn()
-    
-    strike1_group16 = SPAWN:New("S1_SA6_N"):ReSpawn()
-    strike1_group17 = SPAWN:New("S1_SA6_N #001"):ReSpawn()
-    strike1_group18 = SPAWN:New("S1_SA6_N #003"):ReSpawn()
-    strike1_group19 = SPAWN:New("S1_SA6_N #002"):ReSpawn()
-    strike1_group20 = SPAWN:New("S1_SA2"):ReSpawn()
-    strike1_group21 = SPAWN:New("S1_SA2 #001"):ReSpawn()
-    strike1_group22 = SPAWN:New("S1_SA2 #002"):ReSpawn()
-    strike1_group23 = SPAWN:New("S1_SA300#1"):ReSpawn()
-    
-    
-  end
-end
-local function Strike1End()
-  if strike1 == true then
-    strike1_group1:Destroy()
-    strike1_group2:Destroy()
-    strike1_group3:Destroy()
-    strike1_group4:Destroy()
-    strike1_group5:Destroy()
-    strike1_group6:Destroy()
-    strike1_group7:Destroy()
-    strike1_group8:Destroy()
-    strike1_group9:Destroy()
-    strike1_group10:Destroy()
-    strike1_group11:Destroy()
-    strike1_group12:Destroy()
-    strike1_group13:Destroy()
-    strike1_group14:Destroy()
-    strike1_group15:Destroy()
-    strike1_group16:Destroy()
-    strike1_group17:Destroy()
-    strike1_group18:Destroy()
-    strike1_group19:Destroy()
-    strike1_group20:Destroy()
-    strike1_group21:Destroy()
-    strike1_group22:Destroy()
-    strike1_group23:Destroy()
---    radiobeep:ToAll()
-    MessageToAll("Strike 1 is now - inactive",30,"Setup")
-    strike1 = false
-  end
-end
-
 local function GlobalDefenseStart()
   if defense == false then
-    iranian_AWACS_North:ReSpawn()
-    iranian_Tanker_North:ReSpawn()
   
-    globalDefenseGroup1 = SPAWN:New("SAM_Hawk"):ReSpawn()
-    globalDefenseGroup2 = SPAWN:New("SAM_Hawk #001"):ReSpawn()
-    globalDefenseGroup4 = SPAWN:New("SAM_S300"):ReSpawn()
-    globalDefenseGroup5 = SPAWN:New("SAM_S300 #001"):ReSpawn()
-
-    globalDefenseGroup9 = SPAWN:New("SAM_S300 #005"):ReSpawn()
+    globalDefenseGroup1 = SPAWN:New("GD_SAM_Hawk"):ReSpawn()
+    globalDefenseGroup2 = SPAWN:New("GD_SAM_Hawk #001"):ReSpawn()
+    globalDefenseGroup4 = SPAWN:New("GD_SAM_S300"):ReSpawn()
+    globalDefenseGroup5 = SPAWN:New("GD_SAM_S300 #001"):ReSpawn()
+    globalDefenseGroup9 = SPAWN:New("GD_SAM_S300 #002"):ReSpawn()
+    globalDefenseGroup10 = SPAWN:New("GD_SAM_S300 #003"):ReSpawn()
     
-    globalDefenseEWR0 = SPAWN:New("EWR"):ReSpawn()
-    globalDefenseEWR1 = SPAWN:New("EWR #001"):ReSpawn()
-    globalDefenseEWR2 = SPAWN:New("EWR #002"):ReSpawn()
-    globalDefenseEWR3 = SPAWN:New("EWR #003"):ReSpawn()
-    globalDefenseEWR4 = SPAWN:New("EWR #004"):ReSpawn()
-    globalDefenseEWR6 = SPAWN:New("EWR #006"):ReSpawn()
-    globalDefenseEWR7 = SPAWN:New("EWR #007"):ReSpawn()
-    globalDefenseEWR8 = SPAWN:New("EWR #008"):ReSpawn()
+    globalDefenseEWR0 = SPAWN:New("RU_EWR"):ReSpawn()
+    globalDefenseEWR1 = SPAWN:New("RU_EWR #001"):ReSpawn()
+    globalDefenseEWR2 = SPAWN:New("RU_EWR #002"):ReSpawn()
+    globalDefenseEWR3 = SPAWN:New("RU_EWR #003"):ReSpawn()
+    globalDefenseEWR4 = SPAWN:New("RU_EWR #004"):ReSpawn()
+    globalDefenseEWR6 = SPAWN:New("RU_EWR #006"):ReSpawn()
+    globalDefenseEWR7 = SPAWN:New("RU_EWR #007"):ReSpawn()
     
---    radiobeep:ToAll()
     MessageToAll("Overlord to all units, the iranian defense is now online",30,"Setup")
     defense = true
   end
@@ -175,8 +101,8 @@ local function GlobalDefenseEnd()
       globalDefenseGroup2:Destroy()
       globalDefenseGroup4:Destroy()
       globalDefenseGroup5:Destroy()
-
       globalDefenseGroup9:Destroy()
+      globalDefenseGroup10:Destroy()
       
       globalDefenseEWR0:Destroy()
       globalDefenseEWR1:Destroy()
@@ -185,32 +111,16 @@ local function GlobalDefenseEnd()
       globalDefenseEWR4:Destroy()
       globalDefenseEWR6:Destroy()
       globalDefenseEWR7:Destroy()
-      globalDefenseEWR8:Destroy()
 
---    radiobeep:ToAll()
+
     MessageToAll("Overlord to all units, the iranian defense is now offline ",30,"Setup")
     defense = false
   end
 end
 
-local function BoghammerSpawn()
-  if boghammer == false then
-    boghammerGroup = boghammerGroupSpawn:ReSpawn()
-    boghammer = true
-    
-    
-  end
-end
-local function BoghammerEnd()
-  if boghammer == true then
-    boghammerGroup:Destroy()
-  boghammer = false
-  end
-end
-
 local function Mig29DroneWestStart()
 
-Spawn_Mig29_Dumb_Drone1 = SPAWN:New("Mig29DroneWest"):InitLimit(2,1):InitRepeatOnLanding():SpawnScheduled(15,0):ReSpawn()
+Spawn_Mig29_Dumb_Drone1 = SPAWN:New("Mig29DroneWest"):InitLimit(2,0):InitRepeatOnLanding():SpawnScheduled(15,0):ReSpawn()
 
 end
 
@@ -223,7 +133,7 @@ end
 
 local function Su27DroneWestStart()
 
-Spawn_Su27_Drone_West = SPAWN:New("Su27DroneWest"):InitLimit(2,1):InitRepeatOnLanding():SpawnScheduled(15,0):ReSpawn()
+Spawn_Su27_Drone_West = SPAWN:New("Su27DroneWest"):InitLimit(2,0):InitRepeatOnLanding():SpawnScheduled(15,0):ReSpawn()
 
 end
 
@@ -235,7 +145,7 @@ end
 
 local function F16DroneWestStart()
 
-Spawn_F16_Drone_West = SPAWN:New("F16DroneWest"):InitLimit(2,1):InitRepeatOnLanding():SpawnScheduled(15,0):ReSpawn()
+Spawn_F16_Drone_West = SPAWN:New("F16DroneWest"):InitLimit(2,0):InitRepeatOnLanding():SpawnScheduled(15,0):ReSpawn()
 
 end
 
@@ -247,7 +157,7 @@ end
 
 local function IL76DroneWestStart()
 
-Spawn_IL76_Drone_West = SPAWN:New("IL76DroneWest"):InitLimit(2,1):InitRepeatOnLanding():SpawnScheduled(15,0):ReSpawn()
+Spawn_IL76_Drone_West = SPAWN:New("IL76DroneWest"):InitLimit(2,0):InitRepeatOnLanding():SpawnScheduled(15,0):ReSpawn()
 
 end
 
@@ -261,11 +171,11 @@ end
 
 local function PvP1Start()
 
-PvP1_Trucks = SPAWN:New("PvP1_Trucks"):ReSpawn()
-PvP1_Trucks2 = SPAWN:New("PvP1_Trucks2"):ReSpawn()
-PvP1_Tanks = SPAWN:New("PvP1_Tanks"):ReSpawn()
-PvP1_Pickups = SPAWN:New("PvP1_Pickups"):ReSpawn()
-Tanker_PvP1_RussiaNorth = SPAWN:New("Tanker_PvP1_RussiaNorth"):ReSpawn()
+    PvP1_Trucks = SPAWN:New("PvP1_Trucks"):ReSpawn()
+    PvP1_Trucks2 = SPAWN:New("PvP1_Trucks2"):ReSpawn()
+    PvP1_Tanks = SPAWN:New("PvP1_Tanks"):ReSpawn()
+    PvP1_Pickups = SPAWN:New("PvP1_Pickups"):ReSpawn()
+    Tanker_PvP1_RussiaNorth = SPAWN:New("Tanker_PvP1_RussiaNorth"):ReSpawn()
 
     -- Confirm successful creation
     MessageToAll("The PvP Area NW of Sirri Island is now armed!",30,"PvP")
@@ -273,40 +183,130 @@ end
 
 local function PvP1End()
 
-PvP1_Trucks:Destroy()
-PvP1_Trucks2:Destroy()
-PvP1_Tanks:Destroy()
-PvP1_Pickups:Destroy()
-Tanker_PvP1_RussiaNorth:Destroy()
-MessageToAll("The PvP Area NW of Sirri Island is now dis-armed!",30,"PvP")
+    PvP1_Trucks:Destroy()
+    PvP1_Trucks2:Destroy()
+    PvP1_Tanks:Destroy()
+    PvP1_Pickups:Destroy()
+    Tanker_PvP1_RussiaNorth:Destroy()
+    MessageToAll("The PvP Area NW of Sirri Island is now dis-armed!",30,"PvP")
 end
 
+
 local function CapEastStart()
-    CapPlaneSpawnEast = SPAWN:New("RUCAPEast"):ReSpawn()
---    local CapPlane = GROUP:FindByName( "RUCAPEast" )    
---    GroupPolygon = GROUP:FindByName( "CAP_RED_EAST" )
---    PatrolZone = ZONE_POLYGON:New( "CAP_RED_EAST", GroupPolygon )
---    AICapZone = AI_CAP_ZONE:New( PatrolZone, 500, 10000, 400, 600 )    
---    AICapZone:SetControllable( CapPlane )   
---    AICapZone:__Start( 1 )
+       
+          -- Define a SET_GROUP object that builds a collection of groups that define the EWR network.
+          -- Here we build the network with all the groups that have a name starting with DF CCCP AWACS and DF CCCP EWR.
+          local DetectionSetGroupRuEast = SET_GROUP:New()
+          DetectionSetGroupRuEast:FilterPrefixes( { "RU_EWR"} )
+          DetectionSetGroupRuEast:FilterStart()
+          
+          local DetectionRuWest = DETECTION_AREAS:New( DetectionSetGroupRuEast, 30000 )
+          
+          -- Setup the A2A dispatcher, and initialize it.
+          A2ADispatcherRUeast = AI_A2A_DISPATCHER:New( DetectionRuWest )
+          A2ADispatcherRUeast:SetCommandCenter( CommandCenterRed )
+          
+          -- Enable the tactical display panel.
+          A2ADispatcherRUeast:SetTacticalDisplay( false )
+          A2ADispatcherRUeast:SetTacticalMenu( "Debug Dispatchers", "A2A East" )
+          
+          -- Initialize the dispatcher, setting up a border zone. This is a polygon, 
+          -- which takes the waypoints of a late activated group with the name CCCP Border as the boundaries of the border area.
+          -- Any enemy crossing this border will be engaged.
+          RUcapBorderEast = ZONE_POLYGON:New( "RUCAP_RED_EAST_ZONE", GROUP:FindByName( "RUCAP_RED_EAST_ZONE" ) )
+          A2ADispatcherRUeast:SetBorderZone( RUcapBorderEast )
+          
+          -- Initialize the dispatcher, setting up a radius of 100km where any airborne friendly 
+          -- without an assignment within 200km radius from a detected target, will engage that target.
+          A2ADispatcherRUeast:SetEngageRadius( 200000 )
+          
+          -- Setup the squadrons.
+          A2ADispatcherRUeast:SetSquadron( "RUCAPEast", AIRBASE.PersianGulf.Bandar_Abbas_Intl, { "RUCAPEast" })
+          
+          -- Setup the overhead
+          A2ADispatcherRUeast:SetSquadronOverhead( "RUCAPEast", 1 )
+          
+          -- Setup the Grouping
+          A2ADispatcherRUeast:SetSquadronGrouping( "RUCAPEast", 4 )
+          
+          -- Setup the Takeoff methods
+          A2ADispatcherRUeast:SetSquadronTakeoffFromRunway( "RUCAPEast" )
+          
+          -- Setup the Landing methods
+          A2ADispatcherRUeast:SetSquadronLandingNearAirbase( "RUCAPEast" )
+          
+          -- GCI Squadron execution.
+          A2ADispatcherRUeast:SetSquadronGci2( "RUCAPEast", 600, 1200, 100, 100, "RADIO" )
+          
+          A2ADispatcherRUeast:SetDefaultTanker("IranTanker1")
+          
+          -- Set the language of the squadrons to Russian.
+          A2ADispatcherRUeast:SetSquadronLanguage( "RUCAPEast", "RU" )
+          
+          A2ADispatcherRUeast:SetSquadronRadioFrequency( "RUCAPEast", 127.5 )
+
 end
 
 local function CapEastEnd()
-  CapPlaneSpawnEast:Destroy()
+  A2ADispatcherRUeast:Stop()
 end
 
 local function CapWestStart()
-    CapPlaneSpawnWest = SPAWN:New("RUCAPWest"):ReSpawn()
---    local CapPlane = GROUP:FindByName( "RUCAPWest" )    
---    GroupPolygon = GROUP:FindByName( "RUCAP_RED_WEST" )
---    PatrolZone = ZONE_POLYGON:New( "RUCAP_RED_WEST", GroupPolygon )
---    AICapZone = AI_CAP_ZONE:New( PatrolZone, 500, 10000, 400, 600 )    
---    AICapZone:SetControllable( CapPlane )   
---    AICapZone:__Start( 1 )
+
+              -- Define a SET_GROUP object that builds a collection of groups that define the EWR network.
+          -- Here we build the network with all the groups that have a name starting with DF CCCP AWACS and DF CCCP EWR.
+          local DetectionSetGroupRuWest = SET_GROUP:New()
+          DetectionSetGroupRuWest:FilterPrefixes( { "RU_EWR"} )
+          DetectionSetGroupRuWest:FilterStart()
+          
+          local DetectionRuWest = DETECTION_AREAS:New( DetectionSetGroupRuWest, 30000 )
+          
+          -- Setup the A2A dispatcher, and initialize it.
+          A2ADispatcherRUwest = AI_A2A_DISPATCHER:New( DetectionRuWest )
+          A2ADispatcherRUwest:SetCommandCenter( CommandCenterRed )
+          
+          -- Enable the tactical display panel.
+          A2ADispatcherRUwest:SetTacticalDisplay( false )
+          A2ADispatcherRUwest:SetTacticalMenu( "Debug Dispatchers", "A2A West" )
+          
+          -- Initialize the dispatcher, setting up a border zone. This is a polygon, 
+          -- which takes the waypoints of a late activated group with the name CCCP Border as the boundaries of the border area.
+          -- Any enemy crossing this border will be engaged.
+          RUcapBorderWest = ZONE_POLYGON:New( "RUCAP_RED_WEST_ZONE", GROUP:FindByName( "RUCAP_RED_WEST_ZONE" ) )
+          A2ADispatcherRUwest:SetBorderZone( RUcapBorderWest )
+          
+          -- Initialize the dispatcher, setting up a radius of 100km where any airborne friendly 
+          -- without an assignment within 200km radius from a detected target, will engage that target.
+          A2ADispatcherRUwest:SetEngageRadius( 200000 )
+          
+          -- Setup the squadrons.
+          A2ADispatcherRUwest:SetSquadron( "RUCAPWest", AIRBASE.PersianGulf.Shiraz_International_Airport, { "RUCAPWest" })
+          
+          -- Setup the overhead
+          A2ADispatcherRUwest:SetSquadronOverhead( "RUCAPWest", 1 )
+          
+          -- Setup the Grouping
+          A2ADispatcherRUwest:SetSquadronGrouping( "RUCAPWest", 4 )
+          
+          -- Setup the Takeoff methods
+          A2ADispatcherRUwest:SetSquadronTakeoffFromRunway( "RUCAPWest" )
+          
+          -- Setup the Landing methods
+          A2ADispatcherRUwest:SetSquadronLandingNearAirbase("RUCAPWest")
+          
+          -- GCI Squadron execution.
+          A2ADispatcherRUwest:SetSquadronGci2( "RUCAPWest", 600, 1200, 100, 100, "RADIO" )
+          
+          A2ADispatcherRUwest:SetDefaultTanker("IranTanker1")
+          
+          -- Set the language of the squadrons to Russian.
+          A2ADispatcherRUwest:SetSquadronLanguage( "RUCAPWest", "RU" )
+          
+          A2ADispatcherRUwest:SetSquadronRadioFrequency( "RUCAPWest", 127.5 )
 end
 
 local function CapWestEnd()
-  CapPlaneSpawnWest:Destroy()
+          A2ADispatcherRUwest:Stop()
 end
 
 local function RebelRoySpawn(difficult)
@@ -444,8 +444,6 @@ mountain = difficult
         mountainhideoutHell:ReSpawn()
         mountainhideoutHell2:ReSpawn()
         mountainhideoutHell3:ReSpawn()
---        local BlueVictory = USERSOUND:New( "HighwayDangerzone.ogg" )
---        BlueVictory:ToAll()
         
       end
       ctld.JTACAutoLase('Misty_Mountain', 1688)
@@ -472,61 +470,23 @@ local function RebelMountainEnd()
         mountain = -1
 end
 
-
-local function ShipDronesStart(difficult)
-shipDrones = difficult
-        if difficult >= 1 then
-          ShipDronesUnarmed:ReSpawn()
-        end
-        if difficult >= 2 then
-          
-
-        end
-        if difficult >= 3 then
-
-        end
-        MessageToAll("Ships Spawned!",60,"Ships-Active")
-end
-
-local function ShipDronesEnd()
-  if shipDrones >= 1 then
-      ShipDronesUnarmed:GetLastAliveGroup():Destroy()
-  end
-   if shipDrones >= 2 then
-
- end
-   if shipDrones >= 3 then
-
- end  
-      MessageToAll("Ships De-Spawned",60,"Marcos 2-inactive")
-      shipDrones = -1
-end
-
 ------ Red Menue
 local MenuCoalitionRedA2G = MENU_COALITION:New( coalition.side.RED, "Iran MissionSetup A2G" )
-local MenuCoalitionRedMissionSetupA2GGDefense = MENU_COALITION:New( coalition.side.RED, "Global Defense", MenuCoalitionRedA2G)
+--local MenuCoalitionRedMissionSetupA2GGDefense = MENU_COALITION:New( coalition.side.RED, "Global Defense", MenuCoalitionRedA2G)
 local MenuCoalitionRedMissionSetupA2GStrike1 = MENU_COALITION:New( coalition.side.RED, "Strike 1", MenuCoalitionRedA2G)
 local MenuCoalitionRedMissionSetupA2GBH = MENU_COALITION:New( coalition.side.RED, "Boghammer", MenuCoalitionRedA2G)
 
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.RED, "Global Defense : Start", MenuCoalitionRedMissionSetupA2GGDefense, GlobalDefenseStart )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.RED, "Global Defense : End", MenuCoalitionRedMissionSetupA2GGDefense, GlobalDefenseEnd )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.RED, "Strike 1 : Start", MenuCoalitionRedMissionSetupA2GStrike1, Strike1Start )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.RED, "Strike 1 : End", MenuCoalitionRedMissionSetupA2GStrike1, Strike1End )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.RED, "Boghammer : Start", MenuCoalitionRedMissionSetupA2GBH, BoghammerSpawn )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.RED, "Boghammer : End", MenuCoalitionRedMissionSetupA2GBH, BoghammerEnd )
 
 ------- Blue Menue
 MenuCoalitionBlueA2G = MENU_COALITION:New( coalition.side.BLUE, "MissionSetup A2G" )
 local MenuCoalitionBlueA2A = MENU_COALITION:New( coalition.side.BLUE, "MissionSetup A2A" )
-local MenuCoalitionBluePvP = MENU_COALITION:New( coalition.side.BLUE, "PvP Setup" )
 
-local MenuCoalitionBlueMissionSetupA2GGDefense = MENU_COALITION:New( coalition.side.BLUE, "Global Defense...", MenuCoalitionBlueA2G)
+--local MenuCoalitionBlueMissionSetupA2GGDefense = MENU_COALITION:New( coalition.side.BLUE, "Global Defense...", MenuCoalitionBlueA2G)
 local MenuCoalitionBlueMissionSetupA2GRebels = MENU_COALITION:New( coalition.side.BLUE, "Rebel Outpost Sub...", MenuCoalitionBlueA2G)
-local MenuCoalitionBlueMissionSetupA2GStrike1 = MENU_COALITION:New( coalition.side.BLUE, "Strike 1 - Factory Strike...", MenuCoalitionBlueA2G)
-local MenuCoalitionBlueMissionSetupA2GShips = MENU_COALITION:New( coalition.side.BLUE, "Ships...", MenuCoalitionBlueA2G)
+--local MenuCoalitionBlueMissionSetupA2GShips = MENU_COALITION:New( coalition.side.BLUE, "Ships...", MenuCoalitionBlueA2G)
 
 local MenuCoalitionBlueMissionSetupA2GShipDrones = MENU_COALITION:New( coalition.side.BLUE, "Drones...", MenuCoalitionBlueMissionSetupA2GShips)
-local MenuCoalitionBlueMissionSetupA2GShipBoghammers = MENU_COALITION:New( coalition.side.BLUE, "Boghammers...", MenuCoalitionBlueMissionSetupA2GShips)
+--local MenuCoalitionBlueMissionSetupA2GShipBoghammers = MENU_COALITION:New( coalition.side.BLUE, "Boghammers...", MenuCoalitionBlueMissionSetupA2GShips)
 
 local MenuCoalitionBlueMissionSetupA2GRebelsConvoy = MENU_COALITION:New( coalition.side.BLUE, "Convoy...", MenuCoalitionBlueMissionSetupA2GRebels)
 local MenuCoalitionBlueMissionSetupA2GRebelsZaymi = MENU_COALITION:New( coalition.side.BLUE, "Zaymi...", MenuCoalitionBlueMissionSetupA2GRebels)
@@ -537,23 +497,7 @@ local MenuCoalitionBlueMissionSetupA2GRebelsRoy = MENU_COALITION:New( coalition.
 
 local MenuCoalitionBlueMissionSetupA2ADroneWest = MENU_COALITION:New( coalition.side.BLUE, "Drones West...", MenuCoalitionBlueA2A)
 local MenuCoalitionBlueMissionSetupA2ADroneEast = MENU_COALITION:New( coalition.side.BLUE, "Drones East...", MenuCoalitionBlueA2A)
-local MenuCoalitionBlueMissionSetupA2ACAP = MENU_COALITION:New( coalition.side.BLUE, "CAP...", MenuCoalitionBlueA2A)
 
-local MenuCoalitionBlueMissionSetupPvP1 = MENU_COALITION:New( coalition.side.BLUE, "PvP : Strike 1...", MenuCoalitionBluePvP)
-
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Global Defense : Start", MenuCoalitionBlueMissionSetupA2GGDefense, GlobalDefenseStart )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Global Defense : End", MenuCoalitionBlueMissionSetupA2GGDefense, GlobalDefenseEnd )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "CAP West : Start", MenuCoalitionBlueMissionSetupA2ACAP, CapWestStart )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "CAP West : End", MenuCoalitionBlueMissionSetupA2ACAP, CapWestEnd )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "CAP East : Start", MenuCoalitionBlueMissionSetupA2ACAP, CapEastStart )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "CAP East : End", MenuCoalitionBlueMissionSetupA2ACAP, CapEastEnd )
-
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Strike 1 : Start", MenuCoalitionBlueMissionSetupA2GStrike1, Strike1Start )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Strike 1 : End", MenuCoalitionBlueMissionSetupA2GStrike1, Strike1End )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Boghammers : Start", MenuCoalitionBlueMissionSetupA2GShipBoghammers, BoghammerSpawn )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Boghammers : End", MenuCoalitionBlueMissionSetupA2GShipBoghammers, BoghammerEnd )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Tankers : Start", MenuCoalitionBlueMissionSetupA2GShipDrones, ShipDronesStart, 1 )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Tankers : End", MenuCoalitionBlueMissionSetupA2GShipDrones, ShipDronesEnd )
 
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Mig29DroneWest : Start", MenuCoalitionBlueMissionSetupA2ADroneWest, Mig29DroneWestStart )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Mig29DroneWest : End", MenuCoalitionBlueMissionSetupA2ADroneWest, Mig29DroneWestEnd )
@@ -563,9 +507,6 @@ local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "F16DroneWest :
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "F16DroneWest : End", MenuCoalitionBlueMissionSetupA2ADroneWest, F16DroneWestEnd )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "IL76DroneWest : Start", MenuCoalitionBlueMissionSetupA2ADroneWest, IL76DroneWestStart )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "IL76DroneWest : End", MenuCoalitionBlueMissionSetupA2ADroneWest, IL76DroneWestEnd )
-
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "PvP 1 Battle N of Sirri Island: Start", MenuCoalitionBlueMissionSetupPvP1, PvP1Start )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "PvP 1 Battle N of Sirri Island: End", MenuCoalitionBlueMissionSetupPvP1, PvP1End )
 
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Convoy: Easy", MenuCoalitionBlueMissionSetupA2GRebelsConvoy, RebelConvoySpawnStationary,1 )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Convoy: Medium", MenuCoalitionBlueMissionSetupA2GRebelsConvoy, RebelConvoySpawnStationary, 2 )
@@ -589,6 +530,49 @@ local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Royy Outpost: 
 
 
 
+--------
+--Initialize the map
+GlobalDefenseStart()
+CapEastStart()
+CapWestStart()
 
 
+-- Initialize A2G
+--
+-- Define a SET_GROUP object that builds a collection of groups that define the recce network.
+-- Here we build the network with all the groups that have a name starting with CCCP Recce.
+
+local DetectionSetGroupUSBAI = SET_GROUP:New()
+DetectionSetGroupUSBAI:FilterPrefixes( { "US_BAI_RECCE" } )
+DetectionSetGroupUSBAI:FilterStart()
+
+local DetectionUSBAI = DETECTION_AREAS:New( DetectionSetGroupUSBAI, 1000 )
+
+-- Setup the A2A dispatcher, and initialize it.
+A2GDispatcherBlue = AI_A2G_DISPATCHER:New( DetectionUSBAI )
+
+
+-- Add defense coordinates.
+A2GDispatcherBlue:AddDefenseCoordinate( "HQ", HQBlue:GetCoordinate() )
+A2GDispatcherBlue:SetDefenseReactivityHigh() -- High defense reactivity. So far proximity of a threat will trigger a defense action.
+A2GDispatcherBlue:SetDefenseRadius( 9000000 ) -- Defense radius wide enough to also trigger defenses far away.
+
+-- Communication to the players within the coalition. The HQ services the communication of the defense actions.
+A2GDispatcherBlue:SetCommandCenter( CommandCenterBlue )
+
+-- Show a tactical display.
+A2GDispatcherBlue:SetTacticalDisplay( false )
+A2GDispatcherBlue:SetTacticalMenu("A2G Dispatcher", "HQ")
+
+
+-- Setup the patrols.
+
+-- The patrol zone.
+local PatrolZonePowerPlant = ZONE:New( "PatrolZonePowerPlant" )
+
+A2GDispatcherBlue:SetSquadron( "F15E-Strike", AIRBASE.PersianGulf.Al_Dhafra_AB, { "F15E-Strike" })
+A2GDispatcherBlue:SetSquadronBaiPatrol2( "F15E-Strike", PatrolZonePowerPlant, 400, 450, 22000, 28000, "BARO", 22000, 230, 1000, 30000, "BARO" ) -- New API
+A2GDispatcherBlue:SetSquadronBaiPatrolInterval( "F15E-Strike", 1, 300, 1200, 1 )
+A2GDispatcherBlue:SetSquadronTakeoffFromParkingHot( "F15E-Strike" )
+A2GDispatcherBlue:SetSquadronOverhead( "F15E-Strike", 1 )
 

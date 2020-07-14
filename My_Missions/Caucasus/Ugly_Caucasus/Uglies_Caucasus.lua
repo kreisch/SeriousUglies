@@ -1,15 +1,14 @@
 -- START Global Defense BLUE
 local BlueGlobalDefense1 = SPAWN:New("Blue_SAM_Global_Defense_1")
 local BlueGlobalDefense2 = SPAWN:New("Blue_SAM_Global_Defense_2")
-local BlueGlobalDefense3 = SPAWN:New("Blue_SAM_Global_Defense_3")
-local BlueGlobalDefense4 = SPAWN:New("Blue_SAM_Global_Defense_4")
-local BlueGlobalDefense5 = SPAWN:New("Blue_SAM_Global_Defense_5")
+--local BlueGlobalDefense4 = SPAWN:New("Blue_SAM_Global_Defense_4")
+--local BlueGlobalDefense5 = SPAWN:New("Blue_SAM_Global_Defense_5")
 local BlueGlobalDefense6 = SPAWN:New("Blue_SAM_Global_Defense_6")
-local BlueGlobalDefense7 = SPAWN:New("Blue_SAM_Global_Defense_7")
-local BlueGlobalDefense8 = SPAWN:New("Blue_SAM_Global_Defense_8")
+--local BlueGlobalDefense7 = SPAWN:New("Blue_SAM_Global_Defense_7")
+--local BlueGlobalDefense8 = SPAWN:New("Blue_SAM_Global_Defense_8")
 local BlueGlobalDefense9 = SPAWN:New("Blue_SAM_Global_Defense_9")
 local BlueGlobalDefense10 = SPAWN:New("Blue_SAM_Global_Defense_10")
-local BlueGlobalDefense11 = SPAWN:New("Blue_SAM_Global_Defense_11")
+--local BlueGlobalDefense11 = SPAWN:New("Blue_SAM_Global_Defense_11")
 
 local CarlosUnitsAFAC = SPAWN:New("S1_AFAC")
 local CarlosUnitsEasy = SPAWN:New("S1_Carlos")
@@ -54,7 +53,7 @@ local Marcos2UnitsMedium4 = SPAWN:New("S3_Medium")
 
 local Marcos2UnitsHard1 = SPAWN:New("S3_SA2_Hard")
 
-local ShipDronesUnarmed = SPAWN:New("TgtShipDrones")
+--local ShipDronesUnarmed = SPAWN:New("TgtShipDrones")
 
 
 
@@ -69,15 +68,14 @@ local function GlobalDefenseStart()
  
    BlueGlobalDefense1:ReSpawn()
    BlueGlobalDefense2:ReSpawn()
-   BlueGlobalDefense3:ReSpawn()
-   BlueGlobalDefense4:ReSpawn()
-   BlueGlobalDefense5:ReSpawn()
+   --BlueGlobalDefense4:ReSpawn()
+   --BlueGlobalDefense5:ReSpawn()
    BlueGlobalDefense6:ReSpawn()
-   BlueGlobalDefense7:ReSpawn()
-   BlueGlobalDefense8:ReSpawn()
+   --BlueGlobalDefense7:ReSpawn()
+   --BlueGlobalDefense8:ReSpawn()
    BlueGlobalDefense9:ReSpawn()
    BlueGlobalDefense10:ReSpawn()
-   BlueGlobalDefense11:ReSpawn()
+   --BlueGlobalDefense11:ReSpawn()
    
    
    GlobalDefenseBlueActive = true
@@ -94,15 +92,14 @@ local function GlobalDefenseEnd()
  if GlobalDefenseBlueActive then
   BlueGlobalDefense1:GetLastAliveGroup():Destroy()
   BlueGlobalDefense2:GetLastAliveGroup():Destroy()
-  BlueGlobalDefense3:GetLastAliveGroup():Destroy()
-  BlueGlobalDefense4:GetLastAliveGroup():Destroy()
-  BlueGlobalDefense5:GetLastAliveGroup():Destroy()
+  --BlueGlobalDefense4:GetLastAliveGroup():Destroy()
+  --BlueGlobalDefense5:GetLastAliveGroup():Destroy()
   BlueGlobalDefense6:GetLastAliveGroup():Destroy()
-  BlueGlobalDefense7:GetLastAliveGroup():Destroy()
-  BlueGlobalDefense8:GetLastAliveGroup():Destroy()
+  --BlueGlobalDefense7:GetLastAliveGroup():Destroy()
+  --BlueGlobalDefense8:GetLastAliveGroup():Destroy()
   BlueGlobalDefense9:GetLastAliveGroup():Destroy()
   BlueGlobalDefense10:GetLastAliveGroup():Destroy()
-  BlueGlobalDefense11:GetLastAliveGroup():Destroy()
+  --BlueGlobalDefense11:GetLastAliveGroup():Destroy()
   
   GlobalDefenseBlueActive = false
   MessageToAll("WARNING: Blue Defense-Network offline!",60,"Global Defense Blue Despawn")
@@ -436,34 +433,34 @@ local function Marcos2End()
 end
 
 
-local function ShipDronesStart(difficult)
-shipDrones = difficult
-        if difficult >= 1 then
-          ShipDronesUnarmed:ReSpawn()
-        end
-        if difficult >= 2 then
-          
-
-        end
-        if difficult >= 3 then
-
-        end
-        MessageToAll("Ships Spawned!",60,"Ships-Active")
-end
-
-local function ShipDronesEnd()
-  if shipDrones >= 1 then
-      ShipDronesUnarmed:GetLastAliveGroup():Destroy()
-  end
-   if shipDrones >= 2 then
-
- end
-   if shipDrones >= 3 then
-
- end  
-      MessageToAll("Marcos 2 De-Spawned",60,"Marcos 2-inactive")
-      shipDrones = -1
-end
+--local function ShipDronesStart(difficult)
+--shipDrones = difficult
+--        if difficult >= 1 then
+--          ShipDronesUnarmed:ReSpawn()
+--        end
+--        if difficult >= 2 then
+--          
+--
+--        end
+--        if difficult >= 3 then
+--
+--        end
+--        MessageToAll("Ships Spawned!",60,"Ships-Active")
+--end
+--
+--local function ShipDronesEnd()
+--  if shipDrones >= 1 then
+--      ShipDronesUnarmed:GetLastAliveGroup():Destroy()
+--  end
+--   if shipDrones >= 2 then
+--
+-- end
+--   if shipDrones >= 3 then
+--
+-- end  
+--      MessageToAll("Marcos 2 De-Spawned",60,"Marcos 2-inactive")
+--      shipDrones = -1
+--end
 
 
 
@@ -475,10 +472,10 @@ MenuCoalitionBlueA2A = MENU_COALITION:New( coalition.side.BLUE, "MissionSetup A2
 MenuCoalitionBluePvP = MENU_COALITION:New( coalition.side.BLUE, "PvP Setup..." )
 
 -- 2nd Level!
-local MenuCoalitionBlueMissionSetupA2GGDefenseBlue = MENU_COALITION:New( coalition.side.BLUE, "Global Defense Blue...", MenuCoalitionBlueA2G)
+-- local MenuCoalitionBlueMissionSetupA2GGDefenseBlue = MENU_COALITION:New( coalition.side.BLUE, "Global Defense Blue...", MenuCoalitionBlueA2G)
 local MenuCoalitionBlueMissionSetupA2GCarlosMarcos = MENU_COALITION:New( coalition.side.BLUE, "Carlos and Marcos...", MenuCoalitionBlueA2G)
 local MenuCoalitionBlueMissionSetupA2ADrones = MENU_COALITION:New( coalition.side.BLUE, "Drones...", MenuCoalitionBlueA2A)
-local MenuCoalitionBlueMissionSetupA2ARedCap = MENU_COALITION:New( coalition.side.BLUE, "Russian CAP...", MenuCoalitionBlueA2A)
+--local MenuCoalitionBlueMissionSetupA2ARedCap = MENU_COALITION:New( coalition.side.BLUE, "Russian CAP...", MenuCoalitionBlueA2A)
 local MenuCoalitionBlueMissionSetupA2ADroneIL76 = MENU_COALITION:New( coalition.side.BLUE, "Drohne Willie (IL76)...", MenuCoalitionBlueMissionSetupA2ADrones)
 
 -- 3rd Level !
@@ -487,12 +484,12 @@ local MenuCoalitionBlueMissionSetupA2GMarcos = MENU_COALITION:New( coalition.sid
 local MenuCoalitionBlueMissionSetupA2GShips = MENU_COALITION:New( coalition.side.BLUE, "Ships...", MenuCoalitionBlueA2G)
 
 -- Action Level!
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Global Defense Red : Start", MenuCoalitionBlueMissionSetupA2GGDefenseBlue, GlobalDefenseStart )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Global Defense Red : End", MenuCoalitionBlueMissionSetupA2GGDefenseBlue, GlobalDefenseEnd )
+-- local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Global Defense Red : Start", MenuCoalitionBlueMissionSetupA2GGDefenseBlue, GlobalDefenseStart )
+-- local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Global Defense Red : End", MenuCoalitionBlueMissionSetupA2GGDefenseBlue, GlobalDefenseEnd )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Drohne Willie (IL76) : Start", MenuCoalitionBlueMissionSetupA2ADroneIL76, DroneStart )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Drohne Willie (IL76) : End", MenuCoalitionBlueMissionSetupA2ADroneIL76, DroneEnd )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Russian CAP : Start", MenuCoalitionBlueMissionSetupA2ARedCap, RedCAPStart )
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Russian CAP : End", MenuCoalitionBlueMissionSetupA2ARedCap, RedCAPEnd )
+--local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Russian CAP : Start", MenuCoalitionBlueMissionSetupA2ARedCap, RedCAPStart )
+--local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Russian CAP : End", MenuCoalitionBlueMissionSetupA2ARedCap, RedCAPEnd )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Carlos S1 Easy : Start", MenuCoalitionBlueMissionSetupA2GCarlos, CarlosStart, 1 )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Carlos S1 Medium : Start", MenuCoalitionBlueMissionSetupA2GCarlos, CarlosStart, 2 )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Carlos S1 Hard : Start", MenuCoalitionBlueMissionSetupA2GCarlos, CarlosStart, 3 )
@@ -505,8 +502,8 @@ local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Marcos S3 Easy
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Marcos S3 Medium : Start", MenuCoalitionBlueMissionSetupA2GMarcos, Marcos2Start , 2 )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Marcos S3 Hard : Start", MenuCoalitionBlueMissionSetupA2GMarcos, Marcos2Start , 3 )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Marcos S3 : End", MenuCoalitionBlueMissionSetupA2GMarcos, Marcos2End)
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Ship Drones : Start", MenuCoalitionBlueMissionSetupA2GShips, ShipDronesStart, 1)
-local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Ship Drones : End", MenuCoalitionBlueMissionSetupA2GShips, ShipDronesEnd)
+--local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Ship Drones : Start", MenuCoalitionBlueMissionSetupA2GShips, ShipDronesStart, 1)
+--local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Ship Drones : End", MenuCoalitionBlueMissionSetupA2GShips, ShipDronesEnd)
 
 
 

@@ -2,9 +2,9 @@
 -- S-3B Recovery Tanker spawning in air. Groupname
 local tanker2=RECOVERYTANKER:New("CVN-73 George Washington", "ShellCarrier GWashington")
 --tanker:SetTakeoffAir()
-tanker2:SetRadio(267)
+tanker2:SetRadio(122)
 tanker2:SetModex(912)
-tanker2:SetTACAN(67, "SHL")
+tanker2:SetTACAN(22, "SHL12")
 tanker2:Start()
 
 ---- E-2D AWACS spawning on Stennis.

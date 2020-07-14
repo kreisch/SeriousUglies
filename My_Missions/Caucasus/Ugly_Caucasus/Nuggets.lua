@@ -11,12 +11,13 @@ local Nugget03Trucks4 = SPAWN:New("Nugget 03 - Trucks 4")
 function Nugget03Start()
  if not Nugget03Active then
  
-   Nugget03Trucks1:ReSpawn()
-   Nugget03Trucks2:ReSpawn()
-   Nugget03Trucks3:ReSpawn()
-   Nugget03Trucks4:ReSpawn()
-   
    Nugget03Active = true
+   Nugget03Trucks1:InitCleanUp(120):ReSpawn()
+   Nugget03Trucks2:InitCleanUp(120):ReSpawn()
+   Nugget03Trucks3:InitCleanUp(120):ReSpawn()
+   Nugget03Trucks4:InitCleanUp(120):ReSpawn()
+   
+   
    MessageToAll("Nugget 03 - Trucks sind gespawned!",60,"Nugget 03 Spawn")
    
    else
@@ -27,11 +28,13 @@ end
  
 function Nugget03End()
  if Nugget03Active then
+  Nugget03Active = false
+  
   Nugget03Trucks1:GetLastAliveGroup():Destroy()
   Nugget03Trucks2:GetLastAliveGroup():Destroy()
   Nugget03Trucks3:GetLastAliveGroup():Destroy()
   Nugget03Trucks4:GetLastAliveGroup():Destroy()
-  Nugget03Active = false
+  
   MessageToAll("Nugget 03 - Trucks sind despawned!",60,"Nugget 03 Despawn")
   else 
    MessageToAll("Nugget 03 - Trucks sind noch nicht gespawned!",60,"Nugget 03 Error Despawn")  
@@ -47,8 +50,9 @@ local Nugget04BTRs = SPAWN:New("Nugget 04 - BTRs")
 
 function Nugget04Start()
  if not Nugget04Active then
-   Nugget04BTRs:ReSpawn()
    Nugget04Active = true
+   Nugget04BTRs:ReSpawn()
+   
    MessageToAll("Nugget 04 - BTRs sind gespawned!",60,"Nugget 04 Spawn")
    
    else
@@ -59,8 +63,9 @@ end
 
 function Nugget04End()
  if Nugget04Active then
-  Nugget04BTRs:GetLastAliveGroup():Destroy()
   Nugget04Active = false
+  Nugget04BTRs:GetLastAliveGroup():Destroy()
+  
   MessageToAll("Nugget 04 - BTRs sind despawned!",60,"Nugget 04 Despawn")
   else 
    MessageToAll("Nugget 04 - BTRs sind noch nicht gespawned!",60,"Nugget 04 Error Despawn")  
@@ -78,10 +83,12 @@ local Nugget05Bunkers = SPAWN:New("Nugget 05 - Bunker")
 
 function Nugget05Start()
  if not Nugget05Active then
+ 
+   Nugget05Active = true
    Nugget05Trucks:ReSpawn()
    Nugget05BTRs:ReSpawn()
    Nugget05Bunkers:ReSpawn()
-   Nugget05Active = true
+   
    MessageToAll("Nugget 05 - Einheiten sind gespawned!",60,"Nugget 05 Spawn")
    
    else
@@ -92,11 +99,13 @@ end
 
 function Nugget05End()
  if Nugget05Active then
+ 
+  Nugget05Active = false
   Nugget05Trucks:GetLastAliveGroup():Destroy()
   Nugget05BTRs:GetLastAliveGroup():Destroy()
   Nugget05Bunkers:GetLastAliveGroup():Destroy()
   
-  Nugget05Active = false
+  
   MessageToAll("Nugget 05 - Einheiten sind despawned!",60,"Nugget 05 Despawn")
   else 
    MessageToAll("Nugget 05 - Einheiten sind noch nicht gespawned!",60,"Nugget 05 Error Despawn")  
@@ -113,8 +122,10 @@ local Nugget06Trucks = SPAWN:New("Nugget 06 - Units")
 
 function Nugget06Start()
  if not Nugget06Active then
-   Nugget06Trucks:ReSpawn()
+ 
    Nugget06Active = true
+   Nugget06Trucks:ReSpawn()
+   
    MessageToAll("Nugget 06 - Einheiten sind gespawned!",60,"Nugget 06 Spawn")
    
    else
@@ -125,9 +136,11 @@ end
 
 function Nugget06End()
  if Nugget06Active then
-  Nugget06Trucks:GetLastAliveGroup():Destroy()
   
   Nugget06Active = false
+  Nugget06Trucks:GetLastAliveGroup():Destroy()
+  
+  
   MessageToAll("Nugget 06 - Einheiten sind despawned!",60,"Nugget 06 Despawn")
   else 
    MessageToAll("Nugget 06 - Einheiten sind noch nicht gespawned!",60,"Nugget 06 Error Despawn")  
@@ -144,8 +157,10 @@ local Nugget07Trucks = SPAWN:New("Nugget 07 - Drones")
 
 function Nugget07Start()
  if not Nugget07Active then
-   Nugget07Trucks:ReSpawn()
+   
    Nugget07Active = true
+   Nugget07Trucks:ReSpawn()
+   
    MessageToAll("Nugget 07 - Einheiten sind gespawned!",60,"Nugget 07 Spawn")
    
    else
@@ -156,9 +171,12 @@ end
 
 function Nugget07End()
  if Nugget07Active then
-  Nugget07Trucks:GetLastAliveGroup():Destroy()
+  
   
   Nugget07Active = false
+  Nugget07Trucks:GetLastAliveGroup():Destroy()
+  
+  
   MessageToAll("Nugget 07 - Einheiten sind despawned!",60,"Nugget 07 Despawn")
   else 
    MessageToAll("Nugget 07 - Einheiten sind noch nicht gespawned!",60,"Nugget 07 Error Despawn")  

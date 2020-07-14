@@ -1,0 +1,6 @@
+atisKobuleti=ATIS:New(AIRBASE.Caucasus.Kobuleti, 263.15)
+atisKobuleti:SetRadioRelayUnitName("ATIS Kobuleti")
+atisKobuleti:SetTowerFrequencies({263.100, 133.100})
+atisKobuleti:SetImperialUnits()
+atisKobuleti:SetTACAN(67)
+atisKobuleti:Start()

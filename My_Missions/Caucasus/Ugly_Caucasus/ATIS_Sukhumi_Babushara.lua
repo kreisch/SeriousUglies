@@ -1,0 +1,5 @@
+atisSukhumiBabu=ATIS:New(AIRBASE.Caucasus.Sukhumi_Babushara, 258.25)
+atisSukhumiBabu:SetRadioRelayUnitName("ATIS SukhumiBabu")
+atisSukhumiBabu:SetTowerFrequencies({258.200, 129.200})
+atisSukhumiBabu:SetImperialUnits()
+atisSukhumiBabu:Start()

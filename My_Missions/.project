@@ -3,7 +3,7 @@
 	<name>My_Missions</name>
 	<comment></comment>
 	<projects>
-		<project>Moose_Framework_2.4.13</project>
+		<project>MOOSE</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

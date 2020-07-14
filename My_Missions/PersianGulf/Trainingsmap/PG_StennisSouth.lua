@@ -2,9 +2,9 @@
 local tanker=RECOVERYTANKER:New("CVN-74 Stennis", "ShellCarrier")
 
 --tanker:SetTakeoffAir()
-tanker:SetRadio(266)
+tanker:SetRadio(121)
 tanker:SetModex(911)
-tanker:SetTACAN(66, "SHE")
+tanker:SetTACAN(21, "SHL11")
 tanker:Start()
 
 ---- E-2D AWACS spawning on Stennis.
