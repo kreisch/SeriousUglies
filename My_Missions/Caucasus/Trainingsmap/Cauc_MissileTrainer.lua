@@ -19,4 +19,3 @@ local Trainer = MISSILETRAINER
 
 Trainer:InitAlertsToAll(true) -- Now alerts are also on
 
-Trainer:
