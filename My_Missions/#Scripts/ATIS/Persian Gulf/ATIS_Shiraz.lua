@@ -1,0 +1,6 @@
+atisShirazAb=ATIS:New(AIRBASE.PersianGulf.Shiraz_International_Airport, 250.45)
+atisShirazAb:SetRadioRelayUnitName("ATIS Shiraz")
+atisShirazAb:SetImperialUnits()
+atisShirazAb:SetTACAN(94)
+atisShirazAb:SetTowerFrequencies({250.400, 150.400})
+atisShirazAb:Start()

@@ -1,0 +1,6 @@
+atisBandarAbbasAB=ATIS:New(AIRBASE.PersianGulf.Bandar_Abbas_Intl, 250.85)
+atisBandarAbbasAB:SetRadioRelayUnitName("ATIS BandarAbbasAB")
+atisBandarAbbasAB:SetImperialUnits()
+atisBandarAbbasAB:SetTACAN(78)
+atisBandarAbbasAB:SetTowerFrequencies({250.800, 150.800})
+atisBandarAbbasAB:Start()

@@ -1,0 +1,5 @@
+atisAlAinAB=ATIS:New(AIRBASE.PersianGulf.Al_Ain_International_Airport, 250.65)
+atisAlAinAB:SetRadioRelayUnitName("ATIS AlAinAB")
+atisAlAinAB:SetImperialUnits()
+atisAlAinAB:SetTowerFrequencies({250.600, 150.600})
+atisAlAinAB:Start()
