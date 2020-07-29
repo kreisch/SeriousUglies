@@ -1,0 +1,26 @@
+Carrier Lua Template pack v2a
+
+You are welcome to use this script and templates in campaigns, missions, new templates and anything else dcs related! I would appreciate a mention for the original idea / creation and link to the original file (so those who download your template pack can access my templates, instructions and the creating templates guide to help them create their own!):
+
+https://youtu.be/XONOFbhwbsU
+https://www.digitalcombatsimulator.com/en/files/3309905/
+
+If you create your own template pack please get in touch via the details below and i'l add a link to your pack in the video decription!
+
+If you are someone who is more proficient in lua script / programming, you are more than welcome to create a tool for the automation of the template creation process! Be sure to get in contact with me via the details below and I'll be happy to signal boost the tool to the community!
+
+Finally, Big thank you to everyone in the community out there for all the advise and help available on the ED forums.
+
+Enjoy!
+Redkite
+
+
+Contact
+redkiterender@gmail.com
+Discord: https://discord.gg/sfd8sVr
+
+Changelog:
+
+v1  intital release
+v2  Resolved Id limit of 100, minor corrections to templates
+v2a Corrected layout of mass recovery templates to be more realistic

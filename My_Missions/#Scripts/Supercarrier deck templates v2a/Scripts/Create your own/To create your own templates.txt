@@ -1,0 +1,30 @@
+If you wish to create your own templates, Create a new mission and place the aircraft onboard your 
+desired ship. Insure they are named as something useful to help you identify them later.
+
+Open the Units List, sort by Unit ID desending
+
+Open the .miz mission file with winzip / 7zip
+
+Open the Mission file with something like notepad or your prefered software.
+
+Press control F to open search and enter ["unitId"] = ##, Where ## is the id of the unit you wish to copy
+(ideally you should start with the lowest number of those you wish to copy)
+
+Cross reference the Unit list in the editor to your ID's shown in the mission file to confirm exactly 
+what unit you've got
+
+Create a new .lua file for the template, save it.
+Open the template spawn example, copy the code.
+
+Copy and paste relevant details above the unit ID over the section you need to change.
+
+Copy and paste a new copy of this segment and repeat as needed.
+
+Save.
+
+In mission, Set Flag 404 to the ship id you're using
+AFTER this (give it a second or two delay) run the script file you created to spawn the created template.
+
+Don't forget to re-open the script file if you're making changes, the editor saves a copy when opened.
+
+

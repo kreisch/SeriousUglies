@@ -27,21 +27,21 @@ blueIADS:getEarlyWarningRadars():addPowerSource(comPowerSourceUS)
 redIADS:activate()
 blueIADS:activate()
 
-local iadsDebug = redIADS:getDebugSettings()  
-iadsDebug.IADSStatus = true
-iadsDebug.samWentDark = true
-iadsDebug.contacts = true
-iadsDebug.radarWentLive = true
-iadsDebug.ewRadarNoConnection = true
-iadsDebug.samNoConnection = true
-iadsDebug.jammerProbability = true
-iadsDebug.addedEWRadar = true
-iadsDebug.hasNoPower = true
-iadsDebug.addedSAMSite = true
-iadsDebug.warnings = true
-iadsDebug.harmDefence = true
-iadsDebug.samSiteStatusEnvOutput = true
-iadsDebug.earlyWarningRadarStatusEnvOutput = true
+--local iadsDebug = redIADS:getDebugSettings()  
+--iadsDebug.IADSStatus = true
+--iadsDebug.samWentDark = true
+--iadsDebug.contacts = true
+--iadsDebug.radarWentLive = true
+--iadsDebug.ewRadarNoConnection = true
+--iadsDebug.samNoConnection = true
+--iadsDebug.jammerProbability = true
+--iadsDebug.addedEWRadar = true
+--iadsDebug.hasNoPower = true
+--iadsDebug.addedSAMSite = true
+--iadsDebug.warnings = true
+--iadsDebug.harmDefence = true
+--iadsDebug.samSiteStatusEnvOutput = true
+--iadsDebug.earlyWarningRadarStatusEnvOutput = true
 
 
 -- START MOOSE CODE:
@@ -69,7 +69,7 @@ A2ADispatcher:SetBorderZone( CCCPBorderZone )
 A2ADispatcher:SetSquadron( "BandarAbbas", AIRBASE.PersianGulf.Bandar_Abbas_Intl, { "RU_CAP_BandarAbbas_Mig21" }, 2 )
 A2ADispatcher:SetSquadronGrouping( "BandarAbbas", 2 )
 A2ADispatcher:SetSquadronGci( "BandarAbbas", 900, 1200 )
-A2ADispatcher:SetTacticalDisplay(true)
+A2ADispatcher:SetTacticalDisplay(false)
 A2ADispatcher:SetDefaultTakeoffFromParkingHot()
 A2ADispatcher:Start()
 
@@ -78,7 +78,7 @@ A2ADispatcherUS:SetBorderZone( USBorderZone )
 A2ADispatcherUS:SetSquadron( "AlDhafra", AIRBASE.PersianGulf.Al_Dhafra_AB, { "US_CAP_AlDhafra" }, 2 )
 A2ADispatcherUS:SetSquadronGrouping( "AlDhafra", 2 )
 A2ADispatcherUS:SetSquadronGci( "AlDhafra", 900, 1200 )
-A2ADispatcherUS:SetTacticalDisplay(true)
+A2ADispatcherUS:SetTacticalDisplay(false)
 A2ADispatcherUS:SetDefaultTakeoffFromParkingHot()
 A2ADispatcherUS:Start()
 --END MOOSE CODE

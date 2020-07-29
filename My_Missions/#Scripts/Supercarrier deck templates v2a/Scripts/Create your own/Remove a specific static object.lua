@@ -1,0 +1,1 @@
+StaticObject.getByName('StaticObjectName'):destroy() -- replace StaticObjectName with the name of desired object
