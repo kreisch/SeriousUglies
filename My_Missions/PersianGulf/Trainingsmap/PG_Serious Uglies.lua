@@ -289,7 +289,8 @@ local function CapWestStart()
           A2ADispatcherRUwest:SetSquadronGrouping( "RUCAPWest", 4 )
           
           -- Setup the Takeoff methods
-          A2ADispatcherRUwest:SetSquadronTakeoffFromRunway( "RUCAPWest" )
+          --A2ADispatcherRUwest:SetSquadronTakeoffFromRunway( "RUCAPWest" )
+          A2ADispatcherRUwest:SetSquadronTakeoffInAir("RUCAPWest",3000)
           
           -- Setup the Landing methods
           A2ADispatcherRUwest:SetSquadronLandingNearAirbase("RUCAPWest")
@@ -533,8 +534,8 @@ local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Royy Outpost: 
 --------
 --Initialize the map
 GlobalDefenseStart()
-CapEastStart()
-CapWestStart()
+--CapEastStart()
+--CapWestStart()
 
 
 -- Initialize A2G
