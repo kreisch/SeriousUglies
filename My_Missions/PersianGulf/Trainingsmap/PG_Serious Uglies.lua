@@ -571,7 +571,9 @@ A2GDispatcherBlue:SetTacticalMenu("A2G Dispatcher", "HQ")
 local PatrolZonePowerPlant = ZONE:New( "PatrolZonePowerPlant" )
 
 A2GDispatcherBlue:SetSquadron( "F15E-Strike", AIRBASE.PersianGulf.Al_Dhafra_AB, { "F15E-Strike" })
+A2GDispatcherBlue:SetSquadronFuelThreshold("F15E-Strike",0.2)
+A2GDispatcherBlue:SetSquadronTanker("F15E-Strike","Arco31")
 A2GDispatcherBlue:SetSquadronBaiPatrol2( "F15E-Strike", PatrolZonePowerPlant, 800, 1200, 22000, 28000, "BARO", 22000, 230, 1000, 30000, "BARO" ) -- New API
 A2GDispatcherBlue:SetSquadronBaiPatrolInterval( "F15E-Strike", 1, 300, 1200, 1 )
 A2GDispatcherBlue:SetSquadronTakeoffFromParkingHot( "F15E-Strike" )
-A2GDispatcherBlue:SetSquadronOverhead( "F15E-Strike", 1 )
+A2GDispatcherBlue:SetSquadronOverhead( "F15E-Strike", 2 )
