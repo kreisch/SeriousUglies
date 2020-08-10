@@ -1,9 +1,11 @@
 ----
 --
 -- ---------IADS 
--- --- Blue
+-- --- BLUE
 -- 
+-- Sektoren:
 -- Incirlik / NW / Bereich Türkei
+-- 
 -- 
 -- Support:
 -- US_IADS_Comm_Tower1_Incirlik
@@ -18,6 +20,14 @@
 -- EWRs:
 -- US_IADS_EWR_Incirlik_1
 -- 
+-- 
+-- 
+-- --- RED
+-- Sektoren:
+-- Aleppo
+-- Damascus
+-- Palmyra
+-- Homs
 --
 
 -- Tell the log file IADS is loading
