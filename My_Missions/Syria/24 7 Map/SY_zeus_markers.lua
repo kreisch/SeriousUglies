@@ -169,7 +169,7 @@ function handleSpawnRequest(text, coord)
     local zeusSpawn = nil
 	-- RED
 	env.info(text)
-    if text:find("mig19red") then
+    if text:find("mig19_red") then
         zeusSpawn = RU_Zeus_Mig19
     elseif text:find("mig21_red") then
         zeusSpawn = RU_Zeus_Mig21
