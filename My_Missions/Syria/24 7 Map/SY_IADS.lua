@@ -56,8 +56,8 @@ redIADSPalmyra:addEarlyWarningRadarsByPrefix('RU_IADS_EWR_Palmyra')
 redIADSAleppo:addSAMSitesByPrefix('RU_IADS_SAM_Aleppo')
 redIADSPalmyra:addSAMSitesByPrefix('RU_IADS_SAM_Palmyra')
 
-redIADSAleppo:addRadioMenu()
-redIADSPalmyra:addRadioMenu()
+--redIADSAleppo:addRadioMenu()
+--redIADSPalmyra:addRadioMenu()
 
 -------- ALEPPO CC and PP START ---------------------
 -- Define CommandCenter Aleppo

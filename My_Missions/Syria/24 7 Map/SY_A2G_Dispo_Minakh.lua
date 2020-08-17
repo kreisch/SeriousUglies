@@ -26,7 +26,7 @@ A2GDispatcher_Minakh:SetDefenseRadius( 200000 ) -- Defense radius wide enough to
 A2GDispatcher_Minakh:SetCommandCenter( HQ_CC_Minakh )
 
 -- Show a tactical display.
-A2GDispatcher_Minakh:SetTacticalDisplay( true )
+A2GDispatcher_Minakh:SetTacticalDisplay( false )
 
 
 -- Setup the patrols.
@@ -41,7 +41,6 @@ A2GDispatcher_Minakh:SetSquadronCasPatrol2( "Kuweires_CAS_SU25", PatrolZone, nil
 A2GDispatcher_Minakh:SetSquadronCasPatrolInterval( "Kuweires_CAS_SU25", 2, 30, 60, 1 )
 A2GDispatcher_Minakh:SetSquadronTakeoffFromParkingHot( "Kuweires_CAS_SU25" )
 A2GDispatcher_Minakh:SetSquadronOverhead( "Kuweires_CAS_SU25", 0.25 )
-
 
 -- We set for each squadron a takeoff interval, as each helicopter will launch from a FARP.
 -- This to prevent helicopters to clutter.

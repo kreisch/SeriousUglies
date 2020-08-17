@@ -4,9 +4,9 @@ env.info("AIRBOSS: Loading configuration")
 -- S-3B Recovery Tanker spawning in air. Groupname
 local tanker2=RECOVERYTANKER:New("CVN-72 Lincoln", "ShellCarrier Lincoln")
 --tanker:SetTakeoffAir()
-tanker2:SetRadio(122)
+tanker2:SetRadio(121)
 tanker2:SetModex(912)
-tanker2:SetTACAN(22, "SHL12")
+tanker2:SetTACAN(21, "SHL11")
 tanker2:Start()
 
 ---- E-2D AWACS spawning on Stennis.

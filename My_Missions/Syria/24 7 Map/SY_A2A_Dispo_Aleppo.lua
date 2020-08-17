@@ -14,7 +14,7 @@ RED_A2ADispatcher_Aleppo = AI_A2A_DISPATCHER:New( DetectionAleppo )
 -- without an assignment within 100km radius from a detected target, will engage that target.
 RED_A2ADispatcher_Aleppo:SetEngageRadius( 200000 )
 RED_A2ADispatcher_Aleppo:SetDisengageRadius( 200000 )
-RED_A2ADispatcher_Aleppo:SetTacticalDisplay( true )
+RED_A2ADispatcher_Aleppo:SetTacticalDisplay( false )
 
 
 -- Setup the squadrons.
