@@ -70,7 +70,7 @@ redIADSPalmyra:addSAMSitesByPrefix('RU_IADS_SAM_Palmyra')
 -- Assign the PowerPlants to the SAM Sites and to the Command Center
     redIADSAleppo:addCommandCenter(IADS_RED_Aleppo_CC):addPowerSource(IADS_RED_Aleppo_PP_1)
     redIADSAleppo:getSAMSiteByGroupName("RU_IADS_SAM_Aleppo_SA2#2"):addPowerSource(IADS_RED_Aleppo_PP_3)
-    redIADSAleppo:getSAMSiteByGroupName("RU_IADS_SAM_Aleppo_SA2"):addPowerSource(IADS_RED_Aleppo_PP_2)
+    redIADSAleppo:getSAMSiteByGroupName("RU_IADS_SAM_Aleppo_SA2#3-1"):addPowerSource(IADS_RED_Aleppo_PP_2)
     redIADSAleppo:getSAMSiteByGroupName("RU_IADS_SAM_Aleppo_SA2#3"):addPowerSource(IADS_RED_Aleppo_PP_1)
     redIADSAleppo:getEarlyWarningRadarByUnitName('RU_IADS_EWR_Aleppo_EWR-1'):addPowerSource(IADS_RED_Aleppo_PP_4)
 -------- ALEPPO CC and PP END ---------------------

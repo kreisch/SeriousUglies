@@ -24,6 +24,7 @@ RED_A2ADispatcher_Damascus:SetSquadron( "RU_CAP_Damascus", "Aleppo", { "RU_Damas
                                                                            "RU_Damascus_CAP_Mig21",
                                                                            "RU_Damascus_CAP_Mig19" }, 0 )
 RED_CAPZone_Aleppo = ZONE_POLYGON:New( "RU_BORDER_South_CAP", GROUP:FindByName( "RU_BORDER_South_CAP" ) )
-RED_A2ADispatcher_Damascus:SetSquadronCap( "RU_CAP_Damascus", 800, 1200, 4000, 8000, RED_CAPZone_Aleppo, 600, 800, 4000, 8000, "BARO" )
+RED_A2ADispatcher_Damascus:SetSquadronCap("RU_CAP_Damascus",RED_CAPZone_Aleppo,3000,5000,600,900,600,1200,"BARO")
 RED_A2ADispatcher_Damascus:SetSquadronCapInterval( "RU_CAP_Damascus", 4, 30, 120, 1 )
+RED_A2ADispatcher_Damascus:SetSquadronTakeoffFromParkingCold("RU_CAP_Damascus")
 RED_A2ADispatcher_Damascus:__Start(1)

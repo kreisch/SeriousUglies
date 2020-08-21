@@ -21,6 +21,7 @@ RED_A2ADispatcher_Aleppo:SetTacticalDisplay( false )
 
 RED_A2ADispatcher_Aleppo:SetSquadron( "RU_CAP_Aleppo_Mig21", "Aleppo", { "RU_CAP_Aleppo_Mig21" }, 20 )
 RED_CAPZone_Aleppo = ZONE_POLYGON:New( "RU_BORDER_Aleppo_CAP", GROUP:FindByName( "RU_BORDER_Aleppo_CAP" ) )
-RED_A2ADispatcher_Aleppo:SetSquadronCap( "RU_CAP_Aleppo_Mig21", 800, 1200, 4000, 8000, RED_CAPZone_Aleppo, 600, 800, 4000, 8000, "BARO" )
+RED_A2ADispatcher_Aleppo:SetSquadronCap("RU_CAP_Aleppo_Mig21",RED_CAPZone_Aleppo,3000,5000,600,900,600,1200,"BARO")
 RED_A2ADispatcher_Aleppo:SetSquadronCapInterval( "RU_CAP_Aleppo_Mig21", 4, 30, 120, 1 )
+RED_A2ADispatcher_Aleppo:SetSquadronTakeoffFromParkingCold("RU_CAP_Aleppo_Mig21")
 RED_A2ADispatcher_Aleppo:__Start(1)

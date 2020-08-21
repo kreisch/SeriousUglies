@@ -32,7 +32,7 @@ A2GDispatcher_Minakh:SetTacticalDisplay( false )
 -- Setup the patrols.
 
 -- The patrol zone.
-local PatrolZone = ZONE_POLYGON:New( "RU_BORDER_A2G_MINAKH", GROUP:FindByName( "RU_BORDER_A2G_MINAKH" ) )
+PatrolZone = ZONE_POLYGON:New( "RU_BORDER_A2G_MINAKH", GROUP:FindByName( "RU_BORDER_A2G_MINAKH" ) )
 
 
 -- Close Air Support from the CAS farp.
@@ -46,6 +46,7 @@ A2GDispatcher_Minakh:SetSquadronOverhead( "Kuweires_CAS_SU25", 0.25 )
 -- This to prevent helicopters to clutter.
 -- Each helicopter group is taking off the FARP in hot start.
 A2GDispatcher_Minakh:SetSquadronTakeoffInterval( "Kuweires_CAS_SU25", 10 )
+A2GDispatcher_Minakh:SetSquadronTakeoffFromParkingCold("Kuweires_CAS_SU25")
 A2GDispatcher_Minakh:Start()
 
 

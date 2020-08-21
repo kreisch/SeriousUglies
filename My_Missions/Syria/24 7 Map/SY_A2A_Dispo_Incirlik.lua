@@ -28,18 +28,16 @@ US_A2ADispatcher_Incirlik:SetCommandCenter( HQ_CC )
 
 US_A2ADispatcher_Incirlik:SetSquadron( "US_Incirlik_CAP_F15C", "Incirlik", { "US_Incirlik_CAP_F15C" }, 100 )
 US_CAPZone_North = ZONE_POLYGON:New( "US_BORDER_Incirlik_CAP", GROUP:FindByName( "US_BORDER_Incirlik_CAP" ) )
-US_A2ADispatcher_Incirlik:SetSquadronCap( "US_Incirlik_CAP_F15C", 600, 1200, 4000, 8000, US_CAPZone_North, 600, 1200, 4000, 8000, "BARO" )
+US_A2ADispatcher_Incirlik:SetSquadronCap("US_Incirlik_CAP_F15C",US_CAPZone_North,3000,5000,600,900,600,1200,"BARO")
 US_A2ADispatcher_Incirlik:SetSquadronCapInterval( "US_Incirlik_CAP_F15C", 4, 30, 300, 1 )
 
 
 
 US_A2ADispatcher_Incirlik:SetSquadron( "US_Incirlik_CAP_F16C", "Incirlik", { "US_Incirlik_CAP_F16C" }, 100 )
 US_CAPZone_Incirlik = ZONE_POLYGON:New( "US_BORDER_Incirlik_GCI", GROUP:FindByName( "US_BORDER_Incirlik_GCI" ) )
-US_A2ADispatcher_Incirlik:SetSquadronCap( "US_Incirlik_CAP_F16C", 600, 1200, 4000, 8000, US_CAPZone_Incirlik, 600, 1200, 4000, 8000, "BARO" )
+US_A2ADispatcher_Incirlik:SetSquadronCap("US_Incirlik_CAP_F16C",US_CAPZone_Incirlik,3000,5000,600,900,600,1200,"BARO")
+
 US_A2ADispatcher_Incirlik:SetSquadronCapInterval( "US_Incirlik_CAP_F16C", 4, 30, 300, 1 )
-
-
-US_A2ADispatcher_Incirlik:SetDefaultTakeoffFromParkingCold()
 
 US_A2ADispatcher_Incirlik:SetSquadronRadioFrequency("US_Incirlik_CAP_F16C",251.0)
 US_A2ADispatcher_Incirlik:SetSquadronRadioFrequency("US_Incirlik_CAP_F15C",251.0)
@@ -54,6 +52,8 @@ US_A2ADispatcher_Incirlik:SetSquadronGrouping( "US_Incirlik_CAP_F15C", 4 )
 US_A2ADispatcher_Incirlik:SetSquadronLandingAtRunway( "US_Incirlik_CAP_F16C" )
 US_A2ADispatcher_Incirlik:SetSquadronLandingAtRunway( "US_Incirlik_CAP_F15C" )
 
+US_A2ADispatcher_Incirlik:SetSquadronTakeoffFromParkingCold("US_Incirlik_CAP_F16C")
+US_A2ADispatcher_Incirlik:SetSquadronTakeoffFromParkingCold("US_Incirlik_CAP_F15C")
 
 
 

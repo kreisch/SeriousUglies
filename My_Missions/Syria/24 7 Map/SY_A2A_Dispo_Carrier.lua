@@ -21,9 +21,8 @@ US_A2ADispatcher_Carrier:SetTacticalDisplay( false )
 
 US_A2ADispatcher_Carrier:SetSquadron( "US_Carrier_CAP_Tomcat", "CVN-72 Lincoln", { "US_Carrier_CAP_Tomcat" }, 20 )
 US_CAPZone_Carrier = ZONE_POLYGON:New( "US_BORDER_CARRIER_CAP", GROUP:FindByName( "US_BORDER_CARRIER_CAP" ) )
-US_A2ADispatcher_Carrier:SetSquadronCap( "US_Carrier_CAP_Tomcat", 800, 1200, 4000, 8000, US_CAPZone_Carrier, 600, 800, 4000, 8000, "BARO" )
+US_A2ADispatcher_Carrier:SetSquadronCap("US_Carrier_CAP_Tomcat",US_CAPZone_Carrier,3000,5000,600,900,600,1200,"BARO")
 US_A2ADispatcher_Carrier:SetSquadronCapInterval( "US_Carrier_CAP_Tomcat", 4, 30, 600, 1 )
-
 US_A2ADispatcher_Carrier:SetSquadronOverhead( "US_Carrier_CAP_Tomcat", 2.0 )
 US_A2ADispatcher_Carrier:SetSquadronGrouping( "US_Carrier_CAP_Tomcat", 2 )
 US_A2ADispatcher_Carrier:SetSquadronLandingAtRunway( "US_Carrier_CAP_Tomcat" )
