@@ -367,14 +367,14 @@ ctld.extractableGroups = {
     "extract25",
 }
 
--- ************** Logistics UNITS FOR CRATE SPAWNING ******************
+-- ************** Logistics STATICS FOR CRATE SPAWNING ******************
 
 -- Use any of the predefined names or set your own ones
--- When a logistic unit is destroyed, you will no longer be able to spawn crates
+-- When a logistic static is destroyed, you will no longer be able to spawn crates
 
 ctld.logisticUnits = {
     "FARP_London_Supply",
-    "logistic2",
+    "logistic_Hatay",
     "logistic3",
     "logistic4",
     "logistic5",

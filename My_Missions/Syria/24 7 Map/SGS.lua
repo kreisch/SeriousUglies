@@ -31,7 +31,7 @@
  --route, only for the original route it recieved from the Mission Editor. Therefore a DCS limitation.
  -----------------------------------
  --Configurable for user:
- SaveScheduleUnits=10 --how many seconds between each check of all the statics.
+ SaveScheduleUnits=600 --how many seconds between each check of all the statics.
  
  unitsPosFile = "C:\\temp\\Persistence\\UglyUnitPositions.lua" --edit this to represent your own (DCS cant write to different disks)
 
