@@ -1,0 +1,1 @@
+local RU_Kuweires_CAS_SU25 = SPAWN:New( "RU_Kuweires_CAS_SU25" ):InitLimit( 2, 12 ):InitRepeatOnLanding():SpawnScheduled( 600, 0.9 )

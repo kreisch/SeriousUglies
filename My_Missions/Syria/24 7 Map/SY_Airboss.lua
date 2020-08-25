@@ -7,6 +7,7 @@ local tanker2=RECOVERYTANKER:New("CVN-72 Lincoln", "ShellCarrier Lincoln")
 tanker2:SetRadio(121)
 tanker2:SetModex(912)
 tanker2:SetTACAN(21, "SHL11")
+tanker2:SetTakeoffAir()
 tanker2:Start()
 
 ---- E-2D AWACS spawning on Stennis.
@@ -17,6 +18,7 @@ awacs2:SetAltitude(20000)
 awacs2:SetCallsign(CALLSIGN.AWACS.Magic)
 awacs2:SetRacetrackDistances(30, 15)
 awacs2:SetModex(611)
+awacs2:SetTakeoffAir()
 awacs2:__Start(1)
 
 -- Rescue Helo with home base Lake Erie. Has to be a global object! Group name for helo

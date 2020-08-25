@@ -1,3 +1,7 @@
+
+
+----- DO NOT USE THIS! YOU WILL FUCK UP YOUR SERVER !
+
 env.info("A2A_Dispatcher: Loading Incirlik")
 
 -- Define a SET_GROUP object that builds a collection of groups that define the EWR network.
