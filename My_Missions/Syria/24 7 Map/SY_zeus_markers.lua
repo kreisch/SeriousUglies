@@ -144,23 +144,37 @@ RU_Zeus_Ka50 = SPAWN:New("RU_Zeus_Ka50")
 
 ---- GROUND RED
 --
+RU_ZEUS_SRMAAA      = SPAWN:New("RU_ZEUS_SRMAAA")
+RU_ZEUS_MobileInf   = SPAWN:New("RU_ZEUS_MobileInf")
+RU_ZEUS_InfSquad    = SPAWN:New("RU_ZEUS_InfSquad")
+RU_ZEUS_UAZ         = SPAWN:New("RU_ZEUS_UAZ")
+RU_ZEUS_T55         = SPAWN:New("RU_ZEUS_T55")
+RU_ZEUS_T555Group   = SPAWN:New("RU_ZEUS_T555Group")
+--
 ---- A2A BLUE
 ------- Jets
-US_Zeus_F14 = SPAWN:New("US_Zeus_F14")
-US_Zeus_F15C = SPAWN:New("US_Zeus_F15C")
-US_Zeus_F16C = SPAWN:New("US_Zeus_F16C")
-US_Zeus_F18C = SPAWN:New("US_Zeus_F18C")
-US_Zeus_JF17 = SPAWN:New("US_Zeus_JF17")
+US_Zeus_F14         = SPAWN:New("US_Zeus_F14")
+US_Zeus_F15C        = SPAWN:New("US_Zeus_F15C")
+US_Zeus_F16C        = SPAWN:New("US_Zeus_F16C")
+US_Zeus_F18C        = SPAWN:New("US_Zeus_F18C")
+US_Zeus_JF17        = SPAWN:New("US_Zeus_JF17")
 ------- Helo
-US_Zeus_AH64 = SPAWN:New("US_Zeus_AH64")
-US_Zeus_ch47d = SPAWN:New("US_Zeus_ch47d")
-US_Zeus_ch53 = SPAWN:New("US_Zeus_ch53")
-US_Zeus_uh60 = SPAWN:New("US_Zeus_uh60")
-US_Zeus_uh1 = SPAWN:New("US_Zeus_uh1")
-US_Zeus_uh1_slick = SPAWN:New("US_Zeus_uh1_slick")
+US_Zeus_AH64        = SPAWN:New("US_Zeus_AH64")
+US_Zeus_ch47d       = SPAWN:New("US_Zeus_ch47d")
+US_Zeus_ch53        = SPAWN:New("US_Zeus_ch53")
+US_Zeus_uh60        = SPAWN:New("US_Zeus_uh60")
+US_Zeus_uh1         = SPAWN:New("US_Zeus_uh1")
+US_Zeus_uh1_slick   = SPAWN:New("US_Zeus_uh1_slick")
 ---- GROUND BLUE
--- 
 
+US_ZEUS_SRMAAA          = SPAWN:New("US_ZEUS_SRMAAA")
+US_ZEUS_AbramsCompany   = SPAWN:New("US_ZEUS_AbramsCompany")
+US_ZEUS_Abrams5Group    = SPAWN:New("US_ZEUS_Abrams5Group")
+US_ZEUS_Abrams          = SPAWN:New("US_ZEUS_Abrams")
+US_ZEUS_HMMWV           = SPAWN:New("US_ZEUS_HMMWV")
+US_ZEUS_HQGroup         = SPAWN:New("US_ZEUS_HQGroup")
+US_ZEUS_MobileInf       = SPAWN:New("US_ZEUS_MobileInf")
+US_ZEUS_InfSquad        = SPAWN:New("US_ZEUS_InfSquad")
 
 
 function handleSpawnRequest(text, coord)
@@ -184,7 +198,20 @@ function handleSpawnRequest(text, coord)
     elseif text:find("mi8_red") then
         zeusSpawn = RU_Zeus_Mi8    
     elseif text:find("ka50_red") then
-        zeusSpawn = RU_Zeus_Ka50    
+        zeusSpawn = RU_Zeus_Ka50   
+        
+        elseif text:find("ru_zeus_srmaa") then
+        zeusSpawn = RU_ZEUS_SRMAAA
+        elseif text:find("ru_zeus_mobileinf") then
+        zeusSpawn = RU_ZEUS_MobileInf
+        elseif text:find("ru_zeus_infsquad") then
+        zeusSpawn = RU_ZEUS_InfSquad
+        elseif text:find("ru_zeus_uaz") then
+        zeusSpawn = RU_ZEUS_UAZ
+        elseif text:find("ru_zeus_t55") then
+        zeusSpawn = RU_ZEUS_T55
+        elseif text:find("ru_zeus_t555group") then
+        zeusSpawn = RU_ZEUS_T555Group 
 
     -- BLUE
     elseif text:find("f14_blue") then
@@ -209,7 +236,24 @@ function handleSpawnRequest(text, coord)
     elseif text:find("uh1_blue") then
         zeusSpawn =  US_Zeus_uh1      
     elseif text:find("uh1_slick_blue") then
-        zeusSpawn =  US_Zeus_uh1_slick       
+        zeusSpawn =  US_Zeus_uh1_slick    
+        
+        elseif text:find("us_zeus_srmaaa") then
+        zeusSpawn =  US_ZEUS_SRMAAA
+        elseif text:find("us_zeus_abramscompany") then
+        zeusSpawn =  US_ZEUS_AbramsCompany 
+        elseif text:find("us_zeus_abrams5group") then
+        zeusSpawn =  US_ZEUS_Abrams5Group 
+        elseif text:find("us_zeus_abrams") then
+        zeusSpawn =  US_ZEUS_Abrams 
+        elseif text:find("us_zeus_hmmwv") then
+        zeusSpawn =  US_ZEUS_HMMWV 
+        elseif text:find("us_zeus_hqgroup") then
+        zeusSpawn =  US_ZEUS_HQGroup 
+        elseif text:find("us_zeus_mobileinf") then
+        zeusSpawn =  US_ZEUS_MobileInf
+        elseif text:find("us_zeus_infsquad") then
+        zeusSpawn =  US_ZEUS_InfSquad  
         
         		
 	elseif text:find("jtac") then
