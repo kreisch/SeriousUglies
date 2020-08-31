@@ -165,8 +165,8 @@ end
 
 function UglySubstituteAndKillUnit(SubstituteUnit)
 	if ( SubstituteUnit ~= nil ) then
-    local DeadUnit = UNIT:FindByName(SubstituteUnit["name"])
-    if ( DeadUnit ~= nil ) then
+		local DeadUnit = UNIT:FindByName(SubstituteUnit["name"])
+		if ( DeadUnit ~= nil ) then
 		  DeadUnit:Destroy()
 		end
 
@@ -177,8 +177,8 @@ end
 
 function UglySubstituteAndKillStatic(SubstituteStatic)
 	if ( SubstituteStatic ~= nil ) then
-    local DeadStatic = STATIC:FindByName(SubstituteStatic["name"], false)
-    if ( DeadStatic ~= nil ) then
+		local DeadStatic = STATIC:FindByName(SubstituteStatic["name"], false)
+		if ( DeadStatic ~= nil ) then
 		  DeadStatic:Destroy()
 		end
 
@@ -202,6 +202,7 @@ function StartUglyPersistence(_pathToUserData, _unitsFileName, _staticsFileName)
 
 --  DeadUnitsList:FilterCoalitions("red"):FilterCategories("ground"):FilterActive(true):FilterStart()
   DeadUnitsList:HandleEvent(EVENTS.Dead)
+--  DeadUnitsList:HandleEvent(EVENTS.Crash) -- Player and AI Aircraft as statics
 
   --////LOAD UNITS
   
@@ -230,11 +231,13 @@ function StartUglyPersistence(_pathToUserData, _unitsFileName, _staticsFileName)
     --////LOAD STATICS
     if file_exists(StaticsFilePath) then
       UglyPrintDebugText("Loading: "..StaticsFilePath)
+	  env.info( "Loading: "..StaticsFilePath )
 
   	  dofile(StaticsFilePath)
 		
       UglyPrintDebugText("Static Table Length Is "..#UglyStaticDeadList)
-	
+	  env.info( "Static Table Length Is "..#UglyStaticDeadList )
+	  
   	  for i = 1, #UglyStaticDeadList do
         UglySubstituteAndKillStatic(UglyStaticDeadList[i])
         SEFDeletedStaticCount = SEFDeletedStaticCount + 1
@@ -290,20 +293,47 @@ function DeadUnitsList:OnEventDead(EventData)
 --    UglyPrintDebugText("Dead Unit Category: "..DEADUNITCATEGORY)
 --    UglyPrintDebugText("Dead Unit Object Category: "..DEADUNITOBJECTCATEGORY)
 
-  
-  if ( DEADUNITOBJECTCATEGORY == 1 ) then -- UNIT
-    if ( DEADUNITCATEGORY == 2 or DEADUNITCATEGORY == 3 ) then -- GROUND_UNIT or SHIP
-    UglyPrintDebugText("PERSISTED! Dead Unit ["..DEADUNITNAME.."]")
-    dumpToTable(UglyUnitDeadList, DEADUNIT)
-    end
-  elseif ( DEADUNITOBJECTCATEGORY == 3 ) then -- STATIC
-    UglyPrintDebugText("PERSISTED! Dead Static ["..DEADUNITNAME.."]")
-    dumpToTable(UglyStaticDeadList, DEADUNIT)
-  end		
+  if DEADUNIT ~= nil then
+   if ( DEADUNITOBJECTCATEGORY == 1 ) then -- UNIT
+     if ( DEADUNITCATEGORY == 2 or DEADUNITCATEGORY == 3 ) then -- GROUND_UNIT or SHIP
+       UglyPrintDebugText("PERSISTED! Dead Unit ["..DEADUNITNAME.."]")
+       dumpToTable(UglyUnitDeadList, DEADUNIT)
+     end
+    elseif ( DEADUNITOBJECTCATEGORY == 3 ) then -- STATIC
+      UglyPrintDebugText("PERSISTED! Dead Static ["..DEADUNITNAME.."]")
+      dumpToTable(UglyStaticDeadList, DEADUNIT)
+    end		
+  end
 
   local DEADDCSUNIT = EventData.IniDCSUnit
   DEADDCSUNIT:destroy()
 end
+
+--[[
+function DeadUnitsList:OnEventCrash(EventData)
+
+  local DEADUNIT = EventData.IniUnit
+  local DEADUNITNAME = EventData.IniDCSUnitName
+  local DEADUNITCOALITION = EventData.IniCoalition
+  local DEADUNITOBJECTCATEGORY = EventData.IniObjectCategory  -- 1 UNIT / 2 WEAPON / 3 STATIC / 4 BASE / 5 SCENERY / 6 CARGO
+  local DEADUNITCATEGORY = EventData.IniCategory        -- 0 AIRPLANE / 1 HELICOPTER / 2 GROUND_UNIT / 3 SHIP / 4 STRUCTURE
+
+    --Debug Zone
+  UglyPrintDebugText("Dead Unit Name: "..DEADUNITNAME)
+  UglyPrintDebugText("Dead Unit Coalition: "..DEADUNITCOALITION)
+  UglyPrintDebugText("Dead Unit Category: "..DEADUNITCATEGORY)
+  UglyPrintDebugText("Dead Unit Object Category: "..DEADUNITOBJECTCATEGORY)
+
+  if DEADUNIT ~= nil then
+    if ( DEADUNITOBJECTCATEGORY == 1 ) then -- UNIT
+      if ( DEADUNITCATEGORY == 0 or DEADUNITCATEGORY == 1 ) then -- Aircraft or Helicopter
+        UglyPrintDebugText("PERSISTED! Dead Static ["..DEADUNITNAME.."]")
+        dumpToTable(UglyStaticDeadList, DEADUNIT)
+	  end
+	end
+  end		
+end
+]]--
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 --//// Do persistence
