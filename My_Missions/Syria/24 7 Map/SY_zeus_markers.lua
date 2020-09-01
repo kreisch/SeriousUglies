@@ -150,6 +150,10 @@ RU_ZEUS_InfSquad    = SPAWN:New("RU_ZEUS_InfSquad")
 RU_ZEUS_UAZ         = SPAWN:New("RU_ZEUS_UAZ")
 RU_ZEUS_T55         = SPAWN:New("RU_ZEUS_T55")
 RU_ZEUS_T555Group   = SPAWN:New("RU_ZEUS_T555Group")
+RU_ZEUS_Mortar      = SPAWN:New("RU_ZEUS_Mortar")
+RU_ZEUS_Igla        = SPAWN:New("RU_ZEUS_Igla")
+RU_ZEUS_S300        = SPAWN:New("S_RU_ZEUS_S300")
+RU_ZEUS_SA2         = SPAWN:New("S_RU_ZEUS_SA2")
 --
 ---- A2A BLUE
 ------- Jets
@@ -175,12 +179,17 @@ US_ZEUS_HMMWV           = SPAWN:New("US_ZEUS_HMMWV")
 US_ZEUS_HQGroup         = SPAWN:New("US_ZEUS_HQGroup")
 US_ZEUS_MobileInf       = SPAWN:New("US_ZEUS_MobileInf")
 US_ZEUS_InfSquad        = SPAWN:New("US_ZEUS_InfSquad")
+US_ZEUS_Mortar          = SPAWN:New("US_ZEUS_Mortar")
+US_ZEUS_Stinger         = SPAWN:New("US_ZEUS_Stinger")
+US_ZEUS_Paladin5        = SPAWN:New("US_ZEUS_Paladin5")
+US_ZEUS_Support         = SPAWN:New("US_ZEUS_Support")
 
 
 function handleSpawnRequest(text, coord)
 
 
-    local zeusSpawn = nil
+    zeusSpawn = nil
+    local arty = nil
 	-- RED
 	env.info(text)
     if text:find("mig19_red") then
@@ -211,7 +220,15 @@ function handleSpawnRequest(text, coord)
         elseif text:find("ru_zeus_t55") then
         zeusSpawn = RU_ZEUS_T55
         elseif text:find("ru_zeus_t555group") then
-        zeusSpawn = RU_ZEUS_T555Group 
+        zeusSpawn = RU_ZEUS_T555Group
+        elseif text:find("ru_zeus_mortar") then
+        zeusSpawn = RU_ZEUS_Mortar
+        elseif text:find("ru_zeus_igla") then
+        zeusSpawn = RU_ZEUS_Igla
+        elseif text:find("ru_zeus_s300") then
+        zeusSpawn = RU_ZEUS_S300
+        elseif text:find("ru_zeus_sa2") then
+        zeusSpawn = RU_ZEUS_SA2
 
     -- BLUE
     elseif text:find("f14_blue") then
@@ -254,36 +271,57 @@ function handleSpawnRequest(text, coord)
         zeusSpawn =  US_ZEUS_MobileInf
         elseif text:find("us_zeus_infsquad") then
         zeusSpawn =  US_ZEUS_InfSquad  
+        --elseif text:find("us_zeus_mortar") then
+        --zeusSpawn =  US_ZEUS_Mortar
+        elseif text:find("us_zeus_stinger") then
+        zeusSpawn =  US_ZEUS_Stinger   
+        elseif text:find("us_zeus_support") then
+        zeusSpawn =  US_ZEUS_Support
         
         		
-	elseif text:find("jtac") then
-	JTAC_ZEUS = JTAC_MQ_ZEUS:SpawnFromVec3(coord)
-	JTAC_ZEUS_NAME = JTAC_ZEUS:GetName()
-	JTACAutoLase(JTAC_ZEUS_NAME, 1685, true, "all")
-	trigger.action.outText ( "JTAC:  ".. JTAC_ZEUS_NAME .." on station lasing 1685. \nNOTE: If you wish to delete Zeus-spawned JTACS use the map marker command -delete jtac", 60)
-	env.info("JTAC:  ".. JTAC_ZEUS_NAME .."  spawned!")
+  	elseif text:find("jtac") then
+    	JTAC_ZEUS = JTAC_MQ_ZEUS:SpawnFromVec3(coord)
+    	JTAC_ZEUS_NAME = JTAC_ZEUS:GetName()
+    	JTACAutoLase(JTAC_ZEUS_NAME, 1685, true, "all")
+    	trigger.action.outText ( "JTAC:  ".. JTAC_ZEUS_NAME .." on station lasing 1685. \nNOTE: If you wish to delete Zeus-spawned JTACS use the map marker command -delete jtac", 60)
+    	
+    	
+    	env.info("JTAC:  ".. JTAC_ZEUS_NAME .."  spawned!")
+    	
+    elseif text:find("us_zeus_paladin5") then
+      
+      PALADIN_ZEUS = US_ZEUS_Paladin5:SpawnFromVec3(coord)
+      PALADIN_ZEUS_NAME = PALADIN_ZEUS:GetName()    
+      paladin = ARTY:New(GROUP:FindByName(PALADIN_ZEUS_NAME))
+      paladin:SetMaxFiringRange(20)
+      paladin:SetMarkAssignmentsOn()
+      paladin:Start()
+      
+      env.info("Spawn:  ".. PALADIN_ZEUS_NAME .."  spawned!")
 	
-		
+	    return
+	    
+	  elseif text:find("us_zeus_mortar") then
+      
+      MORTAR_ZEUS = US_ZEUS_Mortar:SpawnFromVec3(coord)
+      MORTAR_ZEUS_NAME = MORTAR_ZEUS:GetName()    
+      mortar = ARTY:New(GROUP:FindByName(MORTAR_ZEUS_NAME))
+      mortar:SetMaxFiringRange(6)
+      mortar:SetMarkAssignmentsOn()
+      mortar:Start()
+      
+      env.info("Spawn:  ".. PALADIN_ZEUS_NAME .."  spawned!")
+  
+      return
 	end
-
-
-
-
-	spawnAltitude = 4000
-    -- for i_unit = 1, 9 do
-   --    if text:find(unitList[i_unit]) then
-	--	zeusSpawn:SpawnFromCoordinate(coord)
-	--	trigger.action.outText( "" .. text .. " @ " .. coord .. " succesfully CREATED.", 10)
-		-- spv(unitList[i_unit], coord)
-
-	--zeusSpawn:SpawnFromCoordinate(coord)
-	zeusSpawn:SpawnFromVec3(coord)
 	
-		--trigger.action.outText( "" .. unitList[i_unit] .. " on MAP MARKER succesfully CREATED.", 10)
+	spawnAltitude = 4000
+
+	zeusSpawn:SpawnFromVec3(coord)
+
 		env.info( "" .. text .. " on MAP MARKER succesfully CREATED.")
-		trigger.action.outText( "" .. text .. " on MAP MARKER succesfully CREATED.", 10)
---		trigger.action.outText( "" .. text .. " @ " .. coord .. " succesfully CREATED.", 10)
-        -- trigger.action.outSound( "BD_00007 single beep.ogg")
+		--trigger.action.outText( "" .. text .. " on MAP MARKER succesfully CREATED.", 10)
+
 		end
 
 function handleDebugRequest(text, coord)
@@ -328,14 +366,14 @@ function handleNukeRequest(text, coord)
 function markRemoved(Event)
     if Event.text~=nil and Event.text:lower():find("-") then 
         local text = Event.text:lower()
-     --   local vec3 = {y=Event.pos.y, x=Event.pos.z, z=Event.pos.x}
---        local vec3 = {x=Event.pos.z, z=Event.pos.x}
+
         local vec3 = {z=Event.pos.z, x=Event.pos.x}
         local coord = COORDINATE:NewFromVec3(vec3)
-    --    local coord = COORDINATE:NewFromVec3(vec3)
-    --  coord.y = coord:GetLandHeight()
-     -- coord.y = coord:SetAltitude()
 
+        local playerUnit = Event.initiator:getTypeName()
+        
+        
+--        env.info(playerUnit .. " is your unit type.")
 
         if Event.text:lower():find("-create") then
             handleSpawnRequest(text, coord)
