@@ -856,9 +856,15 @@ end
 
 function csar.spawnGroup(_deadUnit)
 
+    local _groupPlayerName = "unknown pilot"
+
+    if _deadUnit:getPlayerName() ~= nil then
+        _groupPlayerName = _deadUnit:getPlayerName()
+    end
+
     local _id = mist.getNextGroupId()
 
-    local _groupName = "Downed Pilot #" .. _id
+    local _groupName = "Downed Pilot #" .. _id .. " - " .. _groupPlayerName
 
     local _side = _deadUnit:getCoalition()
 
