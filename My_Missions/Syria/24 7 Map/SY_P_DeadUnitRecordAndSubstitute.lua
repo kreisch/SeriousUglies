@@ -7,7 +7,7 @@
 -- Default values for the script
 ----------------------------------------------------------
 -- Seconds between each table write
-SaveDeadListIntervall = 600
+SaveDeadListIntervall = 666
 
 -- Print some more text during script execution
 ShowDebugText = false
@@ -67,7 +67,7 @@ function uglyCheckPersistence()
     end
   else
     UglyPrintDebugText("lfs and io not available -> MissionScripting.lua has to be modified to enable persistence!", 3)
-	PersistenceAvailable = false
+	  PersistenceAvailable = false
     return false
   end
 end
@@ -170,7 +170,22 @@ function UglySubstituteAndKillUnit(SubstituteUnit)
 		  DeadUnit:Destroy()
 		end
 
-		coalition.addStaticObject(SubstituteUnit["countryID"], SubstituteUnit)
+    -- Copy data to new table, else the table will contain unwanted internal data like unitID...
+    local newDeadStatic = {
+      ["country"] = SubstituteUnit["country"], 
+      ["countryID"] = SubstituteUnit["countryID"], 
+      ["type"]=SubstituteUnit["type"],
+      ["coalition"]=SubstituteUnit["coalition"],
+      ["category"]=SubstituteUnit["category"],
+      ["y"]=SubstituteUnit["y"],
+      ["x"]=SubstituteUnit["x"],
+      ["name"]=SubstituteUnit["name"],
+      ["heading"]=SubstituteUnit["heading"],
+      ["shape_name"]=SubstituteUnit["shape_name"],
+      ["dead"] = SubstituteUnit["dead"],
+    }
+  
+		coalition.addStaticObject(SubstituteUnit["countryID"], newDeadStatic)
 		UglyPrintDebugText("Added new static!!! "..SubstituteUnit["countryID"])
 	end
 end
@@ -182,7 +197,22 @@ function UglySubstituteAndKillStatic(SubstituteStatic)
 		  DeadStatic:Destroy()
 		end
 
-		coalition.addStaticObject(SubstituteStatic["countryID"], SubstituteStatic)
+    -- Copy data to new table, else the table will contain unwanted internal data like unitID...
+    local newDeadStatic = {
+      ["country"] = SubstituteStatic["country"], 
+      ["countryID"] = SubstituteStatic["countryID"], 
+      ["type"]=SubstituteStatic["type"],
+      ["coalition"]=SubstituteStatic["coalition"],
+      ["category"]=SubstituteStatic["category"],
+      ["y"]=SubstituteStatic["y"],
+      ["x"]=SubstituteStatic["x"],
+      ["name"]=SubstituteStatic["name"],
+      ["heading"]=SubstituteStatic["heading"],
+      ["shape_name"]=SubstituteStatic["shape_name"],
+      ["dead"] = SubstituteStatic["dead"],
+    }
+
+		coalition.addStaticObject(SubstituteStatic["countryID"], newDeadStatic)
 		UglyPrintDebugText("Added new static!!! "..SubstituteStatic["countryID"])
 	end
 end
@@ -191,18 +221,12 @@ end
 --//// MAIN persistence function
 
 function StartUglyPersistence(_pathToUserData, _unitsFileName, _staticsFileName)
-  UglyPrintDebugText("Trying to start Ugly Persistence!")
-
   PathToUserData = _pathToUserData
   UnitsFileName = _unitsFileName
   StaticsFileName = _staticsFileName
 
   local SEFDeletedUnitCount = 0
   local SEFDeletedStaticCount = 0
-
---  DeadUnitsList:FilterCoalitions("red"):FilterCategories("ground"):FilterActive(true):FilterStart()
-  DeadUnitsList:HandleEvent(EVENTS.Dead)
---  DeadUnitsList:HandleEvent(EVENTS.Crash) -- Player and AI Aircraft as statics
 
   --////LOAD UNITS
   
@@ -253,8 +277,15 @@ function StartUglyPersistence(_pathToUserData, _unitsFileName, _staticsFileName)
 --SCHEDULE
     timer.scheduleFunction(SEF_SaveUglyUnitDeadList, {}, timer.getTime() + SaveDeadListIntervall)
     timer.scheduleFunction(SEF_SaveUglyStaticDeadList, {}, timer.getTime() + SaveDeadListIntervall)
+
+    --  DeadUnitsList:FilterCoalitions("red"):FilterCategories("ground"):FilterActive(true):FilterStart()
+    DeadUnitsList:HandleEvent(EVENTS.Dead)
+    DeadUnitsList:HandleEvent(EVENTS.Crash) -- Player and AI Aircraft as statics
+
     UglyMessageToAll("Ugly Persistence is active. Unit list will be stored every "..SaveDeadListIntervall.." seconds.")
     ---------------------------------------------------------------------------------------------------------------------------------------------------
+  else
+    UglyMessageToAll("Ugly Persistence not available!")
   end
 end
 
@@ -271,7 +302,7 @@ function dumpToTable(theTable, DEADUNIT)
     ["y"]=DEADUNIT:GetPointVec2():GetY(),
     ["x"]=DEADUNIT:GetPointVec2():GetX(),
     ["name"]=DEADUNIT:GetName(),
-    ["heading"]=DEADUNIT:GetHeading(),
+    ["heading"]=routines.utils.toRadian(DEADUNIT:GetHeading()),
     ["shape_name"]=DEADUNIT:GetTypeName(),
     ["dead"] = true,
   }
@@ -280,12 +311,13 @@ function dumpToTable(theTable, DEADUNIT)
 end
 
 function DeadUnitsList:OnEventDead(EventData)
-
   local DEADUNIT = EventData.IniUnit
   local DEADUNITNAME = EventData.IniDCSUnitName
   local DEADUNITCOALITION = EventData.IniCoalition
   local DEADUNITOBJECTCATEGORY = EventData.IniObjectCategory  -- 1 UNIT / 2 WEAPON / 3 STATIC / 4 BASE / 5 SCENERY / 6 CARGO
   local DEADUNITCATEGORY = EventData.IniCategory        -- 0 AIRPLANE / 1 HELICOPTER / 2 GROUND_UNIT / 3 SHIP / 4 STRUCTURE
+
+--  UglyMessageToAll("DeadUnitsList:OnEventDead "..DEADUNITNAME)
 
     --Debug Zone
 --    UglyPrintDebugText("Dead Unit Name: "..DEADUNITNAME)
@@ -309,14 +341,14 @@ function DeadUnitsList:OnEventDead(EventData)
   DEADDCSUNIT:destroy()
 end
 
---[[
 function DeadUnitsList:OnEventCrash(EventData)
-
   local DEADUNIT = EventData.IniUnit
   local DEADUNITNAME = EventData.IniDCSUnitName
   local DEADUNITCOALITION = EventData.IniCoalition
   local DEADUNITOBJECTCATEGORY = EventData.IniObjectCategory  -- 1 UNIT / 2 WEAPON / 3 STATIC / 4 BASE / 5 SCENERY / 6 CARGO
   local DEADUNITCATEGORY = EventData.IniCategory        -- 0 AIRPLANE / 1 HELICOPTER / 2 GROUND_UNIT / 3 SHIP / 4 STRUCTURE
+
+--  UglyMessageToAll("DeadUnitsList:OnEventCrash "..DEADUNITNAME)
 
     --Debug Zone
   UglyPrintDebugText("Dead Unit Name: "..DEADUNITNAME)
@@ -333,7 +365,6 @@ function DeadUnitsList:OnEventCrash(EventData)
 	end
   end		
 end
-]]--
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 --//// Do persistence
@@ -343,7 +374,6 @@ end
 --PathToUserData = "C:\\Users\\Administrator\\Saved Games\\DCS.openbeta_server"  --Chris Server
 --UnitsFileName = "UglyUnitData.lua"
 
-UglyMessageToAll("MessageToAll: Trying to start Ugly Persistence!")
+UglyMessageToAll("Trying to start Ugly Persistence!")
 StartUglyPersistence("C:\\temp", "UglyUnitDeadListSyria247.lua", "UglyStaticsDeadListSyria247.lua")
-UglyMessageToAll("MessageToAll: Ugly Persistence started!")
 

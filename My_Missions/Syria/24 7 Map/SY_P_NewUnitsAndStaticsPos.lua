@@ -8,15 +8,14 @@
  
  -----------------------------------
  --Configurable for user:
- SaveIntervall = 600 --how many seconds between each check of all the statics.
+ SaveIntervall = 666 --how many seconds between each check of all the statics.
  
  local unitsPosFile = "C:\\temp\\Persistence\\UglyUnitPositionsSyria247.lua" --edit this to represent your own (DCS cant write to different disks)
-
  
  -----------------------------------
  --Do not edit below here
  -----------------------------------
- local version = "1.0"
+ local version = "1.1"
  
  function IntegratedbasicSerialize(s)
     if s == nil then
@@ -101,15 +100,18 @@ function LoadOldGroups()
         tempTable =
         { 
           ["type"]=SaveUnits[k]["units"][i]["type"],
-          ["transportable"]= {["randomTransportable"] = false,}, 
+          ["transportable"]= true, 
           --["unitId"]=9000,used to generate ID's here but no longer doing that since DCS seems to handle it
-          ["skill"]=SaveUnits[k]["units"][i]["skill"],
+          ["skill"]="Average",
           ["y"]=SaveUnits[k]["units"][i]["y"] ,
           ["x"]=SaveUnits[k]["units"][i]["x"] ,
           ["name"]=SaveUnits[k]["units"][i]["name"],
           ["heading"]=SaveUnits[k]["units"][i]["heading"],
           ["playerCanDrive"]=true,  --hardcoded but easily changed.  
         }
+
+--        trigger.action.outText("Restore Unit: "..SaveUnits[k]["units"][i]["name"]..", Heading: "..SaveUnits[k]["units"][i]["heading"], 10)
+        env.info("Restore Unit: "..SaveUnits[k]["units"][i]["name"]..", Heading: "..SaveUnits[k]["units"][i]["heading"])
 
         table.insert(units,tempTable)
 
@@ -123,10 +125,15 @@ function LoadOldGroups()
       groupData = 
       {
         ["visible"] = true,
-        --["lateActivation"] = false,
         ["tasks"] = {}, -- end of ["tasks"]
         ["uncontrollable"] = false,
         ["task"] = "Ground Nothing",
+        ["hidden"] = false,
+        ["units"] = units,
+        ["y"] = SaveUnits[k]["y"],
+        ["x"] = SaveUnits[k]["x"],
+        ["name"] = SaveUnits[k]["name"],
+        --["lateActivation"] = false,
         --["taskSelected"] = true,
         --["route"] = 
         --{ 
@@ -134,23 +141,14 @@ function LoadOldGroups()
         --["points"]= {}
         -- },-- end of ["spans"] 
         --["groupId"] = 9000 + _count,
-        ["hidden"] = false,
-        ["units"] = units,
-        ["y"] = SaveUnits[k]["y"],
-        ["x"] = SaveUnits[k]["x"],
-        ["name"] = SaveUnits[k]["name"],
         --["start_time"] = 0,
       } 
 
       coalition.addGroup(SaveUnits[k]["CountryID"], SaveUnits[k]["CategoryID"], groupData)
       groupData = {}
     end --end Group for loop
-
---    AllGroups = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
-
   else --Save File does not exist we start a fresh table, no spawns needed
     SaveUnits={}
---    AllGroups = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
   end
 end
 
@@ -189,35 +187,37 @@ SCHEDULER:New( nil, function()
 	  local tmpTable =
 		{   
 		  ["type"]=grp:GetUnit(i):GetTypeName(),
-	      ["transportable"]=true,
-	      ["unitID"]=grp:GetUnit(i):GetID(),
-	      ["skill"]="Average",
 	      ["y"]=grp:GetUnit(i):GetVec2().y,
 	      ["x"]=grp:GetUnit(i):GetVec2().x,
 	      ["name"]=grp:GetUnit(i):GetName(),
-	      ["playerCanDrive"]=true,
-	      ["heading"]=grp:GetUnit(i):GetHeading(),
-	    }
+	      ["heading"]=routines.utils.toRadian(grp:GetUnit(i):GetHeading()),
+--	      ["transportable"]=true,
+--	      ["unitID"]=grp:GetUnit(i):GetID(),
+--	      ["skill"]="Average",
+--	      ["playerCanDrive"]=true,
+    }
+
+--	  trigger.action.outText("Unit: "..grp:GetName()..", Heading: "..grp:GetUnit(i):GetHeading()..", Heading Rad: "..routines.utils.toRadian(grp:GetUnit(i):GetHeading()), 10)
 	  table.insert(_unittable,tmpTable) --add units to a temporary table
     end
 
     SaveUnits[grp:GetName()] =
     {
       ["CountryID"]=grp:GetCountry(),
-      ["SpawnCoalitionID"]=grp:GetCountry(),
-      ["tasks"]={}, --grp:GetTaskMission(), --wrong gives the whole thing
       ["CategoryID"]=grp:GetCategory(),
-      ["task"]="Ground Nothing",
-      ["route"]={}, -- grp:GetTaskRoute(),
-      ["groupId"]=grp:GetID(),
---["SpawnCategoryID"]=grp:GetCategory(),
       ["units"]= _unittable,
       ["y"]=grp:GetVec2().y, 
       ["x"]=grp:GetVec2().x,
       ["name"]=grp:GetName(),
-      ["start_time"]=0,
       ["CoalitionID"]=grp:GetCoalition(),
-      ["SpawnCountryID"]=grp:GetCoalition(),
+--      ["start_time"]=0,
+--      ["SpawnCoalitionID"]=grp:GetCountry(),
+--      ["tasks"]={}, --grp:GetTaskMission(), --wrong gives the whole thing
+--      ["task"]="Ground Nothing",
+--      ["route"]={}, -- grp:GetTaskRoute(),
+--      ["groupId"]=grp:GetID(),
+--      ["SpawnCategoryID"]=grp:GetCategory(),
+--      ["SpawnCountryID"]=grp:GetCoalition(),
     }
   end)
 
