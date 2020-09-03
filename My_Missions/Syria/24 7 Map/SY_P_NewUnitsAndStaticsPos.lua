@@ -84,7 +84,7 @@ env.info("Units and Static position persistence " .. version)
 
 function LoadOldGroups()
   if file_exists(unitsPosFile) then --Script has been run before, so we need to load the save
-    env.info("Existing database, loading from File.")
+    env.info("Existing database, loading from file.")
   --    AllGroups:ForEachGroup(function (grp)
   --      grp:Destroy()
   --    end)
