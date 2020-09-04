@@ -116,7 +116,7 @@ ctld.JTAC_LIMIT_BLUE = 10 -- max number of JTAC Crates for the BLUE Side
 
 ctld.JTAC_dropEnabled = true -- allow JTAC Crate spawn from F10 menu
 
-ctld.JTAC_maxDistance = 10000 -- How far a JTAC can "see" in meters (with Line of Sight)
+ctld.JTAC_maxDistance = 8000 -- How far a JTAC can "see" in meters (with Line of Sight)
 
 ctld.JTAC_smokeOn_RED = true -- enables marking of target with smoke for RED forces
 ctld.JTAC_smokeOn_BLUE = true -- enables marking of target with smoke for BLUE forces
@@ -129,7 +129,9 @@ ctld.JTAC_jtacStatusF10 = true -- enables F10 JTAC Status menu
 ctld.JTAC_location = true -- shows location of target in JTAC message
 ctld.location_DMS = false -- shows coordinates as Degrees Minutes Seconds instead of Degrees Decimal minutes
 
-ctld.JTAC_lock = "all" -- "vehicle" OR "troop" OR "all" forces JTAC to only lock vehicles or troops or all ground units
+ctld.JTAC_lock = "vehicle" -- "vehicle" OR "troop" OR "all" forces JTAC to only lock vehicles or troops or all ground units
+
+ctld.JTAC_treatNeutralAsEnemy = true -- If true, JTAC also lases neutrals
 
 -- ***************** Pickup, dropoff and waypoint zones *****************
 
@@ -5306,6 +5308,7 @@ function ctld.findNearestVisibleEnemy(_jtacUnit, _targetType,_distance)
                     and _unit:getLife() > 0
                     and _unit:isActive()
                     and _unit:getCoalition() ~= _coa
+                    and not ( _unit:getCoalition() == 0 and not ctld.JTAC_treatNeutralAsEnemy )
                     and not _unit:inAir()
                     and not ctld.alreadyTarget(_jtacUnit,_unit) then
 
