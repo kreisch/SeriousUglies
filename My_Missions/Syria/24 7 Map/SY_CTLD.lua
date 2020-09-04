@@ -131,7 +131,7 @@ ctld.location_DMS = false -- shows coordinates as Degrees Minutes Seconds instea
 
 ctld.JTAC_lock = "vehicle" -- "vehicle" OR "troop" OR "all" forces JTAC to only lock vehicles or troops or all ground units
 
-ctld.JTAC_treatNeutralAsEnemy = true -- If true, JTAC also lases neutrals
+ctld.JTAC_treatNeutralAsEnemy = false -- If true, JTAC also lases neutrals
 
 -- ***************** Pickup, dropoff and waypoint zones *****************
 
