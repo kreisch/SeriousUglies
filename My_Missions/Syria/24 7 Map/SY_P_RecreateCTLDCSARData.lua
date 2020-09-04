@@ -1,6 +1,6 @@
  -----------------------------------
  --Configurable for user:
- SaveFOBIntervall = 666 --how many seconds between each check of all the statics.
+ SaveFOBIntervall = 2 --how many seconds between each check of all the statics.
  
  local ctldDataFile = "C:\\temp\\Persistence\\UglyCTLDSyria247.lua" --edit this to represent your own (DCS cant write to different disks)
  
@@ -106,18 +106,36 @@ function RestoreOldData()
 
     dofile(ctldDataFile)
 
-    if #SaveCTLD == 0 then
+    if #FOBs == 0 then
       env.info("UGLY: No FOBs stored yet.")
     end
 
     --  RUN THROUGH THE KEYS IN THE TABLE 
-    for i = 1, #SaveCTLD do
-      local _country = SaveCTLD[i]["country"]
-      local _coalition = SaveCTLD[i]["coalition"]
-      local _name = SaveCTLD[i]["name"]
-      local _point = { x = SaveCTLD[i]["x"], y = 0, z = SaveCTLD[i]["z"]}
+    for i = 1, #FOBs do
+      local _country = FOBs[i]["country"]
+      local _coalition = FOBs[i]["coalition"]
+      local _name = FOBs[i]["name"]
+      local _point = { x = FOBs[i]["x"], y = 0, z = FOBs[i]["z"]}
 
       ctld.createNewFOB(_country, _coalition, _point, _name)
+    end
+
+    if #Crates == 0 then
+      env.info("UGLY: No Crates stored yet.")
+    end
+
+    --  RUN THROUGH THE KEYS IN THE TABLE 
+    for k,v in pairs (Crates) do
+      local _name = k
+      local _country = Crates[k]["country"]
+      local _side = Crates[k]["side"]
+      local _weight = Crates[k]["weight"]
+      local _point = { x = Crates[k]["x"], y = 0, z = Crates[k]["z"]}
+
+      local unitId = ctld.getNextUnitId();
+      env.info("UGLY: Creating Crate with unitID: " .. unitId)
+
+      ctld.spawnCrateStatic(_country, unitId, _point, _name, _weight, _side)
     end
   else
     env.info("UGLY: No FOBs stored yet.")
@@ -162,12 +180,12 @@ function RestoreOldData()
         trigger.action.outText("Restoring downed pilot: "..grp:GetName(), 10)
       -------------------------------------------
       -- For Testing - Create FOB from unit
-  --    elseif starts_with(grp:GetName(), "Deployed FOB") then
-  --      local _standin = grp:GetDCSObject()
-  --      local _standinUnit = grp:GetDCSUnit(i)
+--      elseif starts_with(grp:GetName(), "Deployed FOB") then
+--        local _standin = grp:GetDCSObject()
+--        local _standinUnit = grp:GetDCSUnit(i)
 
-  --      ctld.createNewFOB(_standinUnit:getCountry(), _standin:getCoalition(), _standinUnit:getPoint(), _standinUnit:getName())
-  --      grp:Destroy()
+--        ctld.createNewFOB(_standinUnit:getCountry(), _standin:getCoalition(), _standinUnit:getPoint(), _standinUnit:getName())
+--        grp:Destroy()
       end
     end
   end
@@ -182,8 +200,10 @@ end
 --////SAVE UNITS FUNCTION
 function UGLY_SaveUglyFOBList(timeloop, time)
 --  env.info("UGLY: FOBs will be saved...")
-  local newMissionStr = IntegratedserializeWithCycles("SaveCTLD", ctld.uglyFOBList) --save the Table as a serialised type with key SaveCTLD
-  writemission(newMissionStr, ctldDataFile)--write the file from the above to ctldDataFile
+  local fobMissionStr   = IntegratedserializeWithCycles("FOBs", ctld.uglyFOBList) --save the Table as a serialised type with key FOBs
+  local crateMissionStr = IntegratedserializeWithCycles("Crates", ctld.uglyCrateList) --save the Table as a serialised type with key FOBs
+
+  writemission(fobMissionStr..crateMissionStr, ctldDataFile)--write the file from the above to ctldDataFile
 --  env.info("UGLY: FOBs have been saved! "..newMissionStr)
 --  env.info("UGLY: FOBs have been saved!")
   return time + SaveFOBIntervall
@@ -191,7 +211,7 @@ end
 
 function UUGLY_SaveUglyFOBListNoArgs()
 --  env.info("UGLY: FOBs will be saved...")
-  local newMissionStr = IntegratedserializeWithCycles("SaveCTLD",SaveCTLD)
+  local newMissionStr = IntegratedserializeWithCycles("FOBs", ctld.uglyFOBList)
 --  env.info("UGLY: UUGLY_SaveUglyFOBListNoArgs! "..newMissionStr)
 --  env.info("UGLY: UUGLY_SaveUglyFOBListNoArgs!")
   writemission(newMissionStr, UnitsFilePath)

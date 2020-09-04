@@ -550,7 +550,6 @@ end
 -- ***************************************************************
 
 ctld.uglyFOBList = {}
-
 ctld.storeToFOBList = function(_country, _coalition, _point, _name)
 
     local newFOBData = {
@@ -563,6 +562,9 @@ ctld.storeToFOBList = function(_country, _coalition, _point, _name)
 
     table.insert(ctld.uglyFOBList, newFOBData)
 end
+
+ctld.uglyCrateList = {}
+
 
 -- ***************************************************************
 -- **************** Mission Editor Functions *********************
@@ -1277,8 +1279,7 @@ end
 -- e.g. ctld.spawnCrateAtZone("blue", 505,{x=1,y=2,z=3}) -- spawn a tow humvee at triggerzone1 for blue side at a specified point
 --
 --
-function ctld.spawnCrateAtPoint(_side, _weight,_point)
-
+function ctld.spawnCrateAtPoint(_side, _weight, _point)
 
     local _crateType = ctld.crateLookupTable[tostring(_weight)]
 
@@ -1365,7 +1366,9 @@ function ctld.getTransportUnit(_unitName)
     return nil
 end
 
-function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight,_side)
+function ctld.spawnCrateStatic(_country, _unitId, _point, _name, _weight, _side)
+
+    ctld.uglyCrateList[_name] = {country = _country, unitId = _unitId, x = _point.x , z = _point.z, weight = _weight, side = _side}
 
     local _crate
     local _spawnedCrate
@@ -2092,6 +2095,9 @@ function ctld.loadUnloadFOBCrate(_args)
                 ctld.droppedFOBCratesBLUE[_nearestCrate.crateUnit:getName()] = nil
             end
 
+            --remove from persistence
+            ctld.uglyCrateList[_nearestCrate.crateUnit:getName()] = nil
+
             --remove
             _nearestCrate.crateUnit:destroy()
 
@@ -2465,6 +2471,9 @@ function ctld.checkHoverStatus()
                                     ctld.spawnedCratesBLUE[_crate.crateUnit:getName()] = nil
                                 end
 
+                                --remove from persistence
+                                ctld.uglyCrateList[_crate.crateUnit:getName()] = nil
+
                                 _crate.crateUnit:destroy()
 
                                 ctld.inTransitSlingLoadCrates[_name] = _crate.details
@@ -2518,6 +2527,9 @@ function ctld.loadNearbyCrate(_name)
                     else
                         ctld.spawnedCratesBLUE[_crate.crateUnit:getName()] = nil
                     end
+
+                    --remove from persistence
+                    ctld.uglyCrateList[_crate.crateUnit:getName()] = nil
 
                     ctld.crateMove[_crate.crateUnit:getName()] = nil
 
@@ -2969,6 +2981,9 @@ function ctld.unpackCrates(_arguments)
                         ctld.spawnedCratesBLUE[_crateName] = nil
                     end
 
+                    --remove from persistence
+                    ctld.uglyCrateList[_crateName] = nil
+
                     ctld.processCallback({unit = _heli, crate = _crate , spawnedGroup = _spawnedGroups, action = "unpack"})
 
                     if _crate.details.unit == "1L13 EWR" then
@@ -3085,6 +3100,9 @@ function ctld.unpackFOBCrates(_crates, _heli)
                 ctld.droppedFOBCratesBLUE[_crate.crateUnit:getName()] = nil
                 ctld.spawnedCratesBLUE[_crate.crateUnit:getName()] = nil
             end
+
+            --remove from persistence
+            ctld.uglyCrateList[_crate.crateUnit:getName()] = nil
 
             table.insert(_points, _crate.crateUnit:getPoint())
 
@@ -3605,6 +3623,9 @@ function ctld.rearmAASystem(_heli, _nearestCrate, _nearbyCrates, _aaSystemTempla
                     ctld.spawnedCratesBLUE[_nearestCrate.crateUnit:getName()] = nil
                 end
 
+                --remove from persistence
+                ctld.uglyCrateList[_nearestCrate.crateUnit:getName()] = nil
+
                 -- remove crate
            --     if ctld.slingLoad == false then
                     _nearestCrate.crateUnit:destroy()
@@ -3748,6 +3769,9 @@ function ctld.unpackAASystem(_heli, _nearestCrate, _nearbyCrates,_aaSystemTempla
             else
                 ctld.spawnedCratesBLUE[_systemPart.crate.crateUnit:getName()] = nil
             end
+
+            --remove from persistence
+            ctld.uglyCrateList[_systemPart.crateUnit:getName()] = nil
 
             --destroy
            -- if ctld.slingLoad == false then
@@ -3913,6 +3937,9 @@ function ctld.unpackMultiCrate(_heli, _nearestCrate, _nearbyCrates)
             else
                 ctld.spawnedCratesBLUE[_crate.crateUnit:getName()] = nil
             end
+
+            --remove from persistence
+            ctld.uglyCrateList[_crate.crateUnit:getName()] = nil
 
             --destroy
          --   if ctld.slingLoad == false then
