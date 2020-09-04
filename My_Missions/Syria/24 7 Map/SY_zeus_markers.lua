@@ -370,7 +370,7 @@ function markRemoved(Event)
         local vec3 = {z=Event.pos.z, x=Event.pos.x}
         local coord = COORDINATE:NewFromVec3(vec3)
 
-        local playerUnit = Event.initiator:getTypeName()
+        --local playerUnit = Event.initiator:getTypeName()
         
         
 --        env.info(playerUnit .. " is your unit type.")
