@@ -542,6 +542,26 @@ ctld.getNextGroupId = function()
     return ctld.nextGroupId
 end
 
+
+-- ***************************************************************
+-- **************** Added Persistence Functions ******************
+-- ***************************************************************
+
+ctld.uglyFOBList = {}
+
+ctld.storeToFOBList = function(_country, _coalition, _point, _name)
+
+    local newFOBData = {
+        ["country"] = _country,
+        ["coalition"] = _coalition,
+        ["x"] = _point.x,
+        ["z"] = _point.z,
+        ["name"] = _name,
+      }
+
+    table.insert(ctld.uglyFOBList, newFOBData)
+end
+
 -- ***************************************************************
 -- **************** Mission Editor Functions *********************
 -- ***************************************************************
@@ -1496,6 +1516,7 @@ end
 
 
 function ctld.spawnFOB(_country, _unitId, _point, _name)
+--    env.info("ctld.spawnFOB")
 
     local _crate = {
         ["category"] = "Fortifications",
@@ -2869,8 +2890,6 @@ function ctld.getCrateObject(_name)
     return _crate
 end
 
-
-
 function ctld.unpackCrates(_arguments)
 
     local _status, _err = pcall(function(_args)
@@ -2981,8 +3000,32 @@ function ctld.unpackCrates(_arguments)
     end
 end
 
-
 -- builds a fob!
+
+function ctld.createNewFOB(_country, _coalition, _point, _name)
+    
+    ctld.storeToFOBList(_country, _coalition, _point, _name)
+
+--    env.info("ctld.createNewFOB")
+
+    local _fob = ctld.spawnFOB(_country, 0, _point, _name)
+
+    --make it able to deploy crates
+    table.insert(ctld.logisticUnits, _fob:getName())
+
+    ctld.beaconCount = ctld.beaconCount + 1
+
+    local _radioBeaconName = "FOB Beacon #" .. ctld.beaconCount
+
+    local _radioBeaconDetails = ctld.createRadioBeacon(_point, _coalition, _country, _radioBeaconName, nil, true)
+
+    ctld.fobBeacons[_name] = { vhf = _radioBeaconDetails.vhf, uhf = _radioBeaconDetails.uhf, fm = _radioBeaconDetails.fm }
+
+    if ctld.troopPickupAtFOB == true then
+        table.insert(ctld.builtFOBS, _fob:getName())
+    end
+end
+
 function ctld.unpackFOBCrates(_crates, _heli)
 
     if ctld.inLogisticsZone(_heli) == true then
@@ -3051,25 +3094,13 @@ function ctld.unpackFOBCrates(_crates, _heli)
 
         timer.scheduleFunction(function(_args)
 
+            -- Store FOB for recreation
             local _unitId = ctld.getNextUnitId()
             local _name = "Deployed FOB #" .. _unitId
-
-            local _fob = ctld.spawnFOB(_args[2], _unitId, _args[1], _name)
-
-            --make it able to deploy crates
-            table.insert(ctld.logisticUnits, _fob:getName())
-
-            ctld.beaconCount = ctld.beaconCount + 1
-
-            local _radioBeaconName = "FOB Beacon #" .. ctld.beaconCount
-
-            local _radioBeaconDetails = ctld.createRadioBeacon(_args[1], _args[3], _args[2], _radioBeaconName, nil, true)
-
-            ctld.fobBeacons[_name] = { vhf = _radioBeaconDetails.vhf, uhf = _radioBeaconDetails.uhf, fm = _radioBeaconDetails.fm }
-
+       
+            ctld.createNewFOB(_args[1], _args[2], _args[3], _name)
+            
             if ctld.troopPickupAtFOB == true then
-                table.insert(ctld.builtFOBS, _fob:getName())
-
                 trigger.action.outTextForCoalition(_args[3], "Finished building FOB! Crates and Troops can now be picked up.", 10)
             else
                 trigger.action.outTextForCoalition(_args[3], "Finished building FOB! Crates can now be picked up.", 10)

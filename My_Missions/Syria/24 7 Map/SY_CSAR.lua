@@ -312,7 +312,7 @@ function csar.eventHandler:onEvent(_event)
             end
         end
 
-        if _event.initiator:getName() and _event.initiator:getPlayerName() then
+        if _event.id ~= 15 and _event.initiator:getName() and _event.initiator:getPlayerName() then
 
             env.info("Checking Unit - " .. _event.initiator:getName())
             csar.checkDisabledAircraftStatus({ _event.initiator:getName(), _event.initiator:getPlayerName() })
