@@ -31,11 +31,12 @@ DeadUnitsList = SET_UNIT:New()
 PersistenceAvailable = true
 
 function UglyMessageToAll(_theNeatMessage)
+  trigger.action.outText("UGLY: ".._theNeatMessage, MessageDefaultShowTime)
 end
 
 function UglyPrintDebugText(_theNeatMessage)
   if ShowDebugText then
-    trigger.action.outText(_theNeatMessage, MessageDefaultShowTime)
+    trigger.action.outText("UGLY: ".._theNeatMessage, MessageDefaultShowTime)
   end
 end
 

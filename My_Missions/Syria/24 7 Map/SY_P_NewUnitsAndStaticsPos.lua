@@ -80,11 +80,11 @@ function writemission(data, file)--Function for saving to file (commonly found)
 end
 
 --SCRIPT START
-env.info("Units and Static position persistence " .. version)
+env.info("UGLY: Units and Static position persistence " .. version)
 
 function LoadOldGroups()
   if file_exists(unitsPosFile) then --Script has been run before, so we need to load the save
-    env.info("Existing database, loading from file.")
+    env.info("UGLY: Existing database, loading from file.")
   --    AllGroups:ForEachGroup(function (grp)
   --      grp:Destroy()
   --    end)
@@ -111,7 +111,7 @@ function LoadOldGroups()
         }
 
 --        trigger.action.outText("Restore Unit: "..SaveUnits[k]["units"][i]["name"]..", Heading: "..SaveUnits[k]["units"][i]["heading"], 10)
-        env.info("Restore Unit: "..SaveUnits[k]["units"][i]["name"]..", Heading: "..SaveUnits[k]["units"][i]["heading"])
+        env.info("UGLY: Restore Unit: "..SaveUnits[k]["units"][i]["name"]..", Heading: "..SaveUnits[k]["units"][i]["heading"])
 
         table.insert(units,tempTable)
 
@@ -159,6 +159,7 @@ end
 LoadOldGroups()
 
 AllGroups = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
+--AllGroups:HandleEvent(EVENTS.Birth) -- Player and AI Aircraft as statics
 
 --THE SAVING SCHEDULE
 SCHEDULER:New( nil, function()
@@ -168,11 +169,11 @@ SCHEDULER:New( nil, function()
   AllGroups:ForEachGroupAlive(function (grp)
     local DCSgroup = Group.getByName(grp:GetName() )
     if starts_with(grp:GetName(), "S_") then
---      env.info("Skipping Unit: "..grp:GetName())
+--      env.info("UGLY: Skipping Unit: "..grp:GetName())
 --      trigger.action.outText("Skipping Unit: "..grp:GetName(), 10)
     else
       RelevantGroups:AddGroup(grp)
---      env.info("Using Unit: "..grp:GetName())
+--      env.info("UGLY: Using Unit: "..grp:GetName())
 --      trigger.action.outText("Using Unit: "..grp:GetName(), 10)
     end
   end)
@@ -224,5 +225,18 @@ SCHEDULER:New( nil, function()
   newMissionStr = IntegratedserializeWithCycles("SaveUnits",SaveUnits) --save the Table as a serialised type with key SaveUnits
   writemission(newMissionStr, unitsPosFile)--write the file from the above to SaveUnits.lua
   SaveUnits={}--clear the table for a new write.
---env.info("Data saved.")
+--env.info("UGLY: Data saved.")
 end, {}, 10, SaveIntervall)
+
+--[[
+function AllGroups:OnEventBirth( EventData )
+
+  local DEADUNITNAME = EventData.IniDCSUnitName
+
+  if (starts_with(DEADUNITNAME, "Deployed FOB") == true) then
+    trigger.action.outText("Found new deployed FOB"..DEADUNITNAME, 10)
+  end
+
+end
+]]--
+
