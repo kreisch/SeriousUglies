@@ -1,6 +1,6 @@
  -----------------------------------
  --Configurable for user:
- SaveFOBIntervall = 6 --how many seconds between each check of all the statics.
+ SaveFOBIntervall = 666 --how many seconds between each check of all the statics.
  
  local ctldDataFile = "C:\\temp\\Persistence\\UglyCTLDSyria247.lua" --edit this to represent your own (DCS cant write to different disks)
  
@@ -123,13 +123,16 @@ function UGLY_SaveUglyFOBList(timeloop, time)
   env.info("UGLY: FOBs will be saved...")
   local newMissionStr = IntegratedserializeWithCycles("SaveCTLD", ctld.uglyFOBList) --save the Table as a serialised type with key SaveCTLD
   writemission(newMissionStr, ctldDataFile)--write the file from the above to ctldDataFile
-  env.info("UGLY: FOBs have been saved!"..newMissionStr)
+--  env.info("UGLY: FOBs have been saved! "..newMissionStr)
+  env.info("UGLY: FOBs have been saved!")
   return time + SaveFOBIntervall
 end
 
 function UUGLY_SaveUglyFOBListNoArgs()
+  env.info("UGLY: FOBs will be saved...")
   local newMissionStr = IntegratedserializeWithCycles("SaveCTLD",SaveCTLD)
-  env.info("UGLY: UUGLY_SaveUglyFOBListNoArgs!"..newMissionStr)
+--  env.info("UGLY: UUGLY_SaveUglyFOBListNoArgs! "..newMissionStr)
+  env.info("UGLY: UUGLY_SaveUglyFOBListNoArgs!")
   writemission(newMissionStr, UnitsFilePath)
 end
 
