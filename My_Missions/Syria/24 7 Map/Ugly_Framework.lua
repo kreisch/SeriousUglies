@@ -1,149 +1,181 @@
------------------------------------
+
+
+-----------------------------------------------------------------------------------------
+-- UGLY PERSISTENCE FRAMEWORK
 --
--- Ugly Automatic AI Zones
--- Copyright Skyfire 2020
--- 
--- Needs Moose to be loaded
+-- 2020 Edition
 --
------------------------------------
--- AI Zone Configuration
------------------------------------
+-- Currently no dependency to other frameworks (no MOOSE, MIST, CTLD...)
 
-local ZoneCheckInterval = 1  -- Check interval in seconds
-local AutoZonePrefix = "AutoOnOffZone"
+-- Declare the Framework
+Ugly = {}
 
+-- The global save interval
+Ugly.saveInterval = 2
 
+-- If true, print any debug text
+Ugly.showDebugText = false
 
+-- How long in seconds is the message displayed
+Ugly.messageShowTime = 10
 
+-----------------------------------------------------------------------------------------
+-- Check if the _toCheckString starts with the _toFindString
 
------------------------------------
---Do not edit below here
------------------------------------
-local version = "1.0"
+Ugly.startsWith = function (_toCheckString, _toFindString)
+  return _toCheckString:sub(1, #_toFindString) == _toFindString
+end
 
-local function setAIOfGroups(_groupSet, _on, _shootFlare)
-  _groupSet:ForEachGroup( function (grp)
-    grp:SetAIOnOff(_on)
+-----------------------------------------------------------------------------------------
+-- Print the neat message to all on screen
 
-    if _shootFlare ~= nil and _shootFlare == true then
-      if _on == true then
-        grp:FlareGreen()
-      else
-        grp:FlareRed()
-      end
-    end
-  end)
+Ugly.messageToAll = function (_theNeatMessage, _forceShow)
+  if Ugly.showDebugText or (_forceShow ~= nil and _forceShow == true) then
+    trigger.action.outText("UGLY: ".._theNeatMessage, Ugly.messageShowTime)
+  end
 end
 
 
-local GroupsOfZoneList = {}
-local AutomaticAIZones = SET_ZONE:New():FilterPrefixes( AutoZonePrefix ):FilterStart()
-local AllGroupsSet = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
-local AllZoneGroupsSet = SET_GROUP:New()
-local ActiveZoneTable = {}
-local OldActiveZoneTable = {}
+-----------------------------------------------------------------------------------------
+-- Detect Player Spawns
 
-local InfoOfZones = ""
+Ugly.currentPlayers = {}
+Ugly.currentMarker = {}
 
--- Initialization and collection of zone data
-AutomaticAIZones:ForEachZone(function (zone)
-  -- default, zone is off
-  OldActiveZoneTable[zone] = false
-  ActiveZoneTable[zone] = false
-  local GroupsOfZone = SET_GROUP:New()
+Ugly.spawnmsg = {}
 
-  InfoOfZones = InfoOfZones .. "Zone: " .. zone:GetName()
-
-  local numberOfUnits = 0
-
-  AllGroupsSet:ForEachGroupCompletelyInZone(zone, function (grp)
-    AllZoneGroupsSet:AddGroup(grp)
-    GroupsOfZone:AddGroup(grp)
-    numberOfUnits = numberOfUnits + #grp:GetUnits()
-  end)
-
-  GroupsOfZoneList[zone] = GroupsOfZone
-  setAIOfGroups(GroupsOfZone, false, true)
-
-  InfoOfZones = InfoOfZones .. ", with " .. numberOfUnits .. " unit"
-
-  if numberOfUnits ~= 1 then
-    InfoOfZones = InfoOfZones .. "s"
-  end
-
-  InfoOfZones = InfoOfZones .. ".\n"
-end)
+Ugly.spawnmsg.message = ""
+Ugly.spawnmsg.eventHandler = {}
 
 
--- Zone-check scheduler 
--- 
--- In each iteration check the relation of all players to the defined zones.
--- Any zone that contains a player unit is turned on. Any vacant zone is turned off.
+function Ugly.storeMarker(_markerEvent)
 
-SCHEDULER:New( nil, function()
+  local newMarker = {
+    idx = _markerEvent.idx,
+    time = _markerEvent.time,
+    initiator = _markerEvent.initiator,
+    coalition = _markerEvent.coalition,
+    text = _markerEvent.text,
+    pos = {x = _markerEvent.pos.x, y = _markerEvent.pos.y, z = _markerEvent.pos.z}
+   }
 
-  local triggerInfoText = ""
+   Ugly.currentMarker[_markerEvent.idx] = newMarker
+end
 
-  -- Init status of active table
-  for k,v in pairs(ActiveZoneTable) do
-    ActiveZoneTable[k] = false
-  end
+function Ugly.removeMarker(_markerEvent)
+  Ugly.currentMarker[_markerEvent.idx] = nil
+end
 
-  -- Check player status
-  _DATABASE:ForEachPlayerUnit(function (unit)
---  trigger.action.outText("Testing " .. unit:GetName() , 10)
-    
-    AutomaticAIZones:ForEachZone(function (zone)
-      if unit:IsInZone(zone) then
-        ActiveZoneTable[zone] = true
-        if ActiveZoneTable[zone] ~= OldActiveZoneTable[zone] then
-          triggerInfoText = "Triggered by " .. unit:GetPlayerName() .. ".\n\n"
-        end
-      end
-    end)
-  end)
+function Ugly.spawnmsg.eventHandler:onEvent(_event)
+  local status, err = pcall(function(_event)
 
-  -- Check status change
-  for k,v in pairs(ActiveZoneTable) do
-    if ActiveZoneTable[k] ~= OldActiveZoneTable[k] then
-      OldActiveZoneTable[k] = ActiveZoneTable[k]
-      setAIOfGroups(GroupsOfZoneList[k], OldActiveZoneTable[k], true)
+    if _event == nil then
+      return false
 
-      triggerInfoText =  triggerInfoText .. "Set AI of zone [" .. k:GetName() .. "] to ["
-      if OldActiveZoneTable[k] == true then
-        triggerInfoText =  triggerInfoText .. "On]\n"
-      else
-        triggerInfoText =  triggerInfoText .. "Off]\n"
-      end
-  
-      if OldActiveZoneTable[k] == false then
-        k:FlareZone(FLARECOLOR.Red)
-      else
-        k:FlareZone(FLARECOLOR.Green)
-      end
+    elseif _event.id == world.event.S_EVENT_MARK_ADDED or _event.id == world.event.S_EVENT_MARK_CHANGE then --new marker added
+      env.info("UGLY: Handled S_EVENT_MARK_ADDED: " .. _event.id)
 
-      trigger.action.outText(triggerInfoText, 10)
+      Ugly.storeMarker(_event)
 
+      return true
+    elseif _event.id == world.event.S_EVENT_MARK_REMOVED then --new marker removed
+      env.info("UGLY: Handled S_EVENT_MARK_REMOVED: " .. _event.id)
+
+      Ugly.removeMarker(_event)
+
+      return true
     end
+
+    if _event.initiator == nil then
+        return false
+
+    elseif _event.id == world.event.S_EVENT_PLAYER_ENTER_UNIT or _event.id == world.event.S_EVENT_TOOK_CONTROL then --player entered unit
+      env.info("UGLY: Handled S_EVENT_PLAYER_ENTER_UNIT and S_EVENT_TOOK_CONTROL: " .. _event.id)
+
+      if  _event.initiator:getPlayerName() then
+
+        Ugly.currentPlayers[_event.initiator:getPlayerName()] = _event.initiator:getTypeName()
+
+      end
+
+      return true
+    elseif _event.id == world.event.S_EVENT_PLAYER_LEAVE_UNIT then --player leave unit
+      env.info("UGLY: Handled S_EVENT_PLAYER_LEAVE_UNIT: " .. _event.id)
+
+      if  _event.initiator:getPlayerName() then
+
+        Ugly.currentPlayers[_event.initiator:getPlayerName()] = nil
+
+      end
+      return true
+    else
+--      env.info("UGLY: Unhandled Event: " .. _event.id)
+    end
+  end, _event)
+
+  if (not status) then
+      env.error(string.format("Error while handling event %s", err),false)
   end
 
-end, {}, 5, ZoneCheckInterval)
-
---------------------
--- Ready
-
-trigger.action.outText("Automatic zone AI control has started for zones:\n\n" .. InfoOfZones, 10)
+end
 
 
+function Ugly.trackPlayerSpawn()
+  world.addEventHandler(Ugly.spawnmsg.eventHandler)
+end
 
 
+-- Framework END
+-----------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------
+-- Testing
 
 
+Ugly.trackPlayerSpawn()
 
+--timer.scheduleFunction(SEF_SaveUglyUnitDeadList, {}, timer.getTime() + SaveDeadListIntervall)
 
-
-
-
-
-
-
+Ugly.EVENTS = {
+  Shot =              world.event.S_EVENT_SHOT,
+  Hit =               world.event.S_EVENT_HIT,
+  Takeoff =           world.event.S_EVENT_TAKEOFF,
+  Land =              world.event.S_EVENT_LAND,
+  Crash =             world.event.S_EVENT_CRASH,
+  Ejection =          world.event.S_EVENT_EJECTION,
+  Refueling =         world.event.S_EVENT_REFUELING,
+  Dead =              world.event.S_EVENT_DEAD,
+  PilotDead =         world.event.S_EVENT_PILOT_DEAD,
+  BaseCaptured =      world.event.S_EVENT_BASE_CAPTURED,
+  MissionStart =      world.event.S_EVENT_MISSION_START,
+  MissionEnd =        world.event.S_EVENT_MISSION_END,
+  TookControl =       world.event.S_EVENT_TOOK_CONTROL,
+  RefuelingStop =     world.event.S_EVENT_REFUELING_STOP,
+  Birth =             world.event.S_EVENT_BIRTH,
+  HumanFailure =      world.event.S_EVENT_HUMAN_FAILURE,
+  EngineStartup =     world.event.S_EVENT_ENGINE_STARTUP,
+  EngineShutdown =    world.event.S_EVENT_ENGINE_SHUTDOWN,
+  PlayerEnterUnit =   world.event.S_EVENT_PLAYER_ENTER_UNIT,
+  PlayerLeaveUnit =   world.event.S_EVENT_PLAYER_LEAVE_UNIT,
+  PlayerComment =     world.event.S_EVENT_PLAYER_COMMENT,
+  ShootingStart =     world.event.S_EVENT_SHOOTING_START,
+  ShootingEnd =       world.event.S_EVENT_SHOOTING_END,
+  -- Added with DCS 2.5.1
+  MarkAdded =         world.event.S_EVENT_MARK_ADDED,
+  MarkChange =        world.event.S_EVENT_MARK_CHANGE,
+  MarkRemoved =       world.event.S_EVENT_MARK_REMOVED,
+  -- Moose Events
+  NewCargo =          world.event.S_EVENT_NEW_CARGO,
+  DeleteCargo =       world.event.S_EVENT_DELETE_CARGO,
+  NewZone =           world.event.S_EVENT_NEW_ZONE,
+  DeleteZone =        world.event.S_EVENT_DELETE_ZONE,
+  NewZoneGoal =       world.event.S_EVENT_NEW_ZONE_GOAL,
+  DeleteZoneGoal =    world.event.S_EVENT_DELETE_ZONE_GOAL,
+  RemoveUnit =        world.event.S_EVENT_REMOVE_UNIT,
+  -- Added with DCS 2.5.6
+  DetailedFailure =   world.event.S_EVENT_DETAILED_FAILURE or -1,  --We set this to -1 for backward compatibility to DCS 2.5.5 and earlier
+  Kill =              world.event.S_EVENT_KILL or -1,
+  Score =             world.event.S_EVENT_SCORE or -1,
+  UnitLost =          world.event.S_EVENT_UNIT_LOST or -1,
+  LandingAfterEjection = world.event.S_EVENT_LANDING_AFTER_EJECTION or -1,
+}
