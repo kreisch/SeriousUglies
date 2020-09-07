@@ -214,7 +214,7 @@ function UUGLY_SaveUglyFOBListNoArgs()
   local newMissionStr = IntegratedserializeWithCycles("FOBs", ctld.uglyFOBList)
 --  env.info("UGLY: UUGLY_SaveUglyFOBListNoArgs! "..newMissionStr)
 --  env.info("UGLY: UUGLY_SaveUglyFOBListNoArgs!")
-  writemission(newMissionStr, UnitsFilePath)
+  writemission(newMissionStr, ctldDataFile)
 end
 
 --SCRIPT START
