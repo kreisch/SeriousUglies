@@ -18,7 +18,7 @@
  --Do not edit below here
  -----------------------------------
  
- assert(Ugly ~= nil, "\n\n** HEY MISSION-DESIGNER! **\n\Ugly_Framework has not been loaded!\n\nMake sure it's running\n*before* running SY_P_NewUnitsAndStaticsPos.lua!\n")
+ assert(Ugly ~= nil, "\n\n** HEY MISSION-DESIGNER! **\nUgly_Framework has not been loaded!\n\nMake sure it's running\n*before* running SY_P_NewUnitsAndStaticsPos.lua!\n")
  
  -- local version = "1.1"
  local version = "1.2"  -- Added Marker
