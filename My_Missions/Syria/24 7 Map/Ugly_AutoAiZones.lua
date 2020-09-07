@@ -18,7 +18,7 @@ local AutoZonePrefix = "AutoOnOffZone"
 -----------------------------------
 
 -- Sanity checks for development (copied from CSAR)
-assert(Ugly ~= nil, "\n\n** HEY MISSION-DESIGNER! **\n\Ugly_Framework has not been loaded!\n\nMake sure it's running\n*before* running this script!\n")
+assert(Ugly ~= nil, "\n\n** HEY MISSION-DESIGNER! **\n\Ugly_Framework has not been loaded!\n\nMake sure it's running\n*before* running Ugly_AutoAiZones.lua!\n")
 
 local version = "1.0"
 

@@ -8,14 +8,20 @@
  
  -----------------------------------
  --Configurable for user:
- SaveIntervall = 666 --how many seconds between each check of all the statics.
+ SaveIntervall = Ugly.saveInterval --how many seconds between each check of all the statics.
+ SaveMarkerIntervall = Ugly.saveInterval --how many seconds between storing of marker.
  
+ local markerDataFile = "C:\\temp\\Persistence\\UglyMarkerSyria247.lua" --edit this to represent your own (DCS cant write to different disks)
  local unitsPosFile = "C:\\temp\\Persistence\\UglyUnitPositionsSyria247.lua" --edit this to represent your own (DCS cant write to different disks)
  
  -----------------------------------
  --Do not edit below here
  -----------------------------------
- local version = "1.1"
+ 
+ assert(Ugly ~= nil, "\n\n** HEY MISSION-DESIGNER! **\n\Ugly_Framework has not been loaded!\n\nMake sure it's running\n*before* running SY_P_NewUnitsAndStaticsPos.lua!\n")
+ 
+ -- local version = "1.1"
+ local version = "1.2"  -- Added Marker
  
  function IntegratedbasicSerialize(s)
     if s == nil then
@@ -152,11 +158,48 @@ function LoadOldGroups()
   end
 end
 
+function RestoreMarkerData()
+  if file_exists(markerDataFile) then --Script has been run before, so we load previous data
+    env.info("UGLY: Existing database, loading marker from file.")
+
+    dofile(markerDataFile)
+
+    --  RUN THROUGH THE KEYS IN THE TABLE 
+    for k,v in pairs(Marker) do
+      local _markText = Marker[k]["text"]
+      local _coalition = Marker[k]["coalition"]
+      local _name = Marker[k]["name"]
+      local _point = { x = Marker[k]["pos"]["x"], y = 0, z = Marker[k]["pos"]["z"]}
+      trigger.action.markToCoalition( k, _markText, _point, _coalition, false, "" )
+--      trigger.action.markToCoalition( UTILS.GetMarkID(), _markText, _point, _coalition, false, "" )
+    end
+  end
+end
+
+--////SAVE UNITS FUNCTION
+function UGLY_SaveUglyMarkerList(timeloop, time)
+--  env.info("UGLY: FOBs will be saved...")
+  local markerMissionStr   = IntegratedserializeWithCycles("Marker", Ugly.currentMarker) --save the Table as a serialised type with key FOBs
+
+  writemission(markerMissionStr, markerDataFile)--write the file from the above to markerDataFile
+--  env.info("UGLY: FOBs have been saved! "..newMissionStr)
+--  env.info("UGLY: FOBs have been saved!")
+  return time + SaveMarkerIntervall
+end
+
+
 local function starts_with(str, start)
   return str:sub(1, #start) == start
 end
 
+-- Load old groups
 LoadOldGroups()
+
+-- Load and create old Marker
+RestoreMarkerData()
+
+--THE SAVING SCHEDULE
+timer.scheduleFunction(UGLY_SaveUglyMarkerList, {}, timer.getTime() + SaveMarkerIntervall)
 
 AllGroups = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
 --AllGroups:HandleEvent(EVENTS.Birth) -- Player and AI Aircraft as statics
