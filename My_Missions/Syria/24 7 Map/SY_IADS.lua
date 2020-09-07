@@ -182,18 +182,18 @@ redIADSHama:setupSAMSitesAndThenActivate()
 redIADSBasselAlAssad:setupSAMSitesAndThenActivate()
 
 
-local iadsDebug = redIADSAleppo:getDebugSettings()  
-iadsDebug.IADSStatus = true
-iadsDebug.samWentDark = true
-iadsDebug.radarWentLive = true
-iadsDebug.ewRadarNoConnection = true
-iadsDebug.samNoConnection = true
-iadsDebug.addedEWRadar = true
-iadsDebug.hasNoPower = true
-iadsDebug.addedSAMSite = true
-iadsDebug.warnings = true
-iadsDebug.samSiteStatusEnvOutput = true
-iadsDebug.earlyWarningRadarStatusEnvOutput = true
+--local iadsDebug = redIADSAleppo:getDebugSettings()  
+--iadsDebug.IADSStatus = true
+--iadsDebug.samWentDark = true
+--iadsDebug.radarWentLive = true
+--iadsDebug.ewRadarNoConnection = true
+--iadsDebug.samNoConnection = true
+--iadsDebug.addedEWRadar = true
+--iadsDebug.hasNoPower = true
+--iadsDebug.addedSAMSite = true
+--iadsDebug.warnings = true
+--iadsDebug.samSiteStatusEnvOutput = true
+--iadsDebug.earlyWarningRadarStatusEnvOutput = true
 
 
 
