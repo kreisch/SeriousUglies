@@ -149,22 +149,22 @@ csar.disableTimeoutTime = 20 -- Time in minutes for TIMEOUT
 
 csar.destructionHeight = 150 -- height in meters an aircraft will be destroyed at if the aircraft is disabled
 
-csar.enableForAI = false -- set to false to disable AI units from being rescued.
+csar.enableForAI = true -- set to false to disable AI units from being rescued.
 
 csar.enableForRED = true -- enable for red side
 
 csar.enableForBLUE = true -- enable for blue side
 
-csar.enableSlotBlocking = true -- if set to true, you need to put the csarSlotBlockGameGUI.lua
+csar.enableSlotBlocking = false -- if set to true, you need to put the csarSlotBlockGameGUI.lua
 -- in C:/Users/<YOUR USERNAME>/DCS/Scripts for 1.5 or C:/Users/<YOUR USERNAME>/DCS.openalpha/Scripts for 2.0
 -- For missions using FLAGS and this script, the CSAR flags will NOT interfere with your mission :)
 
-csar.bluesmokecolor = 4 -- Color of smokemarker for blue side, 0 is green, 1 is red, 2 is white, 3 is orange and 4 is blue
+csar.bluesmokecolor = 0 -- Color of smokemarker for blue side, 0 is green, 1 is red, 2 is white, 3 is orange and 4 is blue
 csar.redsmokecolor = 1 -- Color of smokemarker for red side, 0 is green, 1 is red, 2 is white, 3 is orange and 4 is blue
 
 csar.requestdelay = 2 -- Time in seconds before the survivors will request Medevac
 
-csar.coordtype = 3 -- Use Lat/Long DDM (0), Lat/Long DMS (1), MGRS (2), Bullseye imperial (3) or Bullseye metric (4) for coordinates.
+csar.coordtype = 0 -- Use Lat/Long DDM (0), Lat/Long DMS (1), MGRS (2), Bullseye imperial (3) or Bullseye metric (4) for coordinates.
 csar.coordaccuracy = 1 -- Precision of the reported coordinates, see MIST-docs at http://wiki.hoggit.us/view/GetMGRSString
 -- only applies to _non_ bullseye coords
 
