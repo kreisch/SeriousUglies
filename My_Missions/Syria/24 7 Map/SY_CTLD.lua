@@ -47,7 +47,7 @@ ctld.maximumMoveDistance = 2000 -- max distance for troops to move from drop poi
 
 ctld.minimumDeployDistance = 500 -- minimum distance from a friendly pickup zone where you can deploy a crate
 
-ctld.numberOfTroops = 10 -- default number of troops to load on a transport heli or C-130 
+ctld.numberOfTroops = 28 -- default number of troops to load on a transport heli or C-130 
 							-- also works as maximum size of group that'll fit into a helicopter unless overridden
 ctld.enableFastRopeInsertion = true -- allows you to drop troops by fast rope
 ctld.fastRopeMaximumHeight = 18.28 -- in meters which is 60 ft max fast rope (not rappell) safe height
@@ -453,7 +453,7 @@ ctld.unitActions = {
 -- You can also add an optional coalition side to limit the group to one side
 -- for the side - 2 is BLUE and 1 is RED
 ctld.loadableGroups = {
-    {name = "Standard Group", inf = 6, mg = 4, at = 2 }, -- will make a loadable group with 5 infantry, 2 MGs and 2 anti-tank for both coalitions
+    {name = "Standard Group", inf = 6, mg = 2, at = 2 }, -- will make a loadable group with 5 infantry, 2 MGs and 2 anti-tank for both coalitions
     {name = "Heavy Group", inf = 12, mg = 8, at = 8 }, -- Only loadable via Mi-8
     {name = "Anti Air", inf = 5, aa = 3  },
     {name = "Anti Tank", inf = 2, at = 6  },
@@ -3337,7 +3337,7 @@ function ctld.spawnRadioBeaconUnit(_point, _country, _type)
         },
         --        ["y"] = _positions[1].z,
         --        ["x"] = _positions[1].x,
-        ["name"] = "S_".. "Arty_" .. _type .. " Radio Beacon Group #" .. _groupId,
+        ["name"] = "Arty_" .. _type .. " Radio Beacon Group #" .. _groupId,
         ["task"] = {},
         --added two fields below for MIST
         ["category"] = Group.Category.GROUND,
