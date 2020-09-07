@@ -30,7 +30,7 @@ ctld.staticBugWorkaround = false --  DCS had a bug where destroying statics woul
 
 ctld.disableAllSmoke = false -- if true, all smoke is diabled at pickup and drop off zones regardless of settings below. Leave false to respect settings below
 
-ctld.hoverPickup = true --  if set to false you can load crates with the F10 menu instead of hovering... Only if not using real crates!
+ctld.hoverPickup = false --  if set to false you can load crates with the F10 menu instead of hovering... Only if not using real crates!
 
 ctld.enableCrates = true -- if false, Helis will not be able to spawn or unpack crates so will be normal CTTS
 ctld.slingLoad = false -- if false, crates can be used WITHOUT slingloading, by hovering above the crate, simulating slingloading but not the weight...
@@ -65,7 +65,7 @@ ctld.enabledFOBBuilding = true -- if true, you can load a crate INTO a C-130 tha
 -- In future i'd like it to be a FARP but so far that seems impossible...
 -- You can also enable troop Pickup at FOBS
 
-ctld.cratesRequiredForFOB = 3 -- The amount of crates required to build a FOB. Once built, helis can spawn crates at this outpost to be carried and deployed in another area.
+ctld.cratesRequiredForFOB = 1 -- The amount of crates required to build a FOB. Once built, helis can spawn crates at this outpost to be carried and deployed in another area.
 -- The large crates can only be loaded and dropped by large aircraft, like the C-130 and listed in ctld.vehicleTransportEnabled
 -- Small FOB crates can be moved by helicopter. The FOB will require ctld.cratesRequiredForFOB larges crates and small crates are 1/3 of a large fob crate
 -- To build the FOB entirely out of small crates you will need ctld.cratesRequiredForFOB * 3
@@ -81,7 +81,7 @@ ctld.forceCrateToBeMoved = true -- a crate must be picked up at least once and m
 ctld.radioSound = "beacon.ogg" -- the name of the sound file to use for the FOB radio beacons. If this isnt added to the mission BEACONS WONT WORK!
 ctld.radioSoundFC3 = "beaconsilent.ogg" -- name of the second silent radio file, used so FC3 aircraft dont hear ALL the beacon noises... :)
 
-ctld.deployedBeaconBattery = 30 -- the battery on deployed beacons will last for this number minutes before needing to be re-deployed
+ctld.deployedBeaconBattery = 1200 -- the battery on deployed beacons will last for this number minutes before needing to be re-deployed
 
 ctld.enabledRadioBeaconDrop = true -- if its set to false then beacons cannot be dropped by units
 
@@ -118,8 +118,8 @@ ctld.JTAC_dropEnabled = true -- allow JTAC Crate spawn from F10 menu
 
 ctld.JTAC_maxDistance = 8000 -- How far a JTAC can "see" in meters (with Line of Sight)
 
-ctld.JTAC_smokeOn_RED = true -- enables marking of target with smoke for RED forces
-ctld.JTAC_smokeOn_BLUE = true -- enables marking of target with smoke for BLUE forces
+ctld.JTAC_smokeOn_RED = false -- enables marking of target with smoke for RED forces
+ctld.JTAC_smokeOn_BLUE = false -- enables marking of target with smoke for BLUE forces
 
 ctld.JTAC_smokeColour_RED = 4 -- RED side smoke colour -- Green = 0 , Red = 1, White = 2, Orange = 3, Blue = 4
 ctld.JTAC_smokeColour_BLUE = 1 -- BLUE side smoke colour -- Green = 0 , Red = 1, White = 2, Orange = 3, Blue = 4
@@ -409,9 +409,12 @@ ctld.vehicleTransportEnabled = {
 ctld.unitLoadLimits = {
 
     -- Remove the -- below to turn on options
-    -- ["SA342Mistral"] = 4,
-    -- ["SA342L"] = 4,
-    -- ["SA342M"] = 4,
+    ["SA342Mistral"] = 0,
+    ["SA342L"] = 0,
+    ["SA342M"] = 0,
+    ["UH-1H"] = 12,
+    ["Mi-8MTV2"] = 28,
+    --["Mi-24P"] = 8,
 
 }
 
@@ -450,8 +453,9 @@ ctld.unitActions = {
 -- You can also add an optional coalition side to limit the group to one side
 -- for the side - 2 is BLUE and 1 is RED
 ctld.loadableGroups = {
-    {name = "Standard Group", inf = 6, mg = 2, at = 2 }, -- will make a loadable group with 5 infantry, 2 MGs and 2 anti-tank for both coalitions
-    {name = "Anti Air", inf = 2, aa = 3  },
+    {name = "Standard Group", inf = 6, mg = 4, at = 2 }, -- will make a loadable group with 5 infantry, 2 MGs and 2 anti-tank for both coalitions
+    {name = "Heavy Group", inf = 12, mg = 8, at = 8 }, -- Only loadable via Mi-8
+    {name = "Anti Air", inf = 5, aa = 3  },
     {name = "Anti Tank", inf = 2, at = 6  },
     {name = "Mortar Squad", mortar = 6 },
     -- {name = "Mortar Squad Red", inf = 2, mortar = 5, side =1 }, --would make a group loadable by RED only
