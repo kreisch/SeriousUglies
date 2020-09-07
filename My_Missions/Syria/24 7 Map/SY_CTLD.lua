@@ -3333,7 +3333,7 @@ function ctld.spawnRadioBeaconUnit(_point, _country, _type)
         },
         --        ["y"] = _positions[1].z,
         --        ["x"] = _positions[1].x,
-        ["name"] = "S_" .. _type .. " Radio Beacon Group #" .. _groupId,
+        ["name"] = "S_".. "Arty_" .. _type .. " Radio Beacon Group #" .. _groupId,
         ["task"] = {},
         --added two fields below for MIST
         ["category"] = Group.Category.GROUND,
