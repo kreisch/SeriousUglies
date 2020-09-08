@@ -125,23 +125,49 @@ function Ugly.trackPlayerSpawn()
 end
 
 
-  --- Creates a MapMarker on the location of a given static, visible for BlueFor
+  --- Creates a MapMarker on the location of a given static, visible for the enemy team
   -- @param #_staticName STRING The name of the static
   -- @param #_removeable BOOL True if the mark cannot be removed; false if the mark can be removed by users
   -- @param #_markertext STRING the text to be displayed.
   -- kreisch
-function setMarkerForStaticBlue(_staticName, _removeable, _markertext)
-
-  
+function Ugly.setMarkerForStatic(_staticName, _fixedMarkpoint, _markertext)
     local  _static   = STATIC:FindByName(_staticName, false)
     local  _coalition = _static:GetCoalition()
     local  _coordinate = _static:GetCoordinate()
-    --_coordinate:MarkToCoalition(_markertext,_coalition,_removeable)
-    
-    env.info("UGLY: SetMarkerForStatic " .. _staticName .. " with text " .. _markertext .. " for coalition " .. _coalition)
-    --_coordinate:MarkToCoalition(_markertext,_coalition,_removeable)
-    _coordinate:MarkToCoalitionBlue(_markertext,_removeable)
+    local _coordinateText = _coordinate:ToStringLLDDM()
+    if (_fixedMarkpoint == nil) then
+        _fixedMarkpoint = true
+    end
+    if (_markertext == nil) then
+      _markertext = " "
+    end
 
+    local  _finalText = "Target: " .. _staticName .. "\n ".. _markertext .. "Coordinates: " .. _coordinateText
+    
+    env.info("UGLY: SetMarkerForStatic " .. _staticName .. " with text " .. _markertext .. " for target of coalition " .. _coalition)
+    local _coalitionEnemy = Ugly.getEnemyCoalition(_coalition)
+    if (_coalitionEnemy == 0) then
+      _coordinate:MarkToAll(_finalText,_fixedMarkpoint)
+    else
+      _coordinate:MarkToCoalition(_finalText, _coalitionEnemy, _fixedMarkpoint)
+    end
+
+end
+
+  --- Returns the enemy team ID as INT - Neutral is not included.
+  -- @param #_coalition the coalition you want to receive the enemy of
+  -- @author kreisch
+function Ugly.getEnemyCoalition(_coalition)
+  local _enemy = 0
+    if (_coalition == 1) then
+      _enemy = 2
+    elseif (_coalition == 2) then
+     _enemy = 1
+    end
+  if (_enemy == nil) then
+    env.error("UGLY: Warning, coalition is neutral! Setting mark to both sides.")
+  end
+  return _enemy
 end
 
 -- Framework END
