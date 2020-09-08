@@ -15,6 +15,8 @@ RED_A2ADispatcher_Damascus = AI_A2A_DISPATCHER:New( DetectionDamascus )
 RED_A2ADispatcher_Damascus:SetEngageRadius( 200000 )
 RED_A2ADispatcher_Damascus:SetDisengageRadius( 200000 )
 RED_A2ADispatcher_Damascus:SetTacticalDisplay( false )
+RED_A2ADispatcher_Damascus:SetEventPriority(2)
+RED_A2ADispatcher_Damascus:SetRefreshTimeInterval(60)
 
 
 -- Setup the squadrons.

@@ -79,6 +79,8 @@ redIADSBasselAlAssad:addSAMSitesByPrefix(             'S_RU_IADS_EWR_BasselAlAss
     local  IADS_RED_Aleppo_PP_3   = StaticObject.getByName("RU_IADS_Aleppo_POWER_Power3")
     local  IADS_RED_Aleppo_PP_4   = StaticObject.getByName("RU_IADS_Aleppo_POWER_Power4")
     
+
+    
 -- Assign the PowerPlants to the SAM Sites and to the Command Center
     redIADSAleppo:addCommandCenter(IADS_RED_Aleppo_CC):addPowerSource(IADS_RED_Aleppo_PP_1)
     --redIADSAleppo:getSAMSiteByGroupName(          "S_RU_IADS_SAM_Aleppo_SA2#2"):addPowerSource(IADS_RED_Aleppo_PP_3)

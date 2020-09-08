@@ -125,6 +125,25 @@ function Ugly.trackPlayerSpawn()
 end
 
 
+  --- Creates a MapMarker on the location of a given static, visible for BlueFor
+  -- @param #_staticName STRING The name of the static
+  -- @param #_removeable BOOL True if the mark cannot be removed; false if the mark can be removed by users
+  -- @param #_markertext STRING the text to be displayed.
+  -- kreisch
+function setMarkerForStaticBlue(_staticName, _removeable, _markertext)
+
+  
+    local  _static   = STATIC:FindByName(_staticName, false)
+    local  _coalition = _static:GetCoalition()
+    local  _coordinate = _static:GetCoordinate()
+    --_coordinate:MarkToCoalition(_markertext,_coalition,_removeable)
+    
+    env.info("UGLY: SetMarkerForStatic " .. _staticName .. " with text " .. _markertext .. " for coalition " .. _coalition)
+    --_coordinate:MarkToCoalition(_markertext,_coalition,_removeable)
+    _coordinate:MarkToCoalitionBlue(_markertext,_removeable)
+
+end
+
 -- Framework END
 -----------------------------------------------------------------------------------------
 

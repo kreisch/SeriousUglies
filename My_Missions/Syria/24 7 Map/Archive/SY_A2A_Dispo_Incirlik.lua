@@ -26,6 +26,8 @@ US_A2ADispatcher_Incirlik:SetTacticalDisplay( false )
 local HQ_Group = GROUP:FindByName( "US_HQ" )
 local HQ_CC = COMMANDCENTER:New( HQ_Group, "HQ" )
 US_A2ADispatcher_Incirlik:SetCommandCenter( HQ_CC )
+US_A2ADispatcher_Incirlik:SetEventPriority(3)
+US_A2ADispatcher_Incirlik:SetRefreshTimeInterval(30)
 
 
 -- Setup the squadrons.
