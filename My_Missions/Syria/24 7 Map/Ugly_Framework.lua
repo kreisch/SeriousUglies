@@ -64,7 +64,7 @@ Ugly.unitsPosFile = "UglyUnitPositions" .. Ugly.MissionSuffix .. ".lua" --edit t
 Ugly.ctldDataFile = "UglyCTLD" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
 
 assert(ctld ~= nil, "\n\n** HEY MISSION-DESIGNER! **\nCTLD has not been loaded!\n\nMake sure it's running\n*before* starting the Ugly_Framework.lua!\n")
-assert(csar ~= nil, "\n\n** HEY MISSION-DESIGNER! **\nCTLD has not been loaded!\n\nMake sure it's running\n*before* starting the Ugly_Framework.lua!\n")
+assert(csar ~= nil, "\n\n** HEY MISSION-DESIGNER! **\nCSAR has not been loaded!\n\nMake sure it's running\n*before* starting the Ugly_Framework.lua!\n")
 
 -----------------------------------------------------------------------------------------
 -- Check if file exists
