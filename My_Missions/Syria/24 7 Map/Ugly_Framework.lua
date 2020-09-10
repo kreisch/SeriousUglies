@@ -28,7 +28,7 @@
 Ugly = {}
 
 -- The global save interval
-Ugly.saveInterval = 2
+Ugly.saveInterval = 666
 
 -- If true, print any debug text
 Ugly.showDebugText = false
