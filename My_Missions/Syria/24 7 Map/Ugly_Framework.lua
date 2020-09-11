@@ -36,7 +36,7 @@ Ugly.showDebugText = false
 -- How long in seconds is the message displayed
 Ugly.messageShowTime = 10
 
-Ugly.AutoRecceMarker = "M_"
+Ugly.AutoRecceMarker = "M_" -- if "" no marker is created
 
 Ugly.PathToUserData = "C:\\temp" -- A directory "Persistence" is automatically added to the base directory
 Ugly.MissionSuffix = "Syria247"
@@ -62,9 +62,6 @@ Ugly.StaticsFileName = "UglyStaticsDeadList" .. Ugly.MissionSuffix .. ".lua"
 Ugly.markerDataFile = "UglyMarker" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
 Ugly.unitsPosFile = "UglyUnitPositions" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
 Ugly.ctldDataFile = "UglyCTLD" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
-
-assert(ctld ~= nil, "\n\n** HEY MISSION-DESIGNER! **\nCTLD has not been loaded!\n\nMake sure it's running\n*before* starting the Ugly_Framework.lua!\n")
-assert(csar ~= nil, "\n\n** HEY MISSION-DESIGNER! **\nCSAR has not been loaded!\n\nMake sure it's running\n*before* starting the Ugly_Framework.lua!\n")
 
 -----------------------------------------------------------------------------------------
 -- Check if file exists
@@ -207,16 +204,17 @@ Ugly.setMarkerForStatic = function (_static, _fixedMarkpoint, _markertext)
 end
 
 Ugly.AddMarkerToStatics = function (_Prefix)
-  local AllStatics = SET_STATIC:New():FilterPrefixes(_Prefix):FilterStart()
+  if _Prefix ~= "" then
+    local AllStatics = SET_STATIC:New():FilterPrefixes(_Prefix):FilterStart()
 
-  --    Ugly.AllGroups:ForEachGroup(function (grp)
-  --      grp:Destroy()
-  --    end)
-  AllStatics:ForEachStatic (function (theStatic)
-    trigger.action.outText("Ugly.AddMarkerToStatics for: "..theStatic:GetName(), 10)
-    Ugly.setMarkerForStatic(theStatic, true)
-  end)
-
+    --    Ugly.AllGroups:ForEachGroup(function (grp)
+    --      grp:Destroy()
+    --    end)
+    AllStatics:ForEachStatic (function (theStatic)
+      trigger.action.outText("Ugly.AddMarkerToStatics for: "..theStatic:GetName(), 10)
+      Ugly.setMarkerForStatic(theStatic, true)
+    end)
+  end
 end
 
 
@@ -895,13 +893,33 @@ end
 -----------------------------------------------------------------------------------------
 --//// Start Framework
 
-Ugly.messageToAll("Trying to start Ugly Persistence!")
-Ugly.StartDeathRecorder()
-Ugly.AddMarkerToStatics(Ugly.AutoRecceMarker)
-Ugly.StartMarkerRecorder()
-Ugly.StartObjectPositionRecorder()
-Ugly.StartCTLDCSARRecorder();
 
+Ugly.StartFrameworkPreMist = function()
+  Ugly.messageToAll("Trying to start Ugly Persistence pre MIST phase...")
+
+  Ugly.StartDeathRecorder()
+  Ugly.AddMarkerToStatics(Ugly.AutoRecceMarker)
+  Ugly.StartMarkerRecorder()
+  Ugly.StartObjectPositionRecorder()
+end
+
+Ugly.StartFrameworkPostCTLDCSAR = function()
+  assert(ctld ~= nil, "\n\n** HEY MISSION-DESIGNER! **\nCTLD has not been loaded!\n\nMake sure it's running\n*before* starting the Ugly_Framework.lua!\n")
+  assert(csar ~= nil, "\n\n** HEY MISSION-DESIGNER! **\nCSAR has not been loaded!\n\nMake sure it's running\n*before* starting the Ugly_Framework.lua!\n")
+  
+  Ugly.messageToAll("Starting post CTLD/CSAR actions...")
+  Ugly.StartCTLDCSARRecorder();
+end
+
+-- Simply start complete framework, as we hope the mist warnings are just warnings, no real errors.
+Ugly.StartCompleteFramework = function()
+  Ugly.messageToAll("Trying to start Ugly Persistence!")
+  Ugly.StartDeathRecorder()
+  Ugly.AddMarkerToStatics(Ugly.AutoRecceMarker)
+  Ugly.StartMarkerRecorder()
+  Ugly.StartObjectPositionRecorder()
+  Ugly.StartCTLDCSARRecorder();
+end
 
 -----------------------------------------------------------------------------------------
 -- Testing
