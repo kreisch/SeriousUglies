@@ -4,6 +4,7 @@ SupportHandler = EVENTHANDLER:New()
 
 ---- A2A RED
 ------- Jets
+RU_Zeus_F5    = SPAWN:New("RU_Zeus_F5")
 RU_Zeus_Mig19 = SPAWN:New("RU_Zeus_Mig19")
 RU_Zeus_Mig21 = SPAWN:New("RU_Zeus_Mig21")
 RU_Zeus_Mig23 = SPAWN:New("RU_Zeus_Mig23")
@@ -11,7 +12,7 @@ RU_Zeus_Mig25 = SPAWN:New("RU_Zeus_Mig25")
 RU_Zeus_Su25T = SPAWN:New("RU_Zeus_Su25T")
 ------- Helo
 RU_Zeus_Mi24 = SPAWN:New("RU_Zeus_Mi24")
-RU_Zeus_Mi8 = SPAWN:New("RU_Zeus_Mi8")
+RU_Zeus_Mi8  = SPAWN:New("RU_Zeus_Mi8")
 RU_Zeus_Ka50 = SPAWN:New("RU_Zeus_Ka50")
 
 
@@ -30,6 +31,7 @@ RU_ZEUS_SA2         = SPAWN:New("S_RU_ZEUS_SA2")
 --
 ---- A2A BLUE
 ------- Jets
+US_Zeus_F5          = SPAWN:New("US_Zeus_F5")
 US_Zeus_F14         = SPAWN:New("US_Zeus_F14")
 US_Zeus_F15C        = SPAWN:New("US_Zeus_F15C")
 US_Zeus_F16C        = SPAWN:New("US_Zeus_F16C")
@@ -65,7 +67,9 @@ function handleSpawnRequest(text, coord)
     local arty = nil
 	-- RED
 	env.info(text)
-    if text:find("mig19_red") then
+    if text:find("f5_red") then
+        zeusSpawn = RU_Zeus_F5
+    elseif text:find("mig19_red") then
         zeusSpawn = RU_Zeus_Mig19
     elseif text:find("mig21_red") then
         zeusSpawn = RU_Zeus_Mig21
@@ -104,6 +108,8 @@ function handleSpawnRequest(text, coord)
         zeusSpawn = RU_ZEUS_SA2
 
     -- BLUE
+    elseif text:find("f5_blue") then
+        zeusSpawn =  US_Zeus_F5
     elseif text:find("f14_blue") then
         zeusSpawn =  US_Zeus_F14
     elseif text:find("f15c_blue") then
