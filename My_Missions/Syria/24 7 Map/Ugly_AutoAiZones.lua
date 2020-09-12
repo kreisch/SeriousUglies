@@ -20,22 +20,7 @@ local AutoZonePrefix = "AutoOnOffZone"
 -- Sanity checks for development (copied from CSAR)
 assert(Ugly ~= nil, "\n\n** HEY MISSION-DESIGNER! **\nUgly_Framework has not been loaded!\n\nMake sure it's running\n*before* running Ugly_AutoAiZones.lua!\n")
 
-local version = "1.0"
-
-local function setAIOfGroups(_groupSet, _on, _shootFlare)
-  _groupSet:ForEachGroup( function (grp)
-    grp:SetAIOnOff(_on)
-
-    if _shootFlare ~= nil and _shootFlare == true then
-      if _on == true then
-        grp:FlareGreen()
-      else
-        grp:FlareRed()
-      end
-    end
-  end)
-end
-
+local version = "2.0"
 
 local GroupsOfZoneList = {}
 local AutomaticAIZones = SET_ZONE:New():FilterPrefixes( AutoZonePrefix ):FilterStart()
@@ -45,6 +30,12 @@ local ActiveZoneTable = {}
 local OldActiveZoneTable = {}
 
 local InfoOfZones = ""
+
+local function setAIOfGroups(_groupSet, _on)
+  _groupSet:ForEachGroup( function (grp)
+    grp:SetAIOnOff(_on)
+  end)
+end
 
 -- Initialization and collection of zone data
 AutomaticAIZones:ForEachZone(function (zone)
@@ -66,7 +57,7 @@ AutomaticAIZones:ForEachZone(function (zone)
   end)
 
   GroupsOfZoneList[zone] = GroupsOfZone
-  setAIOfGroups(GroupsOfZone, false, true)
+  setAIOfGroups(GroupsOfZone, false)
 
   InfoOfZones = InfoOfZones .. ", with " .. numberOfUnits .. " unit"
 
@@ -92,50 +83,71 @@ SCHEDULER:New( nil, function()
     ActiveZoneTable[k] = false
   end
 
+  local _activeZoneSet = SET_ZONE:New()
+
   -- Check player status
-  _DATABASE:ForEachPlayerUnit(function (unit)
---  trigger.action.outText("Testing " .. unit:GetName() , 10)
+  _DATABASE:ForEachPlayerUnit(function (_player)
+--  trigger.action.outText("Testing " .. _player:GetName() , 10)
     
     AutomaticAIZones:ForEachZone(function (zone)
-      if unit:IsInZone(zone) then
+      if _player:IsInZone(zone) then
         ActiveZoneTable[zone] = true
+        _activeZoneSet:AddZone(zone)
         if ActiveZoneTable[zone] ~= OldActiveZoneTable[zone] then
-          triggerInfoText = "Triggered by " .. unit:GetPlayerName() .. ".\n\n"
+          triggerInfoText = "Triggered by " .. _player:GetPlayerName() .. ".\n\n"
         end
       end
     end)
   end)
 
+
   -- Check status change
   for k,v in pairs(ActiveZoneTable) do
-    if ActiveZoneTable[k] ~= OldActiveZoneTable[k] then
+    if ActiveZoneTable[k] ~= OldActiveZoneTable[k] then -- Something changed - on to off, or off to on
       OldActiveZoneTable[k] = ActiveZoneTable[k]
-      setAIOfGroups(GroupsOfZoneList[k], OldActiveZoneTable[k], true)
 
-      triggerInfoText =  triggerInfoText .. "Set AI of zone [" .. k:GetName() .. "] to ["
-      if OldActiveZoneTable[k] == true then
-        triggerInfoText =  triggerInfoText .. "On]\n"
+      -- turn all on, when zone is turned on
+      if ActiveZoneTable[k] == true then
+        setAIOfGroups(GroupsOfZoneList[k], true)
+        triggerInfoText =  triggerInfoText .. "Set AI of zone [" .. k:GetName() .. "] to [On]\n"
       else
-        triggerInfoText =  triggerInfoText .. "Off]\n"
+        -- only turn off, when objects are not in another active zone
+        --foreach group of zone, check if in another active zone
+
+        triggerInfoText =  triggerInfoText .. "Check how much to turn off in zone [" .. k:GetName() .. "]"
+
+        GroupsOfZoneList[k]:ForEachGroup( function (grp)
+          local _canBeOff = true
+          _activeZoneSet:ForEachZone( function (zone)
+            if grp:IsInZone(zone) then
+              _canBeOff = false
+--              trigger.action.outText(grp:GetName() .. " must be on!\n", 10)
+              end
+          end)
+
+          if _canBeOff then
+            grp:SetAIOnOff(false)
+--            triggerInfoText =  "Set AI of group [" .. grp:GetName() .. "] to [Off]\n"
+--            trigger.action.outText(triggerInfoText, 10)
+          end    
+        end)
       end
-  
+
+      trigger.action.outText(triggerInfoText, 10)
+      
       if OldActiveZoneTable[k] == false then
         k:FlareZone(FLARECOLOR.Red)
       else
         k:FlareZone(FLARECOLOR.Green)
       end
-
-      trigger.action.outText(triggerInfoText, 10)
-
     end
   end
-
 end, {}, 5, ZoneCheckInterval)
 
 --------------------
 -- Ready
 
-trigger.action.outText("Automatic zone AI control has started for zones:\n\n" .. InfoOfZones, 10)
+trigger.action.outText("Ugly AI Zones Version: " .. version .. "\nAutomatic zone AI control has started for zones:\n\n" .. InfoOfZones, 10)
 
 
 
