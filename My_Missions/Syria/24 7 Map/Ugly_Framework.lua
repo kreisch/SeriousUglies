@@ -36,7 +36,8 @@ Ugly.showDebugText = false
 -- How long in seconds is the message displayed
 Ugly.messageShowTime = 10
 
-Ugly.AutoRecceMarker = "M_" -- if "" no marker is created
+Ugly.AutoRecceMarkerPrefix = "M_" -- if "" no marker is created
+-- not in use currently Ugly.KeepDeadRecceMarker = true -- if "" no marker is created 
 
 Ugly.PathToUserData = "C:\\temp" -- A directory "Persistence" is automatically added to the base directory
 Ugly.MissionSuffix = "Syria247"
@@ -175,7 +176,7 @@ end
 -- @param #_removeable BOOL True if the mark cannot be removed; false if the mark can be removed by users
 -- @param #_markertext STRING the text to be displayed.
 -- kreisch
-Ugly.setMarkerForStatic = function (_static, _fixedMarkpoint, _markertext)
+Ugly.setMarkerForStatic = function (_static, _fixedMarkpoint)
   
   local _staticName = _static:GetName()
   local _coalition  = _static:GetCoalition()
@@ -186,13 +187,15 @@ Ugly.setMarkerForStatic = function (_static, _fixedMarkpoint, _markertext)
       _fixedMarkpoint = true
   end
   
-  if (_markertext == nil) then
-    _markertext = ""
-  end
-
-  local  _finalText = "Target: " .. _staticName .. "\n".. _markertext .. "Coordinates:\n" .. _coordinateText
+  local  _finalText = "Target: " .. _staticName .. "\n"
   
-  env.info("UGLY: SetMarkerForStatic " .. _staticName .. " with text " .. _markertext .. " for target of coalition " .. _coalition)
+  if _static:IsAlive() then
+    _finalText = _finalText .. "Coordinates:\n" .. _coordinateText
+  else
+    _finalText = _finalText .. "***NEUTRALIZED***"
+  end
+  
+  env.info("UGLY: SetMarkerForStatic " .. _staticName .. " for target of coalition " .. _coalition)
 
   local _coalitionEnemy = Ugly.getEnemyCoalition(_coalition)
   
@@ -203,16 +206,15 @@ Ugly.setMarkerForStatic = function (_static, _fixedMarkpoint, _markertext)
   end
 end
 
-Ugly.AddMarkerToStatics = function (_Prefix)
+
+
+Ugly.UseAutoRecceMarker = function (_Prefix)
   if _Prefix ~= "" then
     local AllStatics = SET_STATIC:New():FilterPrefixes(_Prefix):FilterStart()
-
-    --    Ugly.AllGroups:ForEachGroup(function (grp)
-    --      grp:Destroy()
-    --    end)
     AllStatics:ForEachStatic (function (theStatic)
-      trigger.action.outText("Ugly.AddMarkerToStatics for: "..theStatic:GetName(), 10)
-      Ugly.setMarkerForStatic(theStatic, true)
+      if theStatic:IsAlive() then --  or Ugly.KeepDeadRecceMarker 
+        Ugly.setMarkerForStatic(theStatic, true)
+      end
     end)
   end
 end
@@ -896,9 +898,10 @@ end
 
 Ugly.StartFrameworkPreMist = function()
   Ugly.messageToAll("Trying to start Ugly Persistence pre MIST phase...")
+  env.info("UGLY: Trying to start Ugly Persistence pre MIST phase")
 
   Ugly.StartDeathRecorder()
-  Ugly.AddMarkerToStatics(Ugly.AutoRecceMarker)
+  Ugly.UseAutoRecceMarker(Ugly.AutoRecceMarkerPrefix)
   Ugly.StartMarkerRecorder()
   Ugly.StartObjectPositionRecorder()
 end
@@ -906,20 +909,29 @@ end
 Ugly.StartFrameworkPostCTLDCSAR = function()
   assert(ctld ~= nil, "\n\n** HEY MISSION-DESIGNER! **\nCTLD has not been loaded!\n\nMake sure it's running\n*before* starting the Ugly_Framework.lua!\n")
   assert(csar ~= nil, "\n\n** HEY MISSION-DESIGNER! **\nCSAR has not been loaded!\n\nMake sure it's running\n*before* starting the Ugly_Framework.lua!\n")
-  
+
   Ugly.messageToAll("Starting post CTLD/CSAR actions...")
+  env.info("UGLY: Starting post CTLD/CSAR actions")
+
   Ugly.StartCTLDCSARRecorder();
 end
 
 -- Simply start complete framework, as we hope the mist warnings are just warnings, no real errors.
 Ugly.StartCompleteFramework = function()
   Ugly.messageToAll("Trying to start Ugly Persistence!")
+  env.info("UGLY: Trying to start Ugly Persistence")
+
   Ugly.StartDeathRecorder()
-  Ugly.AddMarkerToStatics(Ugly.AutoRecceMarker)
+  Ugly.UseAutoRecceMarker(Ugly.AutoRecceMarkerPrefix)
   Ugly.StartMarkerRecorder()
   Ugly.StartObjectPositionRecorder()
   Ugly.StartCTLDCSARRecorder();
 end
+
+
+
+env.info("UGLY: Framework loaded")
+
 
 -----------------------------------------------------------------------------------------
 -- Testing
