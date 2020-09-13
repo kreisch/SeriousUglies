@@ -858,12 +858,12 @@ Ugly.Rebuild_CTLD_CSAR_Data = function ()
         trigger.action.outText("Restoring downed pilot: "..grp:GetName(), 10)
       -------------------------------------------
       -- For Testing - Create FOB from unit
-      elseif Ugly.startsWith(grp:GetName(), "Deployed FOB") then
-        local _standin = grp:GetDCSObject()
-        local _standinUnit = grp:GetDCSUnit(i)
+--      elseif Ugly.startsWith(grp:GetName(), "Deployed FOB") then
+--        local _standin = grp:GetDCSObject()
+--        local _standinUnit = grp:GetDCSUnit(i)
 
-        ctld.createNewFOB(_standinUnit:getCountry(), _standin:getCoalition(), _standinUnit:getPoint(), _standinUnit:getName())
-        grp:Destroy()
+--        ctld.createNewFOB(_standinUnit:getCountry(), _standin:getCoalition(), _standinUnit:getPoint(), _standinUnit:getName())
+--        grp:Destroy()
       end
     end
   end
