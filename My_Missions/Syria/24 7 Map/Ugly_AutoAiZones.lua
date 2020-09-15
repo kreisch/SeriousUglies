@@ -25,7 +25,6 @@ local version = "2.0"
 local GroupsOfZoneList = {}
 local AutomaticAIZones = SET_ZONE:New():FilterPrefixes( AutoZonePrefix ):FilterStart()
 local AllGroupsSet = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
-local AllZoneGroupsSet = SET_GROUP:New()
 local ActiveZoneTable = {}
 local OldActiveZoneTable = {}
 
@@ -50,7 +49,6 @@ AutomaticAIZones:ForEachZone(function (zone)
 
   AllGroupsSet:ForEachGroupCompletelyInZone(zone, function (grp)
     if Ugly.startsWith(grp:GetName(), "S_") == false then
-      AllZoneGroupsSet:AddGroup(grp)
       GroupsOfZone:AddGroup(grp)
       numberOfUnits = numberOfUnits + #grp:GetUnits()
     end
