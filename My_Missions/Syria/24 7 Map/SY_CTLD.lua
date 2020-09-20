@@ -3023,7 +3023,7 @@ end
 
 -- builds a fob!
 
-function ctld.createNewFOB(_country, _coalition, _point, _name)
+function ctld.createNewFOB( _point,_country, _coalition, _name)
     
     ctld.storeToFOBList(_country, _coalition, _point, _name)
 
@@ -3527,19 +3527,19 @@ end
 -- gets the center of a bunch of points!
 -- return proper DCS point with height
 function ctld.getCentroid(_points)
-    local _tx, _ty = 0, 0
+    local _tx, _tz = 0, 0
     for _index, _point in ipairs(_points) do
         _tx = _tx + _point.x
-        _ty = _ty + _point.z
+        _tz = _tz + _point.z
     end
 
     local _npoints = #_points
 
-    local _point = { x = _tx / _npoints, z = _ty / _npoints }
+    local _point = { x = _tx / _npoints, y = _tz / _npoints }
+    local _alt = land.getHeight(_point)
+    local _finalPoint = { x = _point.x, y = _alt, z = _point.y }
 
-    _point.y = land.getHeight({ _point.x, _point.z })
-
-    return _point
+    return _finalPoint
 end
 
 function ctld.getAATemplate(_unitName)
