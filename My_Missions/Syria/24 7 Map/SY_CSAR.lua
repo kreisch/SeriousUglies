@@ -140,7 +140,7 @@ csar.maxLives = 8 -- Maximum pilot lives
 
 csar.countCSARCrash = false -- If you set to true, pilot lives count for CSAR and CSAR aircraft will count.
 
-csar.reenableIfCSARCrashes = true -- If a CSAR heli crashes, the pilots are counted as rescued anyway. Set to false to Stop this
+csar.reenableIfCSARCrashes = false -- If a CSAR heli crashes, the pilots are counted as rescued anyway. Set to false to Stop this
 
 -- - I recommend you leave the option on below IF USING MODE 1 otherwise the
 -- aircraft will be disabled for the duration of the mission
@@ -149,7 +149,7 @@ csar.disableTimeoutTime = 20 -- Time in minutes for TIMEOUT
 
 csar.destructionHeight = 150 -- height in meters an aircraft will be destroyed at if the aircraft is disabled
 
-csar.enableForAI = true -- set to false to disable AI units from being rescued.
+csar.enableForAI = false -- set to false to disable AI units from being rescued.
 
 csar.enableForRED = true -- enable for red side
 
