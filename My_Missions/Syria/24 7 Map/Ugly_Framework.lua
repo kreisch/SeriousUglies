@@ -62,7 +62,10 @@ Ugly.StaticsFileName = "UglyStaticsDeadList" .. Ugly.MissionSuffix .. ".lua"
 
 Ugly.markerDataFile = "UglyMarker" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
 Ugly.unitsPosFile = "UglyUnitPositions" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
+Ugly.unitsJSONPosFile = "UglyUnitPositions" .. Ugly.MissionSuffix .. ".json" --edit this to represent your own (DCS cant write to different disks)
 Ugly.ctldDataFile = "UglyCTLD" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
+
+Ugly.JSON = nil
 
 -----------------------------------------------------------------------------------------
 -- Check if file exists
@@ -599,9 +602,16 @@ Ugly.DoSaveObjectPositions = function(timeloop, time)
     }
   end)
 
-  newMissionStr = Ugly.IntegratedserializeWithCycles("Ugly.SaveUnits",Ugly.SaveUnits) --save the Table as a serialised type with key Ugly.SaveUnits
+  local newMissionStr = Ugly.IntegratedserializeWithCycles("Ugly.SaveUnits", Ugly.SaveUnits) --save the Table as a serialised type with key Ugly.SaveUnits
   Ugly.writemission(newMissionStr, Ugly.unitsPosFile)--write the file from the above to Ugly.SaveUnits.lua
-  Ugly.SaveUnits={}--clear the table for a new write.
+  
+  if Ugly.JSON ~= nil then
+    local jsonMissionStr = Ugly.JSON:encode_pretty(Ugly.SaveUnits) --save the Table as a serialised type with key Ugly.SaveUnits
+    Ugly.writemission(jsonMissionStr, Ugly.unitsJSONPosFile)--write the file from the above to Ugly.SaveUnits.lua
+  end
+
+  Ugly.SaveUnits = {}--clear the table for a new write.
+
   env.info("UGLY: Unit positions saved.")
 
   return time + Ugly.saveInterval
@@ -610,7 +620,8 @@ end
 
 Ugly.StartObjectPositionRecorder = function ()
   Ugly.unitsPosFile = Ugly.PersistencePath.."\\"..Ugly.unitsPosFile
-
+  Ugly.unitsJSONPosFile = Ugly.PersistencePath.."\\"..Ugly.unitsJSONPosFile
+  
   Ugly.RestoreObjectPositions()
 
   Ugly.AllGroups = SET_GROUP:New():FilterCategories("ground"):FilterActive(true):FilterStart()
@@ -884,6 +895,10 @@ Ugly.SaveUglyFOBList = function(timeloop, time)
 end
 
 Ugly.StartCTLDCSARRecorder = function()
+  env.info("UGLY: Ugly.StartCTLDCSARRecorder!")
+  env.info("Ugly.ctldDataFile: " .. Ugly.ctldDataFile)
+  env.info("Ugly.PersistencePath: " .. Ugly.PersistencePath)
+
   Ugly.ctldDataFile = Ugly.PersistencePath.."\\"..Ugly.ctldDataFile
   -- Load and create old FOBs
   Ugly.Rebuild_CTLD_CSAR_Data()
@@ -893,8 +908,26 @@ Ugly.StartCTLDCSARRecorder = function()
 end
 
 -----------------------------------------------------------------------------------------
---//// Start Framework
+--//// Live Web!
 
+Ugly.InitLiveWeb = function()
+  local require = require
+  local loadfile = loadfile
+    
+  local JSON = loadfile("Scripts\\JSON.lua")()
+
+  if JSON ~= nil then
+    env.info("UGLY: JSON available...")
+  else
+    env.info("UGLY: JSON NOT available!")
+  end
+
+  Ugly.JSON = JSON
+end
+
+
+-----------------------------------------------------------------------------------------
+--//// Start Framework
 
 Ugly.StartFrameworkPreMist = function()
   Ugly.messageToAll("Trying to start Ugly Persistence pre MIST phase...")
@@ -913,7 +946,9 @@ Ugly.StartFrameworkPostCTLDCSAR = function()
   Ugly.messageToAll("Starting post CTLD/CSAR actions...")
   env.info("UGLY: Starting post CTLD/CSAR actions")
 
-  Ugly.StartCTLDCSARRecorder();
+  Ugly.StartCTLDCSARRecorder()
+
+--  Ugly.InitLiveWeb()
 end
 
 -- Simply start complete framework, as we hope the mist warnings are just warnings, no real errors.
@@ -925,7 +960,9 @@ Ugly.StartCompleteFramework = function()
   Ugly.UseAutoRecceMarker(Ugly.AutoRecceMarkerPrefix)
   Ugly.StartMarkerRecorder()
   Ugly.StartObjectPositionRecorder()
-  Ugly.StartCTLDCSARRecorder();
+  Ugly.StartCTLDCSARRecorder()
+
+--  Ugly.InitLiveWeb()
 end
 
 
