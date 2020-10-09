@@ -26,11 +26,13 @@ env.info("SPAWNING: Spawning BigWings")
 --Spawn_Focus:SpawnScheduled(180,0)
 
 
-
+local lowFuelThresholdWarning = 0.10 -- Print message to player when tanker is about to RTB
 
 -- Tanker RESPAWN Script
 --RESPAWN SCRIPT; MISSION START -> DO SCRIPT
 local oldGroupRemovalTime = 480 -- Time (seconds) after which old groups are removed
+
+local messagePrinted = {}
 
 barons_respawn_script = {}
 barons_respawn_script.predicate = function(groupName, lowFuelThreshold, lowHealthThreshold)
@@ -46,6 +48,13 @@ barons_respawn_script.predicate = function(groupName, lowFuelThreshold, lowHealt
     if not group or Unit.inAir(group) == false then
         return true
     end
+
+    if group:getFuel() < lowFuelThresholdWarning and messagePrinted[group:getName()] == nil then
+        trigger.action.outTextForCoalition(group:getCoalition(), "Attention - Tanker: " .. group:getName() .. " is about to RTB soon!", 10)
+        messagePrinted[group:getName()] = true
+        return false
+    end
+
     if group:getFuel() < lowFuelThreshold or group:getLife() / group:getLife0() < lowHealthThreshold then
         return true
     end
@@ -101,25 +110,19 @@ barons_respawn_script.checkstate = function(groupName, lowFuelThreshold, lowHeal
 end
 
 
-
-local groupName = 'Arco 1-1' -- Name of the group in the ME
 local lowFuelThreshold = 0.08 -- RTB when less then this amount of fuel
 local lowHealthThreshold = 0.75 -- RTB when less then this amount of health
+
+local groupName = 'Arco 1-1' -- Name of the group in the ME
 barons_respawn_script.checkstate(groupName, lowFuelThreshold, lowHealthThreshold, true)
 
 local groupName = 'Arco 2-1' -- Name of the group in the ME
-local lowFuelThreshold = 0.08 -- RTB when less then this amount of fuel
-local lowHealthThreshold = 0.75 -- RTB when less then this amount of health
 barons_respawn_script.checkstate(groupName, lowFuelThreshold, lowHealthThreshold, true)
 
 local groupName = 'Texaco 1-1' -- Name of the group in the ME
-local lowFuelThreshold = 0.08 -- RTB when less then this amount of fuel
-local lowHealthThreshold = 0.75 -- RTB when less then this amount of health
 barons_respawn_script.checkstate(groupName, lowFuelThreshold, lowHealthThreshold, true)
 
 local groupName = 'Focus' -- Name of the group in the ME
-local lowFuelThreshold = 0.08 -- RTB when less then this amount of fuel
-local lowHealthThreshold = 0.75 -- RTB when less then this amount of health
 barons_respawn_script.checkstate(groupName, lowFuelThreshold, lowHealthThreshold, true)
 
 
