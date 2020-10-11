@@ -51,7 +51,10 @@ Ugly.MissionSuffix = "Syria247"
 -- Framework data container
 
 Ugly.currentPlayers = {}
-Ugly.currentMarker = {}
+Ugly.userMarker = {}
+
+Ugly.autoMarkerText = "Strategic Target"
+Ugly.autoMarker = {}
 
 Ugly.spawnmsg = {}
 Ugly.spawnmsg.message = ""
@@ -181,7 +184,7 @@ end
 -- kreisch
 Ugly.setMarkerForStatic = function (_static, _fixedMarkpoint)
   
-  local _staticName = _static:GetName()
+  local _staticName = _static:GetName():gsub("%\n", "<br>"):gsub("M_", "")
   local _coalition  = _static:GetCoalition()
   local _coordinate = _static:GetCoordinate()
   local _coordinateText = _coordinate:ToStringLLDDM()
@@ -190,7 +193,7 @@ Ugly.setMarkerForStatic = function (_static, _fixedMarkpoint)
       _fixedMarkpoint = true
   end
   
-  local  _finalText = "Target: " .. _staticName .. "\n"
+  local  _finalText = Ugly.autoMarkerText .. ":\n" .. _staticName .. "\n"
   
   if _static:IsAlive() then
     _finalText = _finalText .. "Coordinates:\n" .. _coordinateText
@@ -348,20 +351,30 @@ end
 
 Ugly.storeMarker = function (_markerEvent)
 
+  local eventPlayerName = "Unknown"
+  if _markerEvent.initiator and _markerEvent.initiator:isExist() then
+    eventPlayerName = _markerEvent.initiator:getPlayerName()
+  end
+
   local newMarker = {
     idx = _markerEvent.idx,
     time = _markerEvent.time,
     initiator = _markerEvent.initiator,
+    playerName = eventPlayerName,
     coalition = _markerEvent.coalition,
     text = _markerEvent.text,
     pos = {x = _markerEvent.pos.x, y = _markerEvent.pos.y, z = _markerEvent.pos.z}
    }
 
-   Ugly.currentMarker[_markerEvent.idx] = newMarker
+  if Ugly.startsWith(_markerEvent.text, Ugly.autoMarkerText) then
+    Ugly.autoMarker[_markerEvent.idx] = newMarker
+  else
+    Ugly.userMarker[_markerEvent.idx] = newMarker
+  end
 end
 
 Ugly.removeMarker = function (_markerEvent)
-  Ugly.currentMarker[_markerEvent.idx] = nil
+  Ugly.userMarker[_markerEvent.idx] = nil
 end
 
 Ugly.RestoreMarkerData = function ()
@@ -371,11 +384,11 @@ Ugly.RestoreMarkerData = function ()
     dofile(Ugly.markerDataFile)
 
     --  RUN THROUGH THE KEYS IN THE TABLE 
-    for k,v in pairs(Ugly.currentMarker) do
-      local _markText = Ugly.currentMarker[k]["text"]
-      local _coalition = Ugly.currentMarker[k]["coalition"]
-      local _name = Ugly.currentMarker[k]["name"]
-      local _point = { x = Ugly.currentMarker[k]["pos"]["x"], y = 0, z = Ugly.currentMarker[k]["pos"]["z"]}
+    for k,v in pairs(Ugly.userMarker) do
+      local _markText = Ugly.userMarker[k]["text"]
+      local _coalition = Ugly.userMarker[k]["coalition"]
+      local _name = Ugly.userMarker[k]["name"]
+      local _point = { x = Ugly.userMarker[k]["pos"]["x"], y = 0, z = Ugly.userMarker[k]["pos"]["z"]}
 --      trigger.action.markToCoalition( UTILS.GetMarkID(), _markText, _point, _coalition, false, "" )
       trigger.action.markToCoalition( k, _markText, _point, _coalition, false, "" )
     end
@@ -385,10 +398,10 @@ end
 --////SAVE UNITS FUNCTION
 Ugly.SaveUglyMarkerList = function(timeloop, time)
 --  env.info("UGLY: Marker will be saved...")
-  local markerMissionStr   = Ugly.IntegratedserializeWithCycles("Ugly.currentMarker", Ugly.currentMarker) --save the Table as a serialised type with key FOBs
+  local markerMissionStr   = Ugly.IntegratedserializeWithCycles("Ugly.userMarker", Ugly.userMarker) --save the Table as a serialised type with key FOBs
 
   Ugly.writemission(markerMissionStr, Ugly.markerDataFile)--write the file from the above to Ugly.markerDataFile
---  env.info("UGLY: Marker have been saved! "..newMissionStr)
+--  env.info("UGLY: Marker have been saved! "..markerMissionStr)
 --  env.info("UGLY: Marker have been saved!")
   return time + Ugly.saveInterval
 end
@@ -934,8 +947,8 @@ Ugly.StartFrameworkPreMist = function()
   env.info("UGLY: Trying to start Ugly Persistence pre MIST phase")
 
   Ugly.StartDeathRecorder()
-  Ugly.UseAutoRecceMarker(Ugly.AutoRecceMarkerPrefix)
   Ugly.StartMarkerRecorder()
+  Ugly.UseAutoRecceMarker(Ugly.AutoRecceMarkerPrefix)
   Ugly.StartObjectPositionRecorder()
 end
 
@@ -957,8 +970,8 @@ Ugly.StartCompleteFramework = function()
   env.info("UGLY: Trying to start Ugly Persistence")
 
   Ugly.StartDeathRecorder()
-  Ugly.UseAutoRecceMarker(Ugly.AutoRecceMarkerPrefix)
   Ugly.StartMarkerRecorder()
+  Ugly.UseAutoRecceMarker(Ugly.AutoRecceMarkerPrefix)
   Ugly.StartObjectPositionRecorder()
   Ugly.StartCTLDCSARRecorder()
 
