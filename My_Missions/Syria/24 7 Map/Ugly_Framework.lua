@@ -179,8 +179,7 @@ end
 
 --- Creates a MapMarker on the location of a given static, visible for the enemy team
 -- @param #_staticName STRING The name of the static
--- @param #_removeable BOOL True if the mark cannot be removed; false if the mark can be removed by users
--- @param #_markertext STRING the text to be displayed.
+-- @param #_fixedMarkpoint BOOL True if the mark cannot be removed; false if the mark can be removed by users
 -- kreisch
 Ugly.setMarkerForStatic = function (_static, _fixedMarkpoint)
   

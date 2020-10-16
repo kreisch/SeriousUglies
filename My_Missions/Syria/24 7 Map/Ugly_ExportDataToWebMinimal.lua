@@ -1,10 +1,11 @@
-
-
 local ExportPosIntervall = 5
 local exportRedUnits = true
-local unitsPosFile = "C:\\Users\\Phil\\Google Drive (uglyskyfire@gmail.com)\\Missions\\UglyWeb\\SyriaLive247\\mapdata\\Syria247.json" --edit this to represent your own (DCS cant write to different disks)
-local markerPosFile = "C:\\Users\\Phil\\Google Drive (uglyskyfire@gmail.com)\\Missions\\UglyWeb\\SyriaLive247\\mapdata\\Syria247Marker.json" --edit this to represent your own (DCS cant write to different disks)
 
+--local baseDirectory = "C:\\Users\\Phil\\Google Drive (uglyskyfire@gmail.com)\\Missions\\UglyWeb\\SyriaLive247\\"
+local baseDirectory = "C:\\DCS-WebMap\\Serious Uglies\\02 Maps Missions Server\\98 Server Admin\\Syria-Livemap\\"
+
+local unitsPosFile = baseDirectory .. "mapdata\\Syria247.json" --edit this to represent your own (DCS cant write to different disks)
+local markerPosFile = baseDirectory .. "mapdata\\Syria247Marker.json" --edit this to represent your own (DCS cant write to different disks)
 
 local require = require
 local loadfile = loadfile
@@ -70,58 +71,56 @@ function getCoordFromGroup(_grp)
 end
 
 function writeMarkerToJson()
-	if Ugly.JSON then
-		env.info("UGLY: Store Marker JSON!")
+	env.info("UGLY: Store Marker JSON!")
 
-    local jsonMarkerStr = "{\n\t\"features\": [\n"
-    local markerCount = 0
+	local jsonMarkerStr = "{\n\t\"features\": [\n"
+	local markerCount = 0
 
-    for k,v in pairs(Ugly.userMarker) do
-			markerCount = markerCount + 1
-			local _userMarker = Ugly.userMarker[k]
-			
-			local newCoord = COORDINATE:New(Ugly.userMarker[k].pos.x, Ugly.userMarker[k].pos.y, Ugly.userMarker[k].pos.z)
-			local lat, lon = coord.LOtoLL(newCoord)
+	for k,v in pairs(Ugly.userMarker) do
+		markerCount = markerCount + 1
+		local _userMarker = Ugly.userMarker[k]
+		
+		local newCoord = COORDINATE:New(Ugly.userMarker[k].pos.x, Ugly.userMarker[k].pos.y, Ugly.userMarker[k].pos.z)
+		local lat, lon = coord.LOtoLL(newCoord)
 
-			local initiatorName = "Unknown"
-		  local debugStr = Ugly.IntegratedserializeWithCycles("Ugly.userMarker[k].initiator", Ugly.userMarker[k].initiator)
-			env.info("UGLY: Ugly.userMarker[k].initiator = " .. debugStr)
+		local initiatorName = "Unknown"
+		local debugStr = Ugly.IntegratedserializeWithCycles("Ugly.userMarker[k].initiator", Ugly.userMarker[k].initiator)
+		env.info("UGLY: Ugly.userMarker[k].initiator = " .. debugStr)
 
 
-			if Ugly.userMarker[k].playerName ~= nil then
-				initiatorName = Ugly.userMarker[k].playerName
-			end
+		if Ugly.userMarker[k].playerName ~= nil then
+			initiatorName = Ugly.userMarker[k].playerName
+		end
 
-			env.info("UGLY: initiatorName = " .. initiatorName)
+		env.info("UGLY: initiatorName = " .. initiatorName)
 
-			jsonMarkerStr = jsonMarkerStr .. writeDataset("Reccon by: " .. initiatorName .. "<br>" .. Ugly.userMarker[k].text, "markerreccon", lon, lat)
-			jsonMarkerStr = jsonMarkerStr .. ",\n"
-    end
+		jsonMarkerStr = jsonMarkerStr .. writeDataset("Player Recon<br>" .. Ugly.userMarker[k].text, "markerreccon", lon, lat)
+		jsonMarkerStr = jsonMarkerStr .. ",\n"
+	end
 
-		for k,v in pairs(Ugly.autoMarker) do
-			markerCount = markerCount + 1
-			local _autoMarker = Ugly.autoMarker[k]
-			
-			local newCoord = COORDINATE:New(Ugly.autoMarker[k].pos.x, Ugly.autoMarker[k].pos.y, Ugly.autoMarker[k].pos.z)
-			local lat, lon = coord.LOtoLL(newCoord)
-			jsonMarkerStr = jsonMarkerStr .. writeDataset(Ugly.autoMarker[k].text, "markertactical", lon, lat)
+	for k,v in pairs(Ugly.autoMarker) do
+		markerCount = markerCount + 1
+		local _autoMarker = Ugly.autoMarker[k]
+		
+		local newCoord = COORDINATE:New(Ugly.autoMarker[k].pos.x, Ugly.autoMarker[k].pos.y, Ugly.autoMarker[k].pos.z)
+		local lat, lon = coord.LOtoLL(newCoord)
+		jsonMarkerStr = jsonMarkerStr .. writeDataset(Ugly.autoMarker[k].text, "markertactical", lon, lat)
 
-			jsonMarkerStr = jsonMarkerStr .. ",\n"
-    end
+		jsonMarkerStr = jsonMarkerStr .. ",\n"
+	end
 
-   	-- remove last comma
-    if markerCount > 0 then
-      jsonMarkerStr = jsonMarkerStr:sub(1, -3)
-    end
+	-- remove last comma
+	if markerCount > 0 then
+		jsonMarkerStr = jsonMarkerStr:sub(1, -3)
+	end
 
-    jsonMarkerStr = jsonMarkerStr.."\n"
+	jsonMarkerStr = jsonMarkerStr.."\n"
 
-    -- Close the file
-    jsonMarkerStr = jsonMarkerStr.."\t]\n}"
+	-- Close the file
+	jsonMarkerStr = jsonMarkerStr.."\t]\n}"
 
-    Ugly.writemission(jsonMarkerStr, markerPosFile)   --write the file from the above to markerPosFile
-		env.info("jsonMarkerStr!\n" .. jsonMarkerStr)
-  end
+	Ugly.writemission(jsonMarkerStr, markerPosFile)   --write the file from the above to markerPosFile
+--	env.info("jsonMarkerStr!\n" .. jsonMarkerStr)
 end
 
 function writeObjectsToJson()
@@ -153,13 +152,40 @@ function writeObjectsToJson()
 		end
 
 		local checkMore = true
-		for i = 1, #grp:GetUnits() do
---			env.info("grp:GetUnit(i):GetTypeName() " .. grp:GetUnit(i):GetTypeName() )
-			if grp:GetUnit(i):GetTypeName() == "Soldier M4" and checkMore == true then
+		if startsWith(grp:GetName(), "Downed Pilot") then
 				local lat, lon = coord.LOtoLL(getCoordFromGroup(grp))
-				fileString = fileString..writeDataset("Unit of " .. #grp:GetUnits() .. " Soldier M4" , iconName, lon, lat)
+
+				local pilotName = "John Doe"
+				local i, j = string.find(grp:GetName(), " -- ")
+
+				if j ~= nil then
+					pilotName = string.sub(grp:GetName(), j)
+				end
+
+				fileString = fileString..writeDataset("Mayday, Mayday, Mayday!<br>" .. pilotName .. " has crashed in this area<br>and needs immediate rescue!" , iconName, lon, lat)
 				fileString = fileString..",\n"
 				checkMore = false
+		end
+
+		if checkMore ~= false then
+			for i = 1, #grp:GetUnits() do
+	 			env.info("grp:GetUnit(i):GetTypeName() " .. grp:GetUnit(i):GetTypeName() )
+				if checkMore ~= false then
+					local isInfantry = false;
+					if ctld.isInfantry(grp:GetUnit(i):GetDCSObject()) then
+						isInfantry = true;
+						env.info(grp:GetUnit(i):GetTypeName() .. " is of type infantry." )
+					else
+			 			env.info(grp:GetUnit(i):GetTypeName() .. " is NOT of type infantry." )
+					end
+
+					if isInfantry == true then
+						local lat, lon = coord.LOtoLL(getCoordFromGroup(grp))
+						fileString = fileString..writeDataset("Group of " .. #grp:GetUnits() .. " Infantry" , iconName, lon, lat)
+						fileString = fileString..",\n"
+						checkMore = false
+					end
+				end
 			end
 		end
 
@@ -219,25 +245,50 @@ function writeObjectsToJson()
 					iconName = iconName.."ground"
 				end
 
-				-- Collect everything. No single units
-				local grpDesc = ""
-				if #grp:GetUnits() > 1 then
-					grpDesc = "Group of Units:<br>"
-				else
-					grpDesc = "Single Unit:<br>"
-				end
+				local checkMore = true
 
 				for i = 1, #grp:GetUnits() do
-					grpDesc = grpDesc .. grp:GetUnit(i):GetDesc().displayName
-					if i < #grp:GetUnits() then
-						grpDesc = grpDesc .. ", "
+					env.info("grp:GetUnit(i):GetTypeName() " .. grp:GetUnit(i):GetTypeName() )
+					if checkMore ~= false then
+						local isInfantry = false;
+						if ctld.isInfantry(grp:GetUnit(i):GetDCSObject()) then
+							isInfantry = true;
+							env.info(grp:GetUnit(i):GetTypeName() .. " is of type infantry." )
+						else
+							env.info(grp:GetUnit(i):GetTypeName() .. " is NOT of type infantry." )
+						end
+
+						if isInfantry == true then
+							local lat, lon = coord.LOtoLL(getCoordFromGroup(grp))
+							fileString = fileString..writeDataset("Group of " .. #grp:GetUnits() .. " Infantry" , iconName, lon, lat)
+							fileString = fileString..",\n"
+							checkMore = false
+						end
 					end
 				end
 
-				-- Maybe calculate the center point from all units.
-				local lat, lon = coord.LOtoLL(getCoordFromGroup(grp))
-				fileString = fileString..writeDataset(grpDesc, iconName, lon, lat)
-				fileString = fileString..",\n"
+				if checkMore ~= false then
+					-- Collect rest. No single units
+					local grpDesc = ""
+					if #grp:GetUnits() > 1 then
+						grpDesc = "Group of Units:<br>"
+					else
+						grpDesc = "Single Unit:<br>"
+					end
+
+					for i = 1, #grp:GetUnits() do
+						grpDesc = grpDesc .. grp:GetUnit(i):GetDesc().displayName
+						if i < #grp:GetUnits() then
+							grpDesc = grpDesc .. ", "
+						end
+					end
+
+					-- Maybe calculate the center point from all units.
+					local lat, lon = coord.LOtoLL(getCoordFromGroup(grp))
+					fileString = fileString..writeDataset(grpDesc, iconName, lon, lat)
+					fileString = fileString..",\n"
+				end
+
 			end
 		end
 		)

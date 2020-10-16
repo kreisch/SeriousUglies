@@ -864,7 +864,7 @@ function csar.spawnGroup(_deadUnit)
 
     local _id = mist.getNextGroupId()
 
-    local _groupName = "Downed Pilot #" .. _id .. " - " .. _groupPlayerName
+    local _groupName = "Downed Pilot #" .. _id .. " -- " .. _groupPlayerName
 
     local _side = _deadUnit:getCoalition()
 

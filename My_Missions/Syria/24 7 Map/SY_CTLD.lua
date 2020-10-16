@@ -5581,7 +5581,7 @@ function ctld.isInfantry(_unit)
     --type coerce tostring
     _typeName = string.lower(_typeName .. "")
 
-    local _soldierType = { "infantry", "paratrooper", "stinger", "manpad", "mortar" }
+    local _soldierType = { "soldier", "infantry", "paratrooper", "stinger", "manpad", "mortar" }
 
     for _key, _value in pairs(_soldierType) do
         if string.match(_typeName, _value) then
