@@ -42,6 +42,11 @@ Ugly.AutoRecceMarkerPrefix = "M_" -- if "" no marker is created
 Ugly.PathToUserData = "C:\\temp" -- A directory "Persistence" is automatically added to the base directory
 Ugly.MissionSuffix = "Syria247"
 
+Ugly.ExportMapIntervall = 5
+Ugly.exportRedUnits = true
+
+Ugly.LiveMapBaseDirectory = "C:\\DCS-WebMap\\Serious Uglies\\02 Maps Missions Server\\98 Server Admin\\Syria-Livemap\\"
+
 -- Framework defines END
 -----------------------------------------------------------------------------------------
 
@@ -50,25 +55,31 @@ Ugly.MissionSuffix = "Syria247"
 -----------------------------------------------------------------------------------------
 -- Framework data container
 
-Ugly.currentPlayers = {}
-Ugly.userMarker = {}
-
-Ugly.autoMarkerText = "Strategic Target"
-Ugly.autoMarker = {}
-
 Ugly.spawnmsg = {}
 Ugly.spawnmsg.message = ""
 Ugly.spawnmsg.eventHandler = {}
 
-Ugly.UnitsFileName = "UglyUnitDeadList" .. Ugly.MissionSuffix .. ".lua"
-Ugly.StaticsFileName = "UglyStaticsDeadList" .. Ugly.MissionSuffix .. ".lua"
 
-Ugly.markerDataFile = "UglyMarker" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
-Ugly.unitsPosFile = "UglyUnitPositions" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
-Ugly.unitsJSONPosFile = "UglyUnitPositions" .. Ugly.MissionSuffix .. ".json" --edit this to represent your own (DCS cant write to different disks)
-Ugly.ctldDataFile = "UglyCTLD" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
+Ugly.InitializeFrameworkParameter = function ()
+  Ugly.currentPlayers = {}
+  Ugly.userMarker = {}
+  
+  Ugly.autoMarkerText = "Strategic Target"
+  Ugly.autoMarker = {}
+  
+  Ugly.StaticsFileName = "UglyStaticsDeadList" .. Ugly.MissionSuffix .. ".lua"
+  Ugly.UnitsFileName = "UglyUnitDeadList" .. Ugly.MissionSuffix .. ".lua"
 
-Ugly.JSON = nil
+  Ugly.unitsPosFile = "UglyUnitPositions" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
+  Ugly.markerDataFile = "UglyMarker" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
+  Ugly.ctldDataFile = "UglyCTLD" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
+--Ugly.unitsJSONPosFile = "UglyUnitPositions" .. Ugly.MissionSuffix .. ".json" --edit this to represent your own (DCS cant write to different disks)
+
+  Ugly.liveMapMarkerPosFile = Ugly.LiveMapBaseDirectory .. "mapdata\\Syria247Marker.json" --edit this to represent your own (DCS cant write to different disks)
+  Ugly.liveMapUnitsPosFile = Ugly.LiveMapBaseDirectory .. "mapdata\\Syria247.json" --edit this to represent your own (DCS cant write to different disks)
+  Ugly.JSON = nil
+end
+
 
 -----------------------------------------------------------------------------------------
 -- Check if file exists
@@ -617,10 +628,12 @@ Ugly.DoSaveObjectPositions = function(timeloop, time)
   local newMissionStr = Ugly.IntegratedserializeWithCycles("Ugly.SaveUnits", Ugly.SaveUnits) --save the Table as a serialised type with key Ugly.SaveUnits
   Ugly.writemission(newMissionStr, Ugly.unitsPosFile)--write the file from the above to Ugly.SaveUnits.lua
   
+--[[
   if Ugly.JSON ~= nil then
     local jsonMissionStr = Ugly.JSON:encode_pretty(Ugly.SaveUnits) --save the Table as a serialised type with key Ugly.SaveUnits
     Ugly.writemission(jsonMissionStr, Ugly.unitsJSONPosFile)--write the file from the above to Ugly.SaveUnits.lua
   end
+]]--
 
   Ugly.SaveUnits = {}--clear the table for a new write.
 
@@ -632,7 +645,7 @@ end
 
 Ugly.StartObjectPositionRecorder = function ()
   Ugly.unitsPosFile = Ugly.PersistencePath.."\\"..Ugly.unitsPosFile
-  Ugly.unitsJSONPosFile = Ugly.PersistencePath.."\\"..Ugly.unitsJSONPosFile
+--  Ugly.unitsJSONPosFile = Ugly.PersistencePath.."\\"..Ugly.unitsJSONPosFile
   
   Ugly.RestoreObjectPositions()
 
@@ -922,7 +935,323 @@ end
 -----------------------------------------------------------------------------------------
 --//// Live Web!
 
+Ugly.writeDataset = function (_desc, _icon, _lon, _lat)
+
+	local descString = _desc:gsub("%\n", "<br>")
+
+	local newMarkerStr = "\t\t{\n"
+	newMarkerStr = newMarkerStr.."\t\t\"d\": \""..descString.."\",\n"
+	newMarkerStr = newMarkerStr.."\t\t\"i\": \"".._icon.."\",\n"
+	newMarkerStr = newMarkerStr.."\t\t\"x\": ".._lon..",\n"
+	newMarkerStr = newMarkerStr.."\t\t\"y\": ".._lat.."\n"
+	newMarkerStr = newMarkerStr.."\t\t}" 
+	return newMarkerStr
+end
+
+Ugly.getCoordFromGroup = function (_grp)
+	local _x = 0 
+	local _y = 0 
+	local _z = 0 
+
+	for i = 1, #_grp:GetUnits() do
+		_x = _x + _grp:GetUnit(i):GetCoordinate().x
+		_y = _y + _grp:GetUnit(i):GetCoordinate().y
+		_z = _z + _grp:GetUnit(i):GetCoordinate().z
+	end
+
+	if #_grp:GetUnits() ~= 0 then
+		_x = _x / #_grp:GetUnits()
+		_y = _y / #_grp:GetUnits()
+		_z = _z / #_grp:GetUnits()
+	end
+
+	local newCoord = COORDINATE:New(_x, _y, _z)
+	return newCoord
+end
+
+Ugly.writeMarkerToJson = function()
+--	env.info("UGLY: Store Marker JSON!")
+
+	local jsonMarkerStr = "{\n\t\"features\": [\n"
+	local markerCount = 0
+
+	for k,v in pairs(Ugly.userMarker) do
+		markerCount = markerCount + 1
+		local _userMarker = Ugly.userMarker[k]
+		
+		local newCoord = COORDINATE:New(Ugly.userMarker[k].pos.x, Ugly.userMarker[k].pos.y, Ugly.userMarker[k].pos.z)
+		local lat, lon = coord.LOtoLL(newCoord)
+
+		local initiatorName = "Unknown"
+		local debugStr = Ugly.IntegratedserializeWithCycles("Ugly.userMarker[k].initiator", Ugly.userMarker[k].initiator)
+--		env.info("UGLY: Ugly.userMarker[k].initiator = " .. debugStr)
+
+
+		if Ugly.userMarker[k].playerName ~= nil then
+			initiatorName = Ugly.userMarker[k].playerName
+		end
+
+--		env.info("UGLY: initiatorName = " .. initiatorName)
+
+		jsonMarkerStr = jsonMarkerStr .. Ugly.writeDataset("Player Recon<br>" .. Ugly.userMarker[k].text, "markerreccon", lon, lat)
+		jsonMarkerStr = jsonMarkerStr .. ",\n"
+	end
+
+	for k,v in pairs(Ugly.autoMarker) do
+		markerCount = markerCount + 1
+		local _autoMarker = Ugly.autoMarker[k]
+		
+		local newCoord = COORDINATE:New(Ugly.autoMarker[k].pos.x, Ugly.autoMarker[k].pos.y, Ugly.autoMarker[k].pos.z)
+		local lat, lon = coord.LOtoLL(newCoord)
+		jsonMarkerStr = jsonMarkerStr .. Ugly.writeDataset(Ugly.autoMarker[k].text, "markertactical", lon, lat)
+
+		jsonMarkerStr = jsonMarkerStr .. ",\n"
+	end
+
+	-- remove last comma
+	if markerCount > 0 then
+		jsonMarkerStr = jsonMarkerStr:sub(1, -3)
+	end
+
+	jsonMarkerStr = jsonMarkerStr.."\n"
+
+	-- Close the file
+	jsonMarkerStr = jsonMarkerStr.."\t]\n}"
+
+	Ugly.writemission(jsonMarkerStr, Ugly.liveMapMarkerPosFile)   --write the file from the above to Ugly.liveMapMarkerPosFile
+--	env.info("jsonMarkerStr!\n" .. jsonMarkerStr)
+end
+
+Ugly.writeObjectsToJson = function()
+	--SCRIPT START
+--	env.info("Store current groups to JSON!")
+
+	-- HEADER
+	local fileString = "{\n\t\"features\": [\n"
+
+	------------------------------------------------------------
+	-- first write blue guys. all!
+	local ExportGroups = SET_GROUP:New():FilterCoalitions( "blue" ):FilterActive(true):FilterStart()
+
+	ExportGroups:ForEachGroupAlive(function (grp)
+		local iconName = "blue"
+
+		if Ugly.startsWith(grp:GetName(), "Downed Pilot") then
+		  iconName = "markerdownedpilot"
+		elseif grp:GetCategory() == 0 then
+		  iconName = iconName.."airfixed"
+		elseif grp:GetCategory() == 1 then
+		  iconName = iconName.."airrotary"
+		elseif grp:GetCategory() == 2 then
+		  iconName = iconName.."ground"
+		elseif grp:GetCategory() == 3 then
+		  iconName = iconName.."water"
+		else
+		  iconName = iconName.."ground"
+		end
+
+		local checkMore = true
+		if Ugly.startsWith(grp:GetName(), "Downed Pilot") then
+				local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
+
+				local pilotName = "John Doe"
+				local i, j = string.find(grp:GetName(), " -- ")
+
+				if j ~= nil then
+					pilotName = string.sub(grp:GetName(), j)
+				end
+
+				fileString = fileString..Ugly.writeDataset("Mayday, Mayday, Mayday!<br>" .. pilotName .. " has crashed in this area and needs immediate rescue!" , iconName, lon, lat)
+				fileString = fileString..",\n"
+				checkMore = false
+		end
+
+		if checkMore ~= false then
+			for i = 1, #grp:GetUnits() do
+--	 			env.info("grp:GetUnit(i):GetTypeName() " .. grp:GetUnit(i):GetTypeName() )
+				if checkMore ~= false then
+					local isInfantry = false;
+					if ctld.isInfantry(grp:GetUnit(i):GetDCSObject()) then
+						isInfantry = true;
+--						env.info(grp:GetUnit(i):GetTypeName() .. " is of type infantry." )
+					else
+--			 			env.info(grp:GetUnit(i):GetTypeName() .. " is NOT of type infantry." )
+					end
+
+					if isInfantry == true then
+						local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
+						fileString = fileString..Ugly.writeDataset("Group of " .. #grp:GetUnits() .. " Infantry" , iconName, lon, lat)
+						fileString = fileString..",\n"
+						checkMore = false
+					end
+				end
+			end
+		end
+
+		if checkMore ~= false then
+			-- If group starts with "S_" treat as one entity
+			if Ugly.startsWith(grp:GetName(), "S_") then
+				-- collect as one entity
+				local grpDesc = ""
+				if #grp:GetUnits() > 1 then
+					grpDesc = "Group of Units:<br>"
+				else
+					grpDesc = "Single Unit:<br>"
+				end
+
+				for i = 1, #grp:GetUnits() do
+					grpDesc = grpDesc .. grp:GetUnit(i):GetDesc().displayName
+					if i < #grp:GetUnits() then
+						grpDesc = grpDesc .. ", "
+					end
+				end
+
+				-- Maybe calculate the center point from all units.
+				local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
+				fileString = fileString..Ugly.writeDataset(grpDesc, iconName, lon, lat)
+				fileString = fileString..",\n"
+			else
+				for i = 1, #grp:GetUnits() do
+					local lat, lon = coord.LOtoLL(grp:GetUnit(i):GetCoordinate())
+					fileString = fileString..Ugly.writeDataset("Single Unit:<br>" .. grp:GetUnit(i):GetDesc().displayName, iconName, lon, lat)
+					fileString = fileString..",\n"
+				end
+			end
+		end
+	end
+	)
+
+	---------------------------------
+	-- Now the red ones
+
+	if Ugly.exportRedUnits then
+		ExportGroups = SET_GROUP:New():FilterCoalitions( "red" ):FilterActive(true):FilterStart()
+
+		ExportGroups:ForEachGroupAlive(function (grp)
+			if Ugly.startsWith(grp:GetName(), "S_") ~= true then
+
+				local iconName = "red"
+
+				if grp:GetCategory() == 0 then
+					iconName = iconName.."airfixed"
+				elseif grp:GetCategory() == 1 then
+					iconName = iconName.."airrotary"
+				elseif grp:GetCategory() == 2 then
+					iconName = iconName.."ground"
+				elseif grp:GetCategory() == 3 then
+					iconName = iconName.."water"
+				else
+					iconName = iconName.."ground"
+				end
+
+				local checkMore = true
+
+				for i = 1, #grp:GetUnits() do
+--					env.info("grp:GetUnit(i):GetTypeName() " .. grp:GetUnit(i):GetTypeName() )
+					if checkMore ~= false then
+						local isInfantry = false;
+						if ctld.isInfantry(grp:GetUnit(i):GetDCSObject()) then
+							isInfantry = true;
+--							env.info(grp:GetUnit(i):GetTypeName() .. " is of type infantry." )
+						else
+--							env.info(grp:GetUnit(i):GetTypeName() .. " is NOT of type infantry." )
+						end
+
+						if isInfantry == true then
+							local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
+							fileString = fileString..Ugly.writeDataset("Group of " .. #grp:GetUnits() .. " Infantry" , iconName, lon, lat)
+							fileString = fileString..",\n"
+							checkMore = false
+						end
+					end
+				end
+
+				if checkMore ~= false then
+					-- Collect rest. No single units
+					local grpDesc = ""
+					if #grp:GetUnits() > 1 then
+						grpDesc = "Group of Units:<br>"
+					else
+						grpDesc = "Single Unit:<br>"
+					end
+
+					for i = 1, #grp:GetUnits() do
+						grpDesc = grpDesc .. grp:GetUnit(i):GetDesc().displayName
+						if i < #grp:GetUnits() then
+							grpDesc = grpDesc .. ", "
+						end
+					end
+
+					-- Maybe calculate the center point from all units.
+					local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
+					fileString = fileString..Ugly.writeDataset(grpDesc, iconName, lon, lat)
+					fileString = fileString..",\n"
+				end
+
+			end
+		end
+		)
+	end
+
+	---------------------------------
+	-- Now the neutral ones
+	ExportGroups = SET_GROUP:New():FilterCoalitions( "neutral" ):FilterActive(true):FilterStart()
+
+	ExportGroups:ForEachGroupAlive(function (grp)
+		if Ugly.startsWith(grp:GetName(), "S_") ~= true then
+
+			local iconName = "neutral"
+
+			if grp:GetCategory() == 0 then
+				iconName = iconName.."airfixed"
+			elseif grp:GetCategory() == 1 then
+				iconName = iconName.."airrotary"
+			elseif grp:GetCategory() == 2 then
+				iconName = iconName.."ground"
+			elseif grp:GetCategory() == 3 then
+				iconName = iconName.."water"
+			else
+				iconName = iconName.."ground"
+			end
+
+			-- Collect everything. No single units
+			local grpDesc = ""
+			if #grp:GetUnits() > 1 then
+				grpDesc = "Group of Units:<br>"
+			else
+				grpDesc = "Single Unit:<br>"
+			end
+
+			for i = 1, #grp:GetUnits() do
+				grpDesc = grpDesc .. grp:GetUnit(i):GetDesc().displayName
+				if i < #grp:GetUnits() then
+					grpDesc = grpDesc .. ", "
+				end
+			end
+
+			-- Maybe calculate the center point from all units.
+			local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
+			fileString = fileString..Ugly.writeDataset(grpDesc, iconName, lon, lat)
+			fileString = fileString..",\n"
+		end
+	end
+	)
+
+
+	-- remove last comma
+	fileString = fileString:sub(1, -3)
+	fileString = fileString.."\n"
+
+	-- Close the file
+	fileString = fileString.."\t]\n}"
+
+  Ugly.writemission(fileString, Ugly.liveMapUnitsPosFile)
+
+end -- writeObjectsToJson
+
+
 Ugly.InitLiveWeb = function()
+--[[
   local require = require
   local loadfile = loadfile
     
@@ -935,6 +1264,19 @@ Ugly.InitLiveWeb = function()
   end
 
   Ugly.JSON = JSON
+
+]]--
+
+
+
+
+  --THE SAVING SCHEDULE
+  SCHEDULER:New( nil, function()
+    Ugly.writeObjectsToJson()
+    Ugly.writeMarkerToJson();
+    
+  end, {}, 2, Ugly.ExportMapIntervall)
+
 end
 
 
@@ -945,6 +1287,8 @@ Ugly.StartFrameworkPreMist = function()
   Ugly.messageToAll("Trying to start Ugly Persistence pre MIST phase...")
   env.info("UGLY: Trying to start Ugly Persistence pre MIST phase")
 
+  Ugly.InitializeFrameworkParameter()
+  
   Ugly.StartDeathRecorder()
   Ugly.StartMarkerRecorder()
   Ugly.UseAutoRecceMarker(Ugly.AutoRecceMarkerPrefix)
@@ -960,7 +1304,7 @@ Ugly.StartFrameworkPostCTLDCSAR = function()
 
   Ugly.StartCTLDCSARRecorder()
 
---  Ugly.InitLiveWeb()
+  Ugly.InitLiveWeb()
 end
 
 -- Simply start complete framework, as we hope the mist warnings are just warnings, no real errors.
@@ -968,13 +1312,15 @@ Ugly.StartCompleteFramework = function()
   Ugly.messageToAll("Trying to start Ugly Persistence!")
   env.info("UGLY: Trying to start Ugly Persistence")
 
+  Ugly.InitializeFrameworkParameter()
+
   Ugly.StartDeathRecorder()
   Ugly.StartMarkerRecorder()
   Ugly.UseAutoRecceMarker(Ugly.AutoRecceMarkerPrefix)
   Ugly.StartObjectPositionRecorder()
   Ugly.StartCTLDCSARRecorder()
 
---  Ugly.InitLiveWeb()
+  Ugly.InitLiveWeb()
 end
 
 
