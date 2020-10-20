@@ -1,8 +1,11 @@
+--- OBSOLETE NOW ---
+--- INTEGRATED IN THE Ugly_Framework ---
+
 local ExportPosIntervall = 5
 local exportRedUnits = true
 
---local baseDirectory = "C:\\Users\\Phil\\Google Drive (uglyskyfire@gmail.com)\\Missions\\UglyWeb\\SyriaLive247\\"
-local baseDirectory = "C:\\DCS-WebMap\\Serious Uglies\\02 Maps Missions Server\\98 Server Admin\\Syria-Livemap\\"
+local baseDirectory = "C:\\Users\\Phil\\Google Drive (uglyskyfire@gmail.com)\\Missions\\UglyWeb\\SyriaLive247\\"
+--local baseDirectory = "C:\\DCS-WebMap\\Serious Uglies\\02 Maps Missions Server\\98 Server Admin\\Syria-Livemap\\"
 
 local unitsPosFile = baseDirectory .. "mapdata\\Syria247.json" --edit this to represent your own (DCS cant write to different disks)
 local markerPosFile = baseDirectory .. "mapdata\\Syria247Marker.json" --edit this to represent your own (DCS cant write to different disks)
@@ -162,7 +165,7 @@ function writeObjectsToJson()
 					pilotName = string.sub(grp:GetName(), j)
 				end
 
-				fileString = fileString..writeDataset("Mayday, Mayday, Mayday!<br>" .. pilotName .. " has crashed in this area<br>and needs immediate rescue!" , iconName, lon, lat)
+				fileString = fileString..writeDataset("Mayday, Mayday, Mayday!<br>" .. pilotName .. " has crashed in this area and needs immediate rescue!" , iconName, lon, lat)
 				fileString = fileString..",\n"
 				checkMore = false
 		end
