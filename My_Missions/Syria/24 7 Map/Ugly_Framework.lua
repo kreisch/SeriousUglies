@@ -1112,8 +1112,17 @@ Ugly.writeObjectsToJson = function()
 				fileString = fileString..",\n"
 			else
 				for i = 1, #grp:GetUnits() do
-					local lat, lon = coord.LOtoLL(grp:GetUnit(i):GetCoordinate())
-					fileString = fileString..Ugly.writeDataset("Single Unit:<br>" .. grp:GetUnit(i):GetDesc().displayName, iconName, lon, lat)
+          local lat, lon = coord.LOtoLL(grp:GetUnit(i):GetCoordinate())
+          
+          local playerName = grp:GetUnit(i):GetDesc().displayName
+
+          if grp:GetUnit(i):GetPlayerName() ~= nil then
+            playerName = playerName .. "[" .. grp:GetUnit(i):GetPlayerName() .. "]"
+          else
+--            playerName = playerName .. "[AI]"
+          end
+
+          fileString = fileString..Ugly.writeDataset("Single Unit:<br>" .. playerName, iconName, lon, lat)
 					fileString = fileString..",\n"
 				end
 			end
