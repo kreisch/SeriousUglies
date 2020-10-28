@@ -3,8 +3,6 @@
 --
 -- 2020 Edition
 --
--- Currently no dependency to other frameworks (no MOOSE, MIST, CTLD...)
--- 
 -- What it can handle:
 --
 -- Units/Statics
@@ -22,13 +20,32 @@
 --  * Recreate JTACs(Hummer) and FOBs
 --  * Recreate Crates 
 --
+-- Needs MOOSE, mist, and a modified version of CTLD and CSAR for proper work
+
+-- The Persistence was inspired by Pickey's and Surrexen's Scripts
+
 
 
 -- Declare the Framework
 Ugly = {}
 
--- The global save interval
+
+------------------------------------------------------------------------------
+-- The framework does nothing on it's own. 
+-- It needs two methods to be called for complete initialization
+--
+-- The settings below can be modified at your own leasure
+
+-- The global save interval for persistence and were to store the data
 Ugly.saveInterval = 666
+Ugly.PathToUserData = "C:\\temp" -- A directory "Persistence" is automatically added to the base directory
+Ugly.MissionSuffix = "Syria247"  -- A name suffix used, so different missions can use the same persistence directory
+
+-- The intervall in which the live map JSON data is exported
+Ugly.ExportMapInterval = 5
+Ugly.LiveMapBaseDirectory = "C:\\DCS-WebMap\\Serious Uglies\\02 Maps Missions Server\\98 Server Admin\\Syria-Livemap\\"
+Ugly.exportRedUnits = true
+Ugly.exportBlueStatics = true
 
 -- If true, print any debug text
 Ugly.showDebugText = false
@@ -37,15 +54,6 @@ Ugly.showDebugText = false
 Ugly.messageShowTime = 10
 
 Ugly.AutoRecceMarkerPrefix = "M_" -- if "" no marker is created
--- not in use currently Ugly.KeepDeadRecceMarker = true -- if "" no marker is created 
-
-Ugly.PathToUserData = "C:\\temp" -- A directory "Persistence" is automatically added to the base directory
-Ugly.MissionSuffix = "Syria247"
-
-Ugly.ExportMapIntervall = 5
-Ugly.exportRedUnits = true
-
-Ugly.LiveMapBaseDirectory = "C:\\DCS-WebMap\\Serious Uglies\\02 Maps Missions Server\\98 Server Admin\\Syria-Livemap\\"
 
 -- Framework defines END
 -----------------------------------------------------------------------------------------
@@ -193,7 +201,8 @@ end
 -- @param #_fixedMarkpoint BOOL True if the mark cannot be removed; false if the mark can be removed by users
 -- kreisch
 Ugly.setMarkerForStatic = function (_static, _fixedMarkpoint)
-  
+--  env.info("Ugly.setMarkerForStatic: " .. _static:GetName())
+
   local _staticName = _static:GetName():gsub("%\n", "<br>"):gsub("M_", "")
   local _coalition  = _static:GetCoalition()
   local _coordinate = _static:GetCoordinate()
@@ -439,13 +448,13 @@ function Ugly.spawnmsg.eventHandler:onEvent(_event)
       return false
 
     elseif _event.id == world.event.S_EVENT_MARK_ADDED or _event.id == world.event.S_EVENT_MARK_CHANGE then --new marker added
-      env.info("UGLY: Handled S_EVENT_MARK_ADDED: " .. _event.id)
+--      env.info("UGLY: Handled S_EVENT_MARK_ADDED: " .. _event.id)
 
       Ugly.storeMarker(_event)
 
       return true
     elseif _event.id == world.event.S_EVENT_MARK_REMOVED then --new marker removed
-      env.info("UGLY: Handled S_EVENT_MARK_REMOVED: " .. _event.id)
+--      env.info("UGLY: Handled S_EVENT_MARK_REMOVED: " .. _event.id)
 
       Ugly.removeMarker(_event)
 
@@ -456,7 +465,7 @@ function Ugly.spawnmsg.eventHandler:onEvent(_event)
         return false
 
     elseif _event.id == world.event.S_EVENT_PLAYER_ENTER_UNIT or _event.id == world.event.S_EVENT_TOOK_CONTROL then --player entered unit
-      env.info("UGLY: Handled S_EVENT_PLAYER_ENTER_UNIT and S_EVENT_TOOK_CONTROL: " .. _event.id)
+--      env.info("UGLY: Handled S_EVENT_PLAYER_ENTER_UNIT and S_EVENT_TOOK_CONTROL: " .. _event.id)
 
       if  _event.initiator:getPlayerName() then
 
@@ -466,7 +475,7 @@ function Ugly.spawnmsg.eventHandler:onEvent(_event)
 
       return true
     elseif _event.id == world.event.S_EVENT_PLAYER_LEAVE_UNIT then --player leave unit
-      env.info("UGLY: Handled S_EVENT_PLAYER_LEAVE_UNIT: " .. _event.id)
+--      env.info("UGLY: Handled S_EVENT_PLAYER_LEAVE_UNIT: " .. _event.id)
 
       if  _event.initiator:getPlayerName() then
 
@@ -1106,7 +1115,7 @@ Ugly.writeObjectsToJson = function()
 					end
 				end
 
-				-- Maybe calculate the center point from all units.
+				-- Calculate the center point from all units.
 				local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
 				fileString = fileString..Ugly.writeDataset(grpDesc, iconName, lon, lat)
 				fileString = fileString..",\n"
@@ -1117,7 +1126,7 @@ Ugly.writeObjectsToJson = function()
           local playerName = grp:GetUnit(i):GetDesc().displayName
 
           if grp:GetUnit(i):GetPlayerName() ~= nil then
-            playerName = playerName .. "[" .. grp:GetUnit(i):GetPlayerName() .. "]"
+            playerName = playerName .. " [" .. grp:GetUnit(i):GetPlayerName() .. "]"
           else
 --            playerName = playerName .. "[AI]"
           end
@@ -1131,10 +1140,65 @@ Ugly.writeObjectsToJson = function()
 	)
 
 	---------------------------------
+	-- Now the statics
+	if Ugly.exportBlueStatics then
+		local ExportStatics = SET_STATIC:New():FilterOnce()
+
+    ExportStatics:ForEachStatic(function (stc)
+        local _name = stc:GetName()
+        local isAirbase = false
+        if AIRBASE:FindByName(_name) ~= nil then
+--          env.info(_name.." is a type of airbase, farp or oil rig")
+          --avoid these types of static, they are really airbases
+          isAirbase = true
+        else
+--            env.info(_name.." is a normal static to be destroyed")
+          --do things here that you want to do on a static like Destroy()
+        end
+        
+        if stc:IsAlive() and isAirbase == false and stc:GetCoalition() == 2 then
+
+--          env.info("Ugly.exportBlueStatics: stc:GetName()" .. stc:GetName())
+--          env.info("Ugly.exportBlueStatics: stc:GetCoalition()" .. stc:GetCoalition())
+--          env.info("Ugly.exportBlueStatics: stc:GetCategory()" .. stc:GetCategory())
+--          env.info("Ugly.exportBlueStatics: UTILS.GetCoalitionName(stc:GetCoalition()) " .. UTILS.GetCoalitionName(stc:GetCoalition()))
+
+          local iconName = UTILS.GetCoalitionName(stc:GetCoalition()):lower()
+
+-- Statics have different categories then units, see https://wiki.hoggitworld.com/view/DCS_Class_Static_Object
+--[[
+          if stc:GetCategory() == 0 then
+            iconName = iconName.."airfixed"
+          elseif stc:GetCategory() == 1 then
+            iconName = iconName.."airrotary"
+          elseif stc:GetCategory() == 2 then
+            iconName = iconName.."ground"
+          elseif stc:GetCategory() == 3 then
+            iconName = iconName.."water"
+          else
+            iconName = iconName.."ground"
+          end
+]]--
+
+          iconName = iconName.."ground"
+          
+          local stcDesc = stc:GetName():gsub("Static ", "")
+          stcDesc = stcDesc .. ", "
+
+          -- Calculate the center point from all units.
+          local lat, lon = coord.LOtoLL(stc:GetCoordinate())
+          fileString = fileString..Ugly.writeDataset(stcDesc, iconName, lon, lat)
+          fileString = fileString..",\n"
+        end
+      end
+    )
+  end
+
+	---------------------------------
 	-- Now the red ones
 
 	if Ugly.exportRedUnits then
-		ExportGroups = SET_GROUP:New():FilterCoalitions( "red" ):FilterActive(true):FilterStart()
+		local ExportGroups = SET_GROUP:New():FilterCoalitions( "red" ):FilterActive(true):FilterStart()
 
 		ExportGroups:ForEachGroupAlive(function (grp)
 			if Ugly.startsWith(grp:GetName(), "S_") ~= true then
@@ -1191,7 +1255,7 @@ Ugly.writeObjectsToJson = function()
 						end
 					end
 
-					-- Maybe calculate the center point from all units.
+					-- Calculate the center point from all units.
 					local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
 					fileString = fileString..Ugly.writeDataset(grpDesc, iconName, lon, lat)
 					fileString = fileString..",\n"
@@ -1238,7 +1302,7 @@ Ugly.writeObjectsToJson = function()
 				end
 			end
 
-			-- Maybe calculate the center point from all units.
+			-- Calculate the center point from all units.
 			local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
 			fileString = fileString..Ugly.writeDataset(grpDesc, iconName, lon, lat)
 			fileString = fileString..",\n"
@@ -1246,7 +1310,7 @@ Ugly.writeObjectsToJson = function()
 	end
 	)
 
-
+  -- Finalize everything
 	-- remove last comma
 	fileString = fileString:sub(1, -3)
 	fileString = fileString.."\n"
@@ -1284,7 +1348,7 @@ Ugly.InitLiveWeb = function()
     Ugly.writeObjectsToJson()
     Ugly.writeMarkerToJson();
     
-  end, {}, 2, Ugly.ExportMapIntervall)
+  end, {}, 2, Ugly.ExportMapInterval)
 
 end
 
@@ -1334,7 +1398,7 @@ end
 
 
 
-env.info("UGLY: Framework loaded")
+env.info("UGLY: Framework loaded - Ready to be used!")
 
 
 -----------------------------------------------------------------------------------------

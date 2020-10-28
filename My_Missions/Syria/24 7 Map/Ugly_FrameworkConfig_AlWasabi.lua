@@ -10,6 +10,14 @@ assert(Ugly ~= nil, "\n\n** HEY MISSION-DESIGNER! **\n\nThe Ugly Framework has n
 
 -- The global save interval
 Ugly.saveInterval = 666
+Ugly.PathToUserData = "C:\\temp" -- A directory "Persistence" is automatically added to the base directory
+Ugly.MissionSuffix = "AlWasabi"  -- A name suffix used, so different missions can use the same persistence directory
+
+-- The intervall in which the live map JSON data is exported
+Ugly.ExportMapInterval = 5
+Ugly.LiveMapBaseDirectory = "C:\\DCS-WebMap\\Serious Uglies\\02 Maps Missions Server\\98 Server Admin\\Syria-Livemap\\"
+Ugly.exportRedUnits = false
+Ugly.exportBlueStatics = true
 
 -- If true, print any debug text
 Ugly.showDebugText = false
@@ -18,12 +26,3 @@ Ugly.showDebugText = false
 Ugly.messageShowTime = 10
 
 Ugly.AutoRecceMarkerPrefix = "M_" -- if "" no marker is created
--- not in use currently Ugly.KeepDeadRecceMarker = true -- if "" no marker is created 
-
-Ugly.PathToUserData = "C:\\temp" -- A directory "Persistence" is automatically added to the base directory
-Ugly.MissionSuffix = "AlWasabi"
-
-Ugly.ExportMapIntervall = 5
-Ugly.exportRedUnits = false
-
-local LiveMapBaseDirectory = "C:\\DCS-WebMap\\Serious Uglies\\02 Maps Missions Server\\98 Server Admin\\Syria-Livemap\\"
