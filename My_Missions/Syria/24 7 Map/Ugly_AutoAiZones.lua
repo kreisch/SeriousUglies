@@ -12,7 +12,8 @@
 local ZoneCheckInterval = 1  -- Check interval in seconds
 local AutoZonePrefix = "AutoOnOffZone"
 
-useAutoZone = true
+local useAutoZone = true
+local activateFlaresOnTrigger = false
 
 -----------------------------------
 --Do not edit below here
@@ -159,11 +160,14 @@ SCHEDULER:New( nil, function()
 
         trigger.action.outText(triggerInfoText, 10)
         
-        if OldActiveZoneTable[k] == false then
-          k:FlareZone(FLARECOLOR.Red)
-        else
-          k:FlareZone(FLARECOLOR.Green)
+        if activateFlaresOnTrigger == true then
+          if OldActiveZoneTable[k] == false then
+            k:FlareZone(FLARECOLOR.Red)
+          else
+            k:FlareZone(FLARECOLOR.Green)
+          end
         end
+
       end
     end
   end
