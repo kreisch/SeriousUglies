@@ -75,8 +75,9 @@ Ugly.InitializeFrameworkParameter = function ()
   Ugly.autoMarkerText = "Strategic Target"
   Ugly.autoMarker = {}
   
-  Ugly.StaticsFileName = "UglyStaticsDeadList" .. Ugly.MissionSuffix .. ".lua"
   Ugly.UnitsFileName = "UglyUnitDeadList" .. Ugly.MissionSuffix .. ".lua"
+  Ugly.StaticsFileName = "UglyStaticsDeadList" .. Ugly.MissionSuffix .. ".lua"
+  Ugly.DeadPilotsFileName = "UglyPilotDeadList" .. Ugly.MissionSuffix .. ".lua"
 
   Ugly.unitsPosFile = "UglyUnitPositions" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
   Ugly.markerDataFile = "UglyMarker" .. Ugly.MissionSuffix .. ".lua" --edit this to represent your own (DCS cant write to different disks)
@@ -90,8 +91,7 @@ end
 
 
 -----------------------------------------------------------------------------------------
--- Check if file exists
--- imported from slmod.serializeWithCycles (Speed)
+-- Imported from slmod.serializeWithCycles (Speed)
 
 Ugly.IntegratedbasicSerialize = function (s)
   if s == nil then
@@ -139,6 +139,40 @@ Ugly.IntegratedserializeWithCycles = function (name, value, saved)
   else
     return ""
   end
+end
+
+-----------------------------------------------------------------------------------------
+-- Check if unit is an specific type
+
+Ugly.soldierTypes = { "soldier", "infantry", "paratrooper", "stinger", "manpad", "mortar" }
+Ugly.awacsTypes = { "soldier", "infantry", "paratrooper", "stinger", "manpad", "mortar" }
+Ugly.tankerTypes = { "soldier", "infantry", "paratrooper", "stinger", "manpad", "mortar" }
+
+Ugly.isOfType = function (_unit, _typeTable)
+
+    local _typeName = _unit:getTypeName()
+
+    _typeName = string.lower(_typeName)
+
+    for _key, _value in pairs(_typeTable) do
+        if string.match(_typeName, _value) then
+            return true
+        end
+    end
+
+    return false
+end
+
+Ugly.isAwacs = function (_unit)
+  return Ugly.isOfType(_unit, Ugly.awacsTypes)
+end
+
+Ugly.isTanker = function (_unit)
+  return Ugly.isOfType(_unit, Ugly.tankerTypes)
+end
+
+Ugly.isSoldier = function (_unit)
+  return Ugly.isOfType(_unit, Ugly.soldierTypes)
 end
 
 -----------------------------------------------------------------------------------------
@@ -252,6 +286,7 @@ Ugly.persistenceAvailable = false
 
 Ugly.UnitsFilePath = ""
 Ugly.StaticsFilePath = ""
+Ugly.DeadPilotsFilePath = ""
 
 Ugly.checkPersistence = function()
   if io and lfs then
@@ -269,13 +304,16 @@ Ugly.checkPersistence = function()
 
       Ugly.UnitsFilePath = Ugly.PersistencePath.."\\"..Ugly.UnitsFileName
       Ugly.StaticsFilePath = Ugly.PersistencePath.."\\"..Ugly.StaticsFileName
+      Ugly.DeadPilotsFilePath = Ugly.PersistencePath.."\\"..Ugly.DeadPilotsFileName
 
       Ugly.messageToAll("Path to Userdata available, ready to load: "..Ugly.UnitsFilePath)
       Ugly.messageToAll("Path to Userdata available, ready to load: "..Ugly.StaticsFilePath)
+      Ugly.messageToAll("Path to Userdata available, ready to load: "..Ugly.DeadPilotsFilePath)
       Ugly.persistenceAvailable = true
     else
       Ugly.messageToAll("Path to Userdata not available: "..Ugly.PathToUserData)
       Ugly.messageToAll("Path to Userdata not available: "..Ugly.StaticsFilePath)
+      Ugly.messageToAll("Path to Userdata not available: "..Ugly.DeadPilotsFilePath)
       Ugly.persistenceAvailable = false
     end
   else
@@ -302,6 +340,11 @@ function Ugly.SaveUglyUnitDeadLists(timeloop, time)
   Ugly.writemission(completeDeadList, Ugly.StaticsFilePath)
   Ugly.messageToAll("Static progress has been saved!")
 
+  Ugly.messageToAll("Dead pilots will be saved...")
+  completeDeadList = Ugly.IntegratedserializeWithCycles("Ugly.deadPilotList", Ugly.deadPilotList)
+  Ugly.writemission(completeDeadList, Ugly.DeadPilotsFilePath)
+  Ugly.messageToAll("Dead pilots have been saved!")
+
   return time + Ugly.saveInterval
 end
 
@@ -312,6 +355,7 @@ Ugly.substituteAndKillUnit = function(_substituteUnit)
 	if ( _substituteUnit ~= nil ) then
 		local DeadUnit = UNIT:FindByName(_substituteUnit["name"])
 		if ( DeadUnit ~= nil ) then
+--      env.info("Found unit to remove first: " .. _substituteUnit["name"])
 		  DeadUnit:Destroy()
 		end
 
@@ -336,33 +380,51 @@ Ugly.substituteAndKillUnit = function(_substituteUnit)
 end
 
 -----------------------------------------------------------------------------------------
--- Substitue Static with dead Static of same kind
+-- Create new Static from dead Static of same kind
 
-Ugly.substituteAndKillStatic = function (_substituteStatic)
+Ugly.creatFromStatic = function (_substituteStatic)
 	if ( _substituteStatic ~= nil ) then
-		local DeadStatic = STATIC:FindByName(_substituteStatic["name"], false)
-		if ( DeadStatic ~= nil ) then
-		  DeadStatic:Destroy()
-		end
+    local staticType = _substituteStatic["type"]
+
+    -- Workaround for missing F-16C_50 static model
+    if staticType == "F-16C_50" then
+      staticType = "F-16C bl.50"
+    end
 
     -- Copy data to new table, else the table will contain unwanted internal data like unitID...
     local newDeadStatic = {
       ["country"] = _substituteStatic["country"], 
       ["countryID"] = _substituteStatic["countryID"], 
-      ["type"]=_substituteStatic["type"],
+      ["type"]=staticType,
       ["coalition"]=_substituteStatic["coalition"],
       ["category"]=_substituteStatic["category"],
       ["y"]=_substituteStatic["y"],
       ["x"]=_substituteStatic["x"],
-      ["name"]=_substituteStatic["name"],
+      ["name"]=_substituteStatic["name"] .. math.random(),
       ["heading"]=_substituteStatic["heading"],
       ["shape_name"]=_substituteStatic["shape_name"],
       ["dead"] = _substituteStatic["dead"],
     }
 
 		coalition.addStaticObject(_substituteStatic["countryID"], newDeadStatic)
-		Ugly.messageToAll("Added new static!!! ".._substituteStatic["countryID"])
+--    env.info("Added new static!!!..." .. _substituteStatic["name"])
+    Ugly.messageToAll("Added new static!!! ".._substituteStatic["countryID"])
 	end
+end
+
+-----------------------------------------------------------------------------------------
+-- Substitue Static with dead Static of same kind
+
+Ugly.substituteAndKillStatic = function (_substituteStatic)
+	if ( _substituteStatic ~= nil ) then
+		local DeadStatic = STATIC:FindByName(_substituteStatic["name"], false)
+    if ( DeadStatic ~= nil ) then
+--      env.info("Found static to remove first: " .. _substituteStatic["name"])
+		  DeadStatic:Destroy()
+    end
+    
+    Ugly.creatFromStatic(_substituteStatic)
+  end
 end
 
 -----------------------------------------------------------------------------------------
@@ -483,6 +545,10 @@ function Ugly.spawnmsg.eventHandler:onEvent(_event)
 
       end
       return true
+--    elseif _event.id == world.event.S_EVENT_PILOT_DEAD then --player is dead!
+--      env.info("UGLY: Handled S_EVENT_PILOT_DEAD: " .. _event.id)
+--    elseif _event.id == world.event.S_EVENT_CRASH then --player is dead!
+--      env.info("UGLY: Handled S_EVENT_CRASH: " .. _event.id)
     else
 --      env.info("UGLY: Unhandled Event: " .. _event.id)
     end
@@ -681,7 +747,6 @@ Ugly.StartDeathRecorder = function()
   local DeletedStaticCount = 0
 
   --////LOAD UNITS
-  
   if Ugly.checkPersistence() then
     if Ugly.file_exists(Ugly.UnitsFilePath) then
 --    if false then
@@ -723,6 +788,25 @@ Ugly.StartDeathRecorder = function()
   	  Ugly.staticDeadList = {}
     end
 
+    --////LOAD Dead Pilots
+    if Ugly.file_exists(Ugly.DeadPilotsFilePath) then
+      Ugly.messageToAll("Loading: "..Ugly.DeadPilotsFilePath)
+	    env.info( "Loading: "..Ugly.DeadPilotsFilePath )
+
+  	  dofile(Ugly.DeadPilotsFilePath)
+		
+      Ugly.messageToAll("Dead Pilots found "..#Ugly.deadPilotList)
+	    env.info( "Dead Pilots found "..#Ugly.deadPilotList )
+
+      for i = 1, #Ugly.deadPilotList do
+        Ugly.creatFromStatic(Ugly.deadPilotList[i])
+      end	
+
+    else
+      Ugly.messageToAll("Creating data for: "..Ugly.DeadPilotsFileName)
+  	  Ugly.deadPilotList = {}
+    end
+
     Ugly.messageToAll("Persistent World Functions Have Removed "..DeletedStaticCount.." Statics")
 
 --SCHEDULE
@@ -730,6 +814,7 @@ Ugly.StartDeathRecorder = function()
 
     --  Ugly.DeadUnitsList:FilterCoalitions("red"):FilterCategories("ground"):FilterActive(true):FilterStart()
     Ugly.DeadUnitsList:HandleEvent(EVENTS.Dead)
+--    Ugly.DeadUnitsList:HandleEvent(EVENTS.PilotDead)
     Ugly.DeadUnitsList:HandleEvent(EVENTS.Crash) -- Player and AI Aircraft as statics
 
     Ugly.messageToAll("Ugly Persistence is active. Unit list will be stored every "..Ugly.saveInterval.." seconds.")
@@ -743,7 +828,7 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 -- Event Handling - Handle OnEventDead for Units and Statics and OnEventCrash for player
 
-Ugly.dumpToTable = function (_theTable, DEADUNIT)
+Ugly.dumpToTable = function (_theTable, DEADUNIT, DEADUNITNAME, _playerName)
   local CountryID = DEADUNIT:GetCountry()
   local CountryName = _DATABASE.COUNTRY_NAME[CountryID]
 
@@ -753,9 +838,11 @@ Ugly.dumpToTable = function (_theTable, DEADUNIT)
     ["type"]=DEADUNIT:GetTypeName(),
     ["coalition"]=DEADUNIT:GetCoalitionName(),
     ["category"]=DEADUNIT:GetCategory(),
-    ["y"]=DEADUNIT:GetPointVec2():GetY(),
     ["x"]=DEADUNIT:GetPointVec2():GetX(),
-    ["name"]=DEADUNIT:GetName(),
+    ["y"]=DEADUNIT:GetPointVec2():GetY(),
+--    ["z"]=DEADUNIT:GetPointVec2():GetZ(),
+    ["name"]=DEADUNITNAME,
+    ["playerName"]=_playerName or "John Doe",
     ["heading"]=routines.utils.toRadian(DEADUNIT:GetHeading()),
     ["shape_name"]=DEADUNIT:GetTypeName(),
     ["dead"] = true,
@@ -771,6 +858,7 @@ function Ugly.DeadUnitsList:OnEventDead(EventData)
   local DEADUNITOBJECTCATEGORY = EventData.IniObjectCategory  -- 1 UNIT / 2 WEAPON / 3 STATIC / 4 BASE / 5 SCENERY / 6 CARGO
   local DEADUNITCATEGORY = EventData.IniCategory        -- 0 AIRPLANE / 1 HELICOPTER / 2 GROUND_UNIT / 3 SHIP / 4 STRUCTURE
 
+--  env.info("Ugly.DeadUnitsList:OnEventDead " .. DEADUNITNAME)
 --  Ugly.messageToAll("Ugly.DeadUnitsList:OnEventDead "..DEADUNITNAME)
 
     --Debug Zone
@@ -780,19 +868,44 @@ function Ugly.DeadUnitsList:OnEventDead(EventData)
 --    Ugly.messageToAll("Dead Unit Object Category: "..DEADUNITOBJECTCATEGORY)
 
   if DEADUNIT ~= nil then
-   if ( DEADUNITOBJECTCATEGORY == 1 ) then -- UNIT
-     if ( DEADUNITCATEGORY == 2 or DEADUNITCATEGORY == 3 ) then -- GROUND_UNIT or SHIP
-      Ugly.messageToAll("PERSISTED! Dead Unit ["..DEADUNITNAME.."]")
-       Ugly.dumpToTable(Ugly.unitDeadList, DEADUNIT)
-     end
+    if ( DEADUNITOBJECTCATEGORY == 1 ) then -- UNIT
+      if ( DEADUNITCATEGORY == 2 or DEADUNITCATEGORY == 3 ) then -- GROUND_UNIT or SHIP
+        Ugly.messageToAll("PERSISTED! Dead Unit ["..DEADUNITNAME.."]")
+--        env.info("PERSISTED! Dead Unit ["..DEADUNITNAME.."]")
+        Ugly.dumpToTable(Ugly.unitDeadList, DEADUNIT, DEADUNITNAME)
+      end
     elseif ( DEADUNITOBJECTCATEGORY == 3 ) then -- STATIC
       Ugly.messageToAll("PERSISTED! Dead Static ["..DEADUNITNAME.."]")
-      Ugly.dumpToTable(Ugly.staticDeadList, DEADUNIT)
+--      env.info("PERSISTED! Dead Static ["..DEADUNITNAME.."]")
+      Ugly.dumpToTable(Ugly.staticDeadList, DEADUNIT, DEADUNITNAME)
     end		
   end
+end
 
-  local DEADDCSUNIT = EventData.IniDCSUnit
-  DEADDCSUNIT:destroy()
+function Ugly.DeadUnitsList:OnEventPilotDead(EventData)
+  local DEADUNIT = EventData.IniUnit
+  local DEADUNITNAME = EventData.IniDCSUnitName
+  local DEADUNITCOALITION = EventData.IniCoalition
+  local DEADUNITOBJECTCATEGORY = EventData.IniObjectCategory  -- 1 UNIT / 2 WEAPON / 3 STATIC / 4 BASE / 5 SCENERY / 6 CARGO
+  local DEADUNITCATEGORY = EventData.IniCategory        -- 0 AIRPLANE / 1 HELICOPTER / 2 GROUND_UNIT / 3 SHIP / 4 STRUCTURE
+
+--  env.info("Ugly.DeadUnitsList:OnEventPilotDead " .. DEADUNITNAME)
+--  Ugly.messageToAll("Ugly.DeadUnitsList:OnEventDead "..DEADUNITNAME)
+
+    --Debug Zone
+--    Ugly.messageToAll("Dead Unit Name: "..DEADUNITNAME)
+--    Ugly.messageToAll("Dead Unit Coalition: "..DEADUNITCOALITION)
+--    Ugly.messageToAll("Dead Unit Category: "..DEADUNITCATEGORY)
+--    Ugly.messageToAll("Dead Unit Object Category: "..DEADUNITOBJECTCATEGORY)
+
+  if DEADUNIT ~= nil then
+    if DEADUNITOBJECTCATEGORY == 1 and DEADUNIT:GetPlayerName() then -- UNIT
+      if ( DEADUNITCATEGORY == 0 or DEADUNITCATEGORY == 1 ) then -- AIRPLANE or HELICOPTER
+        Ugly.messageToAll("PERSISTED! Dead Aircraft ["..DEADUNITNAME.. "] - " .. DEADUNIT:GetPlayerName() )
+        Ugly.dumpToTable(Ugly.deadPilotList, DEADUNIT, DEADUNITNAME, DEADUNIT:GetPlayerName())
+      end
+    end		
+  end
 end
 
 function Ugly.DeadUnitsList:OnEventCrash(EventData)
@@ -802,6 +915,7 @@ function Ugly.DeadUnitsList:OnEventCrash(EventData)
   local DEADUNITOBJECTCATEGORY = EventData.IniObjectCategory  -- 1 UNIT / 2 WEAPON / 3 STATIC / 4 BASE / 5 SCENERY / 6 CARGO
   local DEADUNITCATEGORY = EventData.IniCategory        -- 0 AIRPLANE / 1 HELICOPTER / 2 GROUND_UNIT / 3 SHIP / 4 STRUCTURE
 
+--  env.info("Ugly.DeadUnitsList:OnEventCrash " .. DEADUNITNAME)
 --  Ugly.messageToAll("Ugly.DeadUnitsList:OnEventCrash "..DEADUNITNAME)
 
     --Debug Zone
@@ -814,7 +928,12 @@ function Ugly.DeadUnitsList:OnEventCrash(EventData)
     if ( DEADUNITOBJECTCATEGORY == 1 ) then -- UNIT
       if ( DEADUNITCATEGORY == 0 or DEADUNITCATEGORY == 1 ) then -- Aircraft or Helicopter
         Ugly.messageToAll("PERSISTED! Dead Static ["..DEADUNITNAME.."]")
-        Ugly.dumpToTable(Ugly.staticDeadList, DEADUNIT)
+--        Ugly.dumpToTable(Ugly.staticDeadList, DEADUNIT, DEADUNITNAME.."-DEAD", DEADUNIT:GetPlayerName())
+
+--        if DEADUNIT:GetPlayerName() then
+        Ugly.dumpToTable(Ugly.deadPilotList, DEADUNIT, DEADUNITNAME, DEADUNIT:GetPlayerName())
+--        end
+        
 	  end
 	end
   end		
@@ -984,11 +1103,12 @@ Ugly.writeMarkerToJson = function()
 	local jsonMarkerStr = "{\n\t\"features\": [\n"
 	local markerCount = 0
 
+  -----------------------------------
+  -- User Marker
 	for k,v in pairs(Ugly.userMarker) do
 		markerCount = markerCount + 1
-		local _userMarker = Ugly.userMarker[k]
-		
-		local newCoord = COORDINATE:New(Ugly.userMarker[k].pos.x, Ugly.userMarker[k].pos.y, Ugly.userMarker[k].pos.z)
+
+    local newCoord = COORDINATE:New(Ugly.userMarker[k].pos.x, Ugly.userMarker[k].pos.y, Ugly.userMarker[k].pos.z)
 		local lat, lon = coord.LOtoLL(newCoord)
 
 		local initiatorName = "Unknown"
@@ -1006,13 +1126,34 @@ Ugly.writeMarkerToJson = function()
 		jsonMarkerStr = jsonMarkerStr .. ",\n"
 	end
 
+  -----------------------------------
+  -- Auto Marker
 	for k,v in pairs(Ugly.autoMarker) do
 		markerCount = markerCount + 1
-		local _autoMarker = Ugly.autoMarker[k]
-		
-		local newCoord = COORDINATE:New(Ugly.autoMarker[k].pos.x, Ugly.autoMarker[k].pos.y, Ugly.autoMarker[k].pos.z)
+
+    local newCoord = COORDINATE:New(Ugly.autoMarker[k].pos.x, Ugly.autoMarker[k].pos.y, Ugly.autoMarker[k].pos.z)
 		local lat, lon = coord.LOtoLL(newCoord)
 		jsonMarkerStr = jsonMarkerStr .. Ugly.writeDataset(Ugly.autoMarker[k].text, "markertactical", lon, lat)
+
+		jsonMarkerStr = jsonMarkerStr .. ",\n"
+	end
+
+  -----------------------------------
+  -- Dead Pilots
+ 	for k,v in pairs(Ugly.deadPilotList) do
+		markerCount = markerCount + 1
+    
+		local newCoord = COORDINATE:New(Ugly.deadPilotList[k].x, 0, Ugly.deadPilotList[k].y)
+    local lat, lon = coord.LOtoLL(newCoord)
+    local iconName = "markercrashedaircraft"
+
+    if Ugly.deadPilotList[k].playerName == "John Doe" then
+      iconName = iconName .. "ai"
+    else
+      iconName = iconName .. "player"
+    end
+
+		jsonMarkerStr = jsonMarkerStr .. Ugly.writeDataset(Ugly.deadPilotList[k].type .. " Crashsite<br>Pilot: "..Ugly.deadPilotList[k].playerName, iconName, lon, lat)
 
 		jsonMarkerStr = jsonMarkerStr .. ",\n"
 	end
@@ -1031,6 +1172,34 @@ Ugly.writeMarkerToJson = function()
 --	env.info("jsonMarkerStr!\n" .. jsonMarkerStr)
 end
 
+Ugly.getIconForCategory = function(_category)
+  local iconName
+
+  if _category == 0 then
+    iconName ="airfixed"
+  elseif _category == 1 then
+    iconName = "airrotary"
+  elseif _category == 2 then
+    iconName = "ground"
+  elseif _category == 3 then
+    iconName = "water"
+  else
+    iconName = "ground"
+  end
+
+  return iconName
+end
+
+Ugly.getIconDriver = function(_unit)
+  local iconName = "ai"
+
+  if _unit:GetPlayerName() then
+    iconName = "player"
+  end
+
+  return iconName
+end
+
 Ugly.writeObjectsToJson = function()
 	--SCRIPT START
 --	env.info("Store current groups to JSON!")
@@ -1043,24 +1212,12 @@ Ugly.writeObjectsToJson = function()
 	local ExportGroups = SET_GROUP:New():FilterCoalitions( "blue" ):FilterActive(true):FilterStart()
 
 	ExportGroups:ForEachGroupAlive(function (grp)
-		local iconName = "blue"
+    
+    local iconName = "blue" .. Ugly.getIconForCategory(grp:GetCategory())
 
+    local checkMore = true
 		if Ugly.startsWith(grp:GetName(), "Downed Pilot") then
-		  iconName = "markerdownedpilot"
-		elseif grp:GetCategory() == 0 then
-		  iconName = iconName.."airfixed"
-		elseif grp:GetCategory() == 1 then
-		  iconName = iconName.."airrotary"
-		elseif grp:GetCategory() == 2 then
-		  iconName = iconName.."ground"
-		elseif grp:GetCategory() == 3 then
-		  iconName = iconName.."water"
-		else
-		  iconName = iconName.."ground"
-		end
-
-		local checkMore = true
-		if Ugly.startsWith(grp:GetName(), "Downed Pilot") then
+  		  iconName = "markerdownedpilot"
 				local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
 
 				local pilotName = "John Doe"
@@ -1070,7 +1227,7 @@ Ugly.writeObjectsToJson = function()
 					pilotName = string.sub(grp:GetName(), j)
 				end
 
-				fileString = fileString..Ugly.writeDataset("Mayday, Mayday, Mayday!<br>" .. pilotName .. " has crashed in this area and needs immediate rescue!" , iconName, lon, lat)
+				fileString = fileString..Ugly.writeDataset("Mayday, Mayday, Mayday!<br>" .. pilotName .. " has ejected in this area and needs immediate rescue!" , iconName, lon, lat)
 				fileString = fileString..",\n"
 				checkMore = false
 		end
@@ -1087,9 +1244,11 @@ Ugly.writeObjectsToJson = function()
 --			 			env.info(grp:GetUnit(i):GetTypeName() .. " is NOT of type infantry." )
 					end
 
-					if isInfantry == true then
+          if isInfantry == true then
+            local finalIconName = iconName .. Ugly.getIconDriver(grp:GetUnit(1))
+
 						local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
-						fileString = fileString..Ugly.writeDataset("Group of " .. #grp:GetUnits() .. " Infantry" , iconName, lon, lat)
+						fileString = fileString..Ugly.writeDataset("Group of " .. #grp:GetUnits() .. " Infantry" , finalIconName, lon, lat)
 						fileString = fileString..",\n"
 						checkMore = false
 					end
@@ -1115,15 +1274,18 @@ Ugly.writeObjectsToJson = function()
 					end
 				end
 
+        local finalIconName = iconName .. Ugly.getIconDriver(grp:GetUnit(1))
+
 				-- Calculate the center point from all units.
 				local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
-				fileString = fileString..Ugly.writeDataset(grpDesc, iconName, lon, lat)
+				fileString = fileString..Ugly.writeDataset(grpDesc, finalIconName, lon, lat)
 				fileString = fileString..",\n"
 			else
 				for i = 1, #grp:GetUnits() do
           local lat, lon = coord.LOtoLL(grp:GetUnit(i):GetCoordinate())
           
           local playerName = grp:GetUnit(i):GetDesc().displayName
+          local finalIconName = iconName .. Ugly.getIconDriver(grp:GetUnit(i))
 
           if grp:GetUnit(i):GetPlayerName() ~= nil then
             playerName = playerName .. " [" .. grp:GetUnit(i):GetPlayerName() .. "]"
@@ -1131,7 +1293,7 @@ Ugly.writeObjectsToJson = function()
 --            playerName = playerName .. "[AI]"
           end
 
-          fileString = fileString..Ugly.writeDataset("Single Unit:<br>" .. playerName, iconName, lon, lat)
+          fileString = fileString..Ugly.writeDataset("Single Unit:<br>" .. playerName, finalIconName, lon, lat)
 					fileString = fileString..",\n"
 				end
 			end
@@ -1165,22 +1327,7 @@ Ugly.writeObjectsToJson = function()
 
           local iconName = UTILS.GetCoalitionName(stc:GetCoalition()):lower()
 
--- Statics have different categories then units, see https://wiki.hoggitworld.com/view/DCS_Class_Static_Object
---[[
-          if stc:GetCategory() == 0 then
-            iconName = iconName.."airfixed"
-          elseif stc:GetCategory() == 1 then
-            iconName = iconName.."airrotary"
-          elseif stc:GetCategory() == 2 then
-            iconName = iconName.."ground"
-          elseif stc:GetCategory() == 3 then
-            iconName = iconName.."water"
-          else
-            iconName = iconName.."ground"
-          end
-]]--
-
-          iconName = iconName.."ground"
+          iconName = iconName.."groundai"
           
           local stcDesc = stc:GetName():gsub("Static ", "")
           stcDesc = stcDesc .. ", "
@@ -1203,19 +1350,7 @@ Ugly.writeObjectsToJson = function()
 		ExportGroups:ForEachGroupAlive(function (grp)
 			if Ugly.startsWith(grp:GetName(), "S_") ~= true then
 
-				local iconName = "red"
-
-				if grp:GetCategory() == 0 then
-					iconName = iconName.."airfixed"
-				elseif grp:GetCategory() == 1 then
-					iconName = iconName.."airrotary"
-				elseif grp:GetCategory() == 2 then
-					iconName = iconName.."ground"
-				elseif grp:GetCategory() == 3 then
-					iconName = iconName.."water"
-				else
-					iconName = iconName.."ground"
-				end
+        local iconName = "red" .. Ugly.getIconForCategory(grp:GetCategory())
 
 				local checkMore = true
 
@@ -1230,9 +1365,11 @@ Ugly.writeObjectsToJson = function()
 --							env.info(grp:GetUnit(i):GetTypeName() .. " is NOT of type infantry." )
 						end
 
-						if isInfantry == true then
+            if isInfantry == true then
+              local finalIconName = iconName .. Ugly.getIconDriver(grp:GetUnit(1))
+
 							local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
-							fileString = fileString..Ugly.writeDataset("Group of " .. #grp:GetUnits() .. " Infantry" , iconName, lon, lat)
+							fileString = fileString..Ugly.writeDataset("Group of " .. #grp:GetUnits() .. " Infantry" , finalIconName, lon, lat)
 							fileString = fileString..",\n"
 							checkMore = false
 						end
@@ -1255,9 +1392,11 @@ Ugly.writeObjectsToJson = function()
 						end
 					end
 
-					-- Calculate the center point from all units.
+          -- Calculate the center point from all units.
+          local finalIconName = iconName .. Ugly.getIconDriver(grp:GetUnit(1))
+
 					local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
-					fileString = fileString..Ugly.writeDataset(grpDesc, iconName, lon, lat)
+					fileString = fileString..Ugly.writeDataset(grpDesc, finalIconName, lon, lat)
 					fileString = fileString..",\n"
 				end
 
@@ -1273,19 +1412,7 @@ Ugly.writeObjectsToJson = function()
 	ExportGroups:ForEachGroupAlive(function (grp)
 		if Ugly.startsWith(grp:GetName(), "S_") ~= true then
 
-			local iconName = "neutral"
-
-			if grp:GetCategory() == 0 then
-				iconName = iconName.."airfixed"
-			elseif grp:GetCategory() == 1 then
-				iconName = iconName.."airrotary"
-			elseif grp:GetCategory() == 2 then
-				iconName = iconName.."ground"
-			elseif grp:GetCategory() == 3 then
-				iconName = iconName.."water"
-			else
-				iconName = iconName.."ground"
-			end
+      local iconName = "neutral" .. Ugly.getIconForCategory(grp:GetCategory())
 
 			-- Collect everything. No single units
 			local grpDesc = ""
@@ -1302,9 +1429,10 @@ Ugly.writeObjectsToJson = function()
 				end
 			end
 
-			-- Calculate the center point from all units.
+      -- Calculate the center point from all units.
+      local finalIconName = iconName .. Ugly.getIconDriver(grp:GetUnit(1))
 			local lat, lon = coord.LOtoLL(Ugly.getCoordFromGroup(grp))
-			fileString = fileString..Ugly.writeDataset(grpDesc, iconName, lon, lat)
+			fileString = fileString..Ugly.writeDataset(grpDesc, finalIconName, lon, lat)
 			fileString = fileString..",\n"
 		end
 	end
