@@ -146,6 +146,7 @@ end
 
 Ugly.awacsTypes = { "E-2C", "E-3A", "A-50" }
 Ugly.tankerTypes = { "KC130", "KC135MPRS", "KC-135", "S-3B Tanker", "IL-78M" }
+Ugly.cargoTypes = { "IL-76MD", "An-26B", "An-30M", "C-17A", "C-130" }
 
 Ugly.isOfType = function (_unit, _typeTable)
 
@@ -168,6 +169,10 @@ end
 
 Ugly.isTanker = function (_unit)
   return Ugly.isOfType(_unit, Ugly.tankerTypes)
+end
+
+Ugly.isCargo = function (_unit)
+  return Ugly.isOfType(_unit, Ugly.cargoTypes)
 end
 
 -----------------------------------------------------------------------------------------
@@ -1196,6 +1201,8 @@ Ugly.getIconDriver = function(_unit)
     iconName = "tanker"
   elseif Ugly.isAwacs(_unit) then
     iconName = "awacs"
+  elseif Ugly.isCargo(_unit) then
+    iconName = "cargo"
   end
 
   return iconName
@@ -1349,7 +1356,7 @@ Ugly.writeObjectsToJson = function()
 	-- Now the red ones
 
 	if Ugly.exportRedUnits then
-		local ExportGroups = SET_GROUP:New():FilterCoalitions( "red" ):FilterActive(true):FilterStart()
+		local ExportGroups = SET_GROUP:New():FilterCoalitions( "red" ):FilterCategoryAirplane():FilterCategoryHelicopter():FilterActive(true):FilterStart()
 
 		ExportGroups:ForEachGroupAlive(function (grp)
 			if Ugly.startsWith(grp:GetName(), "S_") ~= true then
