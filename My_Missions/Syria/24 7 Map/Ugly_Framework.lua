@@ -144,18 +144,17 @@ end
 -----------------------------------------------------------------------------------------
 -- Check if unit is an specific type
 
-Ugly.soldierTypes = { "soldier", "infantry", "paratrooper", "stinger", "manpad", "mortar" }
-Ugly.awacsTypes = { "soldier", "infantry", "paratrooper", "stinger", "manpad", "mortar" }
-Ugly.tankerTypes = { "soldier", "infantry", "paratrooper", "stinger", "manpad", "mortar" }
+Ugly.awacsTypes = { "E-2C", "E-3A", "A-50" }
+Ugly.tankerTypes = { "KC130", "KC135MPRS", "KC-135", "S-3B Tanker", "IL-78M" }
 
 Ugly.isOfType = function (_unit, _typeTable)
 
-    local _typeName = _unit:getTypeName()
+    local _typeName = _unit:GetTypeName()
 
     _typeName = string.lower(_typeName)
 
     for _key, _value in pairs(_typeTable) do
-        if string.match(_typeName, _value) then
+        if _typeName:lower() == _value:lower() then
             return true
         end
     end
@@ -169,10 +168,6 @@ end
 
 Ugly.isTanker = function (_unit)
   return Ugly.isOfType(_unit, Ugly.tankerTypes)
-end
-
-Ugly.isSoldier = function (_unit)
-  return Ugly.isOfType(_unit, Ugly.soldierTypes)
 end
 
 -----------------------------------------------------------------------------------------
@@ -1145,15 +1140,17 @@ Ugly.writeMarkerToJson = function()
     
 		local newCoord = COORDINATE:New(Ugly.deadPilotList[k].x, 0, Ugly.deadPilotList[k].y)
     local lat, lon = coord.LOtoLL(newCoord)
-    local iconName = "markercrashedaircraft"
+    local iconName = "markercrashedaircraft" .. Ugly.deadPilotList[k].coalition:lower()
+    local playerInfo = ""
 
     if Ugly.deadPilotList[k].playerName == "John Doe" then
       iconName = iconName .. "ai"
     else
+      playerInfo = "<br>Pilot: "..Ugly.deadPilotList[k].playerName
       iconName = iconName .. "player"
     end
 
-		jsonMarkerStr = jsonMarkerStr .. Ugly.writeDataset(Ugly.deadPilotList[k].type .. " Crashsite<br>Pilot: "..Ugly.deadPilotList[k].playerName, iconName, lon, lat)
+		jsonMarkerStr = jsonMarkerStr .. Ugly.writeDataset(Ugly.deadPilotList[k].type .. " Crashsite" .. playerInfo, iconName, lon, lat)
 
 		jsonMarkerStr = jsonMarkerStr .. ",\n"
 	end
@@ -1195,6 +1192,10 @@ Ugly.getIconDriver = function(_unit)
 
   if _unit:GetPlayerName() then
     iconName = "player"
+  elseif Ugly.isTanker(_unit) then
+    iconName = "tanker"
+  elseif Ugly.isAwacs(_unit) then
+    iconName = "awacs"
   end
 
   return iconName
@@ -1215,6 +1216,7 @@ Ugly.writeObjectsToJson = function()
     
     local iconName = "blue" .. Ugly.getIconForCategory(grp:GetCategory())
 
+    -- The Ejected ones
     local checkMore = true
 		if Ugly.startsWith(grp:GetName(), "Downed Pilot") then
   		  iconName = "markerdownedpilot"
@@ -1232,6 +1234,7 @@ Ugly.writeObjectsToJson = function()
 				checkMore = false
 		end
 
+    --- The Infantry
 		if checkMore ~= false then
 			for i = 1, #grp:GetUnits() do
 --	 			env.info("grp:GetUnit(i):GetTypeName() " .. grp:GetUnit(i):GetTypeName() )
@@ -1256,6 +1259,7 @@ Ugly.writeObjectsToJson = function()
 			end
 		end
 
+    -- Statics and the rest
 		if checkMore ~= false then
 			-- If group starts with "S_" treat as one entity
 			if Ugly.startsWith(grp:GetName(), "S_") then
