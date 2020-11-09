@@ -18,6 +18,7 @@ Ugly.ExportMapInterval = 5
 Ugly.LiveMapBaseDirectory = "C:\\DCS-WebMap\\Serious Uglies\\02 Maps Missions Server\\98 Server Admin\\Syria-Livemap\\"
 Ugly.exportRedUnits = true
 Ugly.exportBlueStatics = true
+Ugly.maxDeadPilots = 20
 
 -- If true, print any debug text
 Ugly.showDebugText = false

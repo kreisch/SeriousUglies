@@ -46,6 +46,7 @@ Ugly.ExportMapInterval = 5
 Ugly.LiveMapBaseDirectory = "C:\\DCS-WebMap\\Serious Uglies\\02 Maps Missions Server\\98 Server Admin\\Syria-Livemap\\"
 Ugly.exportRedUnits = true
 Ugly.exportBlueStatics = true
+Ugly.maxDeadPilots = 20
 
 -- If true, print any debug text
 Ugly.showDebugText = false
@@ -1140,24 +1141,35 @@ Ugly.writeMarkerToJson = function()
 
   -----------------------------------
   -- Dead Pilots
- 	for k,v in pairs(Ugly.deadPilotList) do
+  local crashedPerCoalition = {}
+
+  crashedPerCoalition["red"] = 0
+  crashedPerCoalition["blue"] = 0
+  crashedPerCoalition["neutral"] = 0
+
+  for k,v in pairs(Ugly.deadPilotList) do
 		markerCount = markerCount + 1
-    
-		local newCoord = COORDINATE:New(Ugly.deadPilotList[k].x, 0, Ugly.deadPilotList[k].y)
-    local lat, lon = coord.LOtoLL(newCoord)
-    local iconName = "markercrashedaircraft" .. Ugly.deadPilotList[k].coalition:lower()
+
+    local coalition = Ugly.deadPilotList[k].coalition:lower()
+    local iconName = "markercrashedaircraft" .. coalition
     local playerInfo = ""
+    local doExport = true
 
     if Ugly.deadPilotList[k].playerName == "John Doe" then
       iconName = iconName .. "ai"
+      crashedPerCoalition[coalition] = crashedPerCoalition[coalition] + 1
+      doExport = false
     else
       playerInfo = "<br>Pilot: "..Ugly.deadPilotList[k].playerName
       iconName = iconName .. "player"
     end
 
-		jsonMarkerStr = jsonMarkerStr .. Ugly.writeDataset(Ugly.deadPilotList[k].type .. " Crashsite" .. playerInfo, iconName, lon, lat)
-
-		jsonMarkerStr = jsonMarkerStr .. ",\n"
+    if crashedPerCoalition[coalition] < Ugly.maxDeadPilots or doExport then
+      local newCoord = COORDINATE:New(Ugly.deadPilotList[k].x, 0, Ugly.deadPilotList[k].y)
+      local lat, lon = coord.LOtoLL(newCoord)
+      jsonMarkerStr = jsonMarkerStr .. Ugly.writeDataset(Ugly.deadPilotList[k].type .. " Crashsite" .. playerInfo, iconName, lon, lat)
+      jsonMarkerStr = jsonMarkerStr .. ",\n"
+    end
 	end
 
 	-- remove last comma
