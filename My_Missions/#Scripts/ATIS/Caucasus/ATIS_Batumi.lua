@@ -1,4 +1,4 @@
-atisBatumi=ATIS:New(AIRBASE.Caucasus.Batumi, 260.15)
+atisBatumi=ATIS:New(AIRBASE.Caucasus.Batumi, 245.650)
 atisBatumi:SetRadioRelayUnitName("ATIS Batumi")
 atisBatumi:SetTowerFrequencies({260.100, 131.100})
 atisBatumi:SetImperialUnits()
