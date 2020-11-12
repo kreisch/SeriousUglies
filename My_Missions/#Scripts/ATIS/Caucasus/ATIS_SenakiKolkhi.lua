@@ -1,4 +1,4 @@
-atisSenakiKolkhi=ATIS:New(AIRBASE.Caucasus.Senaki_Kolkhi, 261.15)
+atisSenakiKolkhi=ATIS:New(AIRBASE.Caucasus.Senaki_Kolkhi, 251.150)
 atisSenakiKolkhi:SetRadioRelayUnitName("ATIS SenakiKolkhi")
 atisSenakiKolkhi:SetTowerFrequencies({261.100, 132.100})
 atisSenakiKolkhi:SetImperialUnits()
