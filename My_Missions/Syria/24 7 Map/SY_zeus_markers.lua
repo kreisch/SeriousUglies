@@ -28,6 +28,7 @@ RU_ZEUS_Mortar      = SPAWN:New("RU_ZEUS_Mortar")
 RU_ZEUS_Igla        = SPAWN:New("RU_ZEUS_Igla")
 RU_ZEUS_S300        = SPAWN:New("S_RU_ZEUS_S300")
 RU_ZEUS_SA2         = SPAWN:New("S_RU_ZEUS_SA2")
+RU_ZEUS_Speedboat5  = SPAWN:New("RU_ZEUS_Speedboat5")
 --
 ---- A2A BLUE
 ------- Jets
@@ -58,6 +59,7 @@ US_ZEUS_Mortar          = SPAWN:New("US_ZEUS_Mortar")
 US_ZEUS_Stinger         = SPAWN:New("US_ZEUS_Stinger")
 US_ZEUS_Paladin5        = SPAWN:New("Arty_US_ZEUS_Paladin5")
 US_ZEUS_Support         = SPAWN:New("US_ZEUS_Support")
+US_ZEUS_Downed_Pilot    = SPAWN:New("Downed Pilot_Zeus")
 
 
 function handleSpawnRequest(text, coord)
@@ -156,7 +158,8 @@ function handleSpawnRequest(text, coord)
         zeusSpawn =  US_ZEUS_Stinger   
         elseif text:find("us_zeus_support") then
         zeusSpawn =  US_ZEUS_Support
-        
+        elseif text:find("ru_zeus_speedboat5") then
+        zeusSpawn =  RU_ZEUS_Speedboat5
         		
   	elseif text:find("jtac") then
     	JTAC_ZEUS = JTAC_MQ_ZEUS:SpawnFromVec3(coord)
@@ -166,6 +169,29 @@ function handleSpawnRequest(text, coord)
     	
     	
     	env.info("JTAC:  ".. JTAC_ZEUS_NAME .."  spawned!")
+    	
+    	
+    elseif text:find("us_zeus_downed_pilot") then
+      
+      local DOWNED_PILOT_ZEUS = US_ZEUS_Downed_Pilot:SpawnFromVec3(coord)    
+
+      local _downedGroup = DOWNED_PILOT_ZEUS:GetDCSObject()
+      local _downedUnit = DOWNED_PILOT_ZEUS:GetDCSUnit(1)
+
+      trigger.action.setGroupAIOff(_downedGroup)
+      local _freq = csar.generateADFFrequency()
+
+      csar.addBeaconToGroup(_downedGroup:getName(), _freq)
+
+      -- Generate DESCRIPTION text
+      local _text = "Pilot of " .. _downedUnit:getName() .. " - " .. _downedUnit:getTypeName()
+
+      csar.woundedGroups[_downedGroup:getName()] = { side = _downedGroup:getCoalition(), originalUnit = _downedUnit:getName(), frequency = _freq, desc = _text, player = nil }
+
+      csar.initSARForPilot(_downedGroup, _freq)
+      csar.addSpecialParametersToGroup(_downedGroup)
+      
+      return
     	
     elseif text:find("us_zeus_paladin5") then
       
@@ -280,5 +306,26 @@ function SupportHandler:onEvent(Event)
 end
 
 world.addEventHandler(SupportHandler)
+
+
+function FarpSpawner()
+
+  local ZonePosition = ZONE:New( "Position" )
+  
+  local SpawnBuilding = SPAWNSTATIC:NewFromStatic( "Building", country.id.GERMANY )
+  local SpawnBarrack = SPAWNSTATIC:NewFromStatic( "Barrack", country.id.GERMANY )
+  
+  local ZonePointVec2 = ZonePosition:GetPointVec2()
+  
+  local Building = SpawnBuilding:SpawnFromZone( ZonePosition, 0 )
+  
+  for Heading = 0, 360,60 do
+    local Radial = Heading * ( math.pi*2 ) / 360
+    local x = ZonePointVec2:GetLat() + math.cos( Radial ) * 150
+    local y = ZonePointVec2:GetLon() + math.sin( Radial ) * 150
+    SpawnBarrack:SpawnFromPointVec2( POINT_VEC2:New( x, y ), Heading + 90 )
+  end
+  
+end
 
 env.info('ZEUS: Loaded')
