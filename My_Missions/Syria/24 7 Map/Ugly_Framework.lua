@@ -189,10 +189,15 @@ end
 -----------------------------------------------------------------------------------------
 -- Open file and write data
 
-Ugly.writemission = function (data, file)--Function for saving to file (commonly found)
-  File = io.open(file, "w")
-  File:write(data)
-  File:close()
+Ugly.writemission = function (_data, _fileName)--Function for saving to file (commonly found)
+  local File = io.open(_fileName, "w")
+
+  if File ~= nil then
+    File:write(_data)
+    File:close()
+  else
+    env.info("Ugly.writemission: Cannot access or write - " .. _fileName)
+  end
 end
 
 -----------------------------------------------------------------------------------------
@@ -1475,24 +1480,6 @@ end -- writeObjectsToJson
 
 
 Ugly.InitLiveWeb = function()
---[[
-  local require = require
-  local loadfile = loadfile
-    
-  local JSON = loadfile("Scripts\\JSON.lua")()
-
-  if JSON ~= nil then
-    env.info("UGLY: JSON available...")
-  else
-    env.info("UGLY: JSON NOT available!")
-  end
-
-  Ugly.JSON = JSON
-
-]]--
-
-
-
 
   --THE SAVING SCHEDULE
   SCHEDULER:New( nil, function()
