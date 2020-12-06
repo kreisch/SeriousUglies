@@ -71,7 +71,7 @@
           US_A2ADispatcher:SetCommandCenter( US_HQ_CC )
           
           -- Enable the tactical display panel.
-          US_A2ADispatcher:SetTacticalDisplay( true )
+          US_A2ADispatcher:SetTacticalDisplay( false )
           US_A2ADispatcher:SetTacticalMenu( "Dispatchers", "A2A" )
           
           -- Initialize the dispatcher, setting up a border zone. This is a polygon, 
