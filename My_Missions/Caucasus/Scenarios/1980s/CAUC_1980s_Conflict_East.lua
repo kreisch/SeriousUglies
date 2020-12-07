@@ -6,13 +6,14 @@
 local HQBlue = GROUP:FindByName("HQBlue")
 local CommandCenterBlue = COMMANDCENTER:New( HQBlue, "Overlord" )
 
+local autoGFT_East_Blue
+local autoGFT_East_Red
+local autoGFT_West_Blue
+local autoGFT_West_Red
 
-
-local switch = math.random (1,1)
-
-if switch == 1 then
+function Conflict_East_Border()
   -- BLUE UNITS
-  autogft_Setup:new()
+  autoGFT_East_Blue = autogft_Setup:new()
     :addBaseZone("Vladikavkaz_Blue_Base")
     :startUsingRoads()
     :setSpeed(90)
@@ -21,7 +22,7 @@ if switch == 1 then
     :addControlZone("East_Border_Obj1")
   
   -- RED UNITS
-  autogft_Setup:new()
+  autoGFT_East_Red = autogft_Setup:new()
     :addBaseZone("Kazbegi_Red_Base-1")
     :startUsingRoads()
     :setSpeed(90)
@@ -29,7 +30,12 @@ if switch == 1 then
     :addControlZone("East_Border_Obj2")
     :addControlZone("East_Border_Obj1")
     
-    ctld.JTACAutoLase('US_BAI_RECCE_Reaper_East', 1688)
+    ---- Spawn JTAC
+    --Spawn_Drone = SPAWN:New( "US_BAI_RECCE_Reaper_East" ):Spawn()
+    Spawn_Drone_Name = SPAWN:New( "US_BAI_RECCE_Reaper_East" ):Spawn():GetName()
+    ctld.JTACAutoLase(Spawn_Drone_Name, 1688)
+    
+    
     --- Define CAS now
     env.info("Loading A2G CAS Zone EAST")
           -- Initialize A2G
@@ -73,9 +79,14 @@ if switch == 1 then
           A2GDispatcherBlue:SetSquadronTakeoffInAir("F15E-Strike",2000)
           A2GDispatcherBlue:SetSquadronOverhead( "F15E-Strike", 2 )
     env.info("Loaded A2G CAS Zone EAST")
+
 end
 
-if switch == 2 then
+function stop()
+  autoGFT_East_Blue:stopReinforcing()
+end
+
+function Conflict_West_Border()
   -- BLUE UNITS
   autogft_Setup:new()
     :addBaseZone("Alagir_Blue_Base")
@@ -93,5 +104,22 @@ if switch == 2 then
     :addControlZone("West_Border_Ob1")
     :addControlZone("West_Border_Ob2")
     :addControlZone("West_Border_Ob3")
-
 end
+
+
+
+
+
+
+local switch = math.random (1,1)
+
+if switch == 1 then
+    Conflict_East_Border()
+end
+
+if switch == 2 then
+  Conflict_West_Border()
+end
+
+
+
