@@ -10,12 +10,12 @@ assert(Ugly ~= nil, "\n\n** HEY MISSION-DESIGNER! **\n\nThe Ugly Framework has n
 
 -- The global save interval
 Ugly.saveInterval = 666
-Ugly.PathToUserData = "C:\\temp" -- A directory "Persistence" is automatically added to the base directory
+Ugly.PathToUserData = "C:\\DCS_DATA" -- A directory "Persistence" is automatically added to the base directory
 Ugly.MissionSuffix = "AlWasabi"  -- A name suffix used, so different missions can use the same persistence directory
 
 -- The intervall in which the live map JSON data is exported
 Ugly.ExportMapInterval = 5
-Ugly.LiveMapBaseDirectory = "C:\\DCS-WebMap\\Serious Uglies\\02 Maps Missions Server\\98 Server Admin\\Syria-Livemap\\"
+Ugly.LiveMapBaseDirectory = "C:\\DCS_DATA\\Map"
 Ugly.exportRedUnits = true
 Ugly.exportBlueStatics = true
 Ugly.maxDeadPilots = 20
