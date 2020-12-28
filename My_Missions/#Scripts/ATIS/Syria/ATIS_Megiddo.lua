@@ -1,0 +1,5 @@
+atisMegiddo=ATIS:New("Megiddo", 254.65)
+atisMegiddo:SetRadioRelayUnitName("ATIS_Megiddo")
+atisMegiddo:SetImperialUnits()
+atisMegiddo:SetTowerFrequencies({135.100, 254.600})
+atisMegiddo:Start()

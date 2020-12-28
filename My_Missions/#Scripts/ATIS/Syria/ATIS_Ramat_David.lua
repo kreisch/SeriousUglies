@@ -1,0 +1,5 @@
+atisRamatDavid=ATIS:New("Ramat David", 254.45)
+atisRamatDavid:SetRadioRelayUnitName("ATIS_Ramat_David")
+atisRamatDavid:SetImperialUnits()
+atisRamatDavid:SetTowerFrequencies({128.900, 254.400})
+atisRamatDavid:Start()
