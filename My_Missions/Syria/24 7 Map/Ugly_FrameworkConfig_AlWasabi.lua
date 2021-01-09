@@ -15,7 +15,7 @@ Ugly.MissionSuffix = "AlWasabi"  -- A name suffix used, so different missions ca
 
 -- The intervall in which the live map JSON data is exported
 Ugly.ExportMapInterval = 5
-Ugly.LiveMapBaseDirectory = "C:\\DCS_DATA\\Map"
+Ugly.LiveMapBaseDirectory = "C:\\DCS_DATA\\Map\\"
 Ugly.exportRedUnits = true
 Ugly.exportBlueStatics = true
 Ugly.maxDeadPilots = 20
