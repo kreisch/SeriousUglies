@@ -153,14 +153,16 @@ ctld.JTAC_treatNeutralAsEnemy = false -- If true, JTAC also lases neutrals
 
 --pickupZones = { "Zone name or Ship Unit Name", "smoke color", "limit (-1 unlimited)", "ACTIVE (yes/no)", "side (0 = Both sides / 1 = Red / 2 = Blue )", flag number (optional) }
 ctld.pickupZones = {
-    { "pickzone1", "blue", -1, "yes", 0 },
-    { "pickzone2", "red", -1, "yes", 0 },
-    { "pickzone3", "none", -1, "yes", 0 },
-    { "pickzone4", "none", -1, "yes", 0 },
-    { "pickzone5", "none", -1, "yes", 0 },
-    { "pickzone6", "none", -1, "yes", 0 },
-    { "pickzone7", "none", -1, "yes", 0 },
-    { "pickzone8", "none", -1, "yes", 0 },
+    { "FARP_Blue_Paris_Zone", "none", -1, "yes", 2 },
+    { "FARP_Blue_Berlin_Zone", "none", -1, "yes", 2 },
+    { "pickzone3", "none", -1, "yes", 2 },
+    { "pickzone4", "none", -1, "yes", 2 },
+    { "pickzone5", "none", -1, "yes", 2 },
+    { "pickzone6", "none", -1, "yes", 2 },
+    { "pickzone7", "none", -1, "yes", 2 },
+    { "pickzone8", "none", -1, "yes", 2 },
+    
+    
     { "pickzone9", "none", 5, "yes", 1 }, -- limits pickup zone 9 to 5 groups of soldiers or vehicles, only red can pick up
     { "pickzone10", "none", 10, "yes", 2 },  -- limits pickup zone 10 to 10 groups of soldiers or vehicles, only blue can pick up
 
@@ -196,16 +198,49 @@ ctld.dropOffZones = {
 
 --wpZones = { "Zone name", "smoke color",  "ACTIVE (yes/no)", "side (0 = Both sides / 1 = Red / 2 = Blue )", }
 ctld.wpZones = {
-    { "wpzone1", "none","yes", 2 },
-    { "wpzone_AleppoSAM", "none","yes", 2 },
-    { "wpzone_AleppoAF", "none","yes", 2 },
-    { "wpzone4", "none","yes", 2 },
-    { "wpzone5", "none","yes", 2 },
-    { "wpzone6", "none","yes", 1 },
-    { "wpzone7", "none","yes", 1 },
-    { "wpzone8", "none","yes", 1 },
-    { "wpzone9", "none","yes", 1 },
-    { "wpzone10", "none","no", 0 }, -- Both sides as its set to 0
+    { "Alagir_Blue_Base", "none","yes", 1 },  
+    { "West_Border_Ob1", "none","yes", 0 },
+    { "West_Border_Ob2", "none","yes", 0 },
+    { "West_Border_Ob3", "none","yes", 0 },
+    { "KvemoSba_Red_Base", "none","yes", 2 },
+
+    
+    
+    { "Vladikavkaz_Blue_Base", "none","yes", 1 },
+    { "East_Border_Obj3", "none","yes", 0 },
+    { "East_Border_Obj2", "none","yes", 0 },
+    { "East_Border_Obj1", "none","yes", 0 },
+    { "Kazbegi_Red_Base-1", "none","yes", 2 },
+    
+    
+    { "Tblisi-Target-1", "none","yes", 2 },
+    { "Tblisi-Target-2", "none","yes", 0 },
+    { "Tblisi-Target-3", "none","yes", 2 },
+    { "Tblisi-Target-4", "none","yes", 0 },
+    { "Tblisi-Target-5", "none","yes", 2 },
+    { "Tblisi-Target-6", "none","yes", 2 },
+    { "Tblisi-Target-7", "none","yes", 0 },
+    { "Tblisi-Target-8", "none","yes", 2 },
+    { "Tblisi-Target-9", "none","yes", 0 },
+    { "Tblisi-Target-10", "none","yes", 2 },
+    { "Tblisi-Target-11", "none","yes", 2 },
+    { "Tblisi-Target-12", "none","yes", 0 },
+    { "Tblisi-Target-13", "none","yes", 2 },
+    { "Tblisi-Target-14", "none","yes", 2 },
+    { "Tblisi-Target-Airfield", "none","yes", 0 },
+    
+    { "Tskhinvali_Target_1", "none","yes", 0 },
+    { "Tskhinvali_Target_1-1", "none","yes", 0 },
+    { "Tskhinvali_Target_1-2", "none","yes", 0 },
+    { "Tskhinvali_Target_1-3", "none","yes", 0 },
+    
+    { "Khashuri_Target_1", "none","yes", 0 },
+    { "Khashuri_Target_1-1", "none","yes", 0 },
+    { "Khashuri_Target_1-2", "none","yes", 0 },
+    { "Khashuri_Target_1-3", "none","yes", 0 },
+    
+    { "Reha-Target-1", "none","yes", 0 },
+
 }
 
 
@@ -223,7 +258,6 @@ ctld.transportPilotNames = {
     "helicargo8",
     "helicargo9",
     "helicargo10",
-
     "helicargo11",
     "helicargo12",
     "helicargo13",
@@ -234,12 +268,36 @@ ctld.transportPilotNames = {
     "helicargo18",
     "helicargo19",
     "helicargo20",
-
     "helicargo21",
     "helicargo22",
     "helicargo23",
     "helicargo24",
     "helicargo25",
+    "helicargo26",
+    "helicargo27",
+    "helicargo28",
+    "helicargo29",
+    "helicargo30",
+    "helicargo31",
+    "helicargo32",
+    "helicargo33",
+    "helicargo34",
+    "helicargo35",
+    "helicargo36",
+    "helicargo37",
+    "helicargo38",
+    "helicargo39",
+    "helicargo40",
+    "helicargo41",
+    "helicargo42",
+    "helicargo43",
+    "helicargo44",
+    "helicargo45",
+    "helicargo46",
+    "helicargo47",
+    "helicargo48",
+    "helicargo49",
+    "helicargo50",
 
     "MEDEVAC #1",
     "MEDEVAC #2",
@@ -375,8 +433,8 @@ ctld.extractableGroups = {
 -- When a logistic static is destroyed, you will no longer be able to spawn crates
 
 ctld.logisticUnits = {
-    "FARP_London_Supply",
-    "logistic_Hatay",
+    "FARP_Blue_Paris_Supply",
+    "FARP_Blue_Berlin_Supply",
     "logistic3",
     "logistic4",
     "logistic5",

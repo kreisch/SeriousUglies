@@ -1,39 +1,25 @@
 --- 1980s setting of Serious Uglies ---
 --- @author: kreisch
 
--- First we define a random number to determine which lane will go active
-
 local HQBlue = GROUP:FindByName("HQBlue")
 local CommandCenterBlue = COMMANDCENTER:New( HQBlue, "Overlord" )
 local HQRED = GROUP:FindByName("HQRED")
 local CommandCenterRed = COMMANDCENTER:New( HQRED, "MasterEvil" )
 
-local autoGFT_East_Blue
-local autoGFT_East_Red
-local autoGFT_West_Blue
-local autoGFT_West_Red
 
 function Conflict_East_Border()
   -- BLUE UNITS
-  autoGFT_East_Blue = autogft_Setup:new()
-    :addBaseZone("Vladikavkaz_Blue_Base")
-    :startUsingRoads()
-    :setSpeed(90)
-    :addControlZone("East_Border_Obj3")
-    :addControlZone("East_Border_Obj2")
-    :addControlZone("East_Border_Obj1")
+  BlueConvoy1 = SPAWN:New("TaskForceEast_Convoy1-1"):InitLimit(16,6):SpawnScheduled(300,0.5)
   
   -- RED UNITS
   Roadblock = SPAWN:New("Kazbegi_RoadOutpost"):Spawn()
   Defensive = SPAWN:New("Kazbegi_RoadOutpost-1"):Spawn()
+  BorderForces1 = SPAWN:New("TaskForce_RU_East_BorderForces"):Spawn()
+  BorderForces2 = SPAWN:New("TaskForce_RU_East_BorderForces-1"):Spawn()
+  BorderForces3 = SPAWN:New("TaskForce_RU_East_BorderForces-2"):Spawn()
   
-  autoGFT_East_Red = autogft_Setup:new()
-    :addBaseZone("Kazbegi_Red_Base-1")
-    :startUsingRoads()
-    :setSpeed(90)
-    :addControlZone("East_Border_Obj3")
-    :addControlZone("East_Border_Obj2")
-    :addControlZone("East_Border_Obj1")
+  RedConvoy1 = SPAWN:New("TaskForce_RU_East_Convoy1-1"):InitLimit(12,3):SpawnScheduled(300,0.5)
+  RedConvoy2 = SPAWN:New("TaskForce_RU_East_Convoy1-2"):InitLimit(12,3):SpawnScheduled(600,0.7)
     
     ---- Spawn JTAC
     Spawn_Drone_Name = SPAWN:New( "US_BAI_RECCE_Reaper_East" ):Spawn():GetName()
@@ -116,36 +102,26 @@ function Conflict_East_Border()
 
 end
 
+-- in work
 function stop()
   autoGFT_East_Blue:stopReinforcing()
 end
 
 function Conflict_West_Border()
-  -- Spawn the Units (Buildings) which represent the reinforcement factories
-  Roadblock = SPAWN:New("KvemoSba_RoadOutpost"):Spawn()
-  Factories = SPAWN:New("KvemoSbaGround-2"):Spawn()
-    
   -- BLUE UNITS
-  autogft_Setup:new()
-    :addBaseZone("Alagir_Blue_Base")
-    :startUsingRoads()
-    :setSpeed(90)
-    :addIntermidiateZone("West_Border_Ob1")
-    :addIntermidiateZone("West_Border_Ob2")
-    :addIntermidiateZone("West_Border_Ob3")
-    :addControlZone("KvemoSba_Red_Base")
+  BlueConvoy1 = SPAWN:New("TaskForceWest_Convoy1-2"):InitLimit(16,6):SpawnScheduled(300,0.5)
   
   -- RED UNITS
-  autogft_Setup:new()
-    :addBaseZone("KvemoSba_Red_Base")
-    :startUsingRoads()
-    :linkBase("Vladikavkaz_Blue_Base", "KvemoSba_RoadOutpost")
-    :linkBase("Vladikavkaz_Blue_Base", "KvemoSbaGround-2")
-    :setSpeed(90)
-    :addIntermidiateZone("West_Border_Ob3")
-    :addIntermidiateZone("West_Border_Ob2")
-    :addIntermidiateZone("West_Border_Ob1")
-    :addControlZone("Alagir_Blue_Base")
+  Roadblock = SPAWN:New("KvemoSba_RoadOutpost"):Spawn()
+  Defensive = SPAWN:New("KvemoSbaGround-2"):Spawn()
+  BorderForces1 = SPAWN:New("TaskForce_RU_West_BorderForces"):Spawn()
+  BorderForces2 = SPAWN:New("TaskForce_RU_West_BorderForces-1"):Spawn()
+  BorderForces3 = SPAWN:New("TaskForce_RU_West_BorderForces-2"):Spawn()
+  BorderForces4 = SPAWN:New("TaskForce_RU_West_BorderForces-3"):Spawn()
+  
+  RedConvoy1 = SPAWN:New("TaskForce_RU_West_Convoy1-1"):InitLimit(12,3):SpawnScheduled(300,0.5)
+  RedConvoy2 = SPAWN:New("TaskForce_RU_West_Convoy1-2"):InitLimit(12,3):SpawnScheduled(600,0.7)
+  
     
     
         ---- Spawn JTAC
@@ -233,7 +209,7 @@ end
 
 
 
-local switch = math.random (2,2)
+local switch = math.random (1,2)
 
 if switch == 1 then
     Conflict_East_Border()
