@@ -67,7 +67,7 @@ ctld.enabledFOBBuilding = true -- if true, you can load a crate INTO a C-130 tha
 -- In future i'd like it to be a FARP but so far that seems impossible...
 -- You can also enable troop Pickup at FOBS
 
-ctld.cratesRequiredForFOB = 2 -- The amount of crates required to build a FOB. Once built, helis can spawn crates at this outpost to be carried and deployed in another area.
+ctld.cratesRequiredForFOB = 1 -- The amount of crates required to build a FOB. Once built, helis can spawn crates at this outpost to be carried and deployed in another area.
 -- The large crates can only be loaded and dropped by large aircraft, like the C-130 and listed in ctld.vehicleTransportEnabled
 -- Small FOB crates can be moved by helicopter. The FOB will require ctld.cratesRequiredForFOB larges crates and small crates are 1/3 of a large fob crate
 -- To build the FOB entirely out of small crates you will need ctld.cratesRequiredForFOB * 3
@@ -148,8 +148,8 @@ ctld.JTAC_lock = "all" -- "vehicle" OR "troop" OR "all" forces JTAC to only lock
 
 --pickupZones = { "Zone name or Ship Unit Name", "smoke color", "limit (-1 unlimited)", "ACTIVE (yes/no)", "side (0 = Both sides / 1 = Red / 2 = Blue )", flag number (optional) }
 ctld.pickupZones = {
-    { "PickupKutaisi", "none", -1, "yes", 0 },
-    { "pickzone2", "red", -1, "yes", 0 },
+    { "pickzone1", "none", -1, "yes", 0 },
+    { "pickzone2", "none", -1, "yes", 0 },
     { "pickzone3", "none", -1, "yes", 0 },
     { "pickzone4", "none", -1, "yes", 0 },
     { "pickzone5", "none", -1, "yes", 0 },
@@ -208,52 +208,58 @@ ctld.wpZones = {
 
 -- Use any of the predefined names or set your own ones
 ctld.transportPilotNames = {
-    "UH1 Slot1",
-    "UH1 Slot2",
-    "UH1 Slot3",
-    "UH1 Slot4",
-    "SA342L Slot5",
-    "SA342L Slot6",
-    "SA342M Slot7",
-    "SA342M Slot8",
-    "MI8 Slot 9",
-    "MI8 Slot 10",
+    "helicargo1",
+    "helicargo2",
+    "helicargo3",
+    "helicargo4",
+    "helicargo5",
+    "helicargo6",
+    "helicargo7",
+    "helicargo8",
+    "helicargo9",
+    "helicargo10",
 
-    "JOLLY RAMP #008",
-    "JOLLY RAMP #001",
-    "JOLLY RAMP #009",
-    "JOLLY RAMP #010",
-    "JOLLY RAMP #011",
-    "MI8 Slot 10 #002",
-    "MI8 Slot 10 #001",
+    "helicargo11",
+    "helicargo12",
+    "helicargo13",
+    "helicargo14",
+    "helicargo15",
+    "helicargo16",
+    "helicargo17",
     "helicargo18",
     "helicargo19",
     "helicargo20",
-    
-    "London 1 Mi-8",
-    "London 1 Mi-8 #001",
-    "London 1 Mi-8 #002",
-    "London 1 Mi-8 #003",
-    "London 3 UH 1",
-    "London 3 UH 1 #001",
-    "London 3 UH 1 #002",
-    "London 3 UH 1 #003",
-    "London 2 SA342L",
-    "London 2 SA342L #001",
-    "London 2 SA342M",
-    "London 2 SA342M #001",
-    
-    
 
-    "FarpGroomLake1",
-    "FarpGroomLake1 #001",
-    "FarpGroomLake1 #002",
-    "FarpGroomLake1 #003",
-    "FarpGroomLake5",
-
-    "FarpGroomLake6",
-    "FarpGroomLake7",
-    "FarpGroomLake8",
+    "helicargo21",
+    "helicargo22",
+    "helicargo23",
+    "helicargo24",
+    "helicargo25",
+    "helicargo26",
+    "helicargo27",
+    "helicargo28",
+    "helicargo29",
+    "helicargo30",
+    "helicargo31",
+    "helicargo32",
+    "helicargo33",
+    "helicargo34",
+    "helicargo35",
+    "helicargo36",
+    "helicargo37",
+    "helicargo38",
+    "helicargo39",
+    "helicargo40",
+    "helicargo41",
+    "helicargo42",
+    "helicargo43",
+    "helicargo44",
+    "helicargo45",
+    "helicargo46",
+    "helicargo47",
+    "helicargo48",
+    "helicargo49",
+    "helicargo50",
     "MEDEVAC #4",
     "MEDEVAC #5",
     "MEDEVAC #6",
@@ -385,7 +391,7 @@ ctld.extractableGroups = {
 -- When a logistic unit is destroyed, you will no longer be able to spawn crates
 
 ctld.logisticUnits = {
-    "CTLDBlueHQ",
+    "FARP_London_Supply",
     "CTLDBlueHQ2",
     "CTLDBlueHQCoast",
     "CTLDBlueHQCoast2",

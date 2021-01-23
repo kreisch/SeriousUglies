@@ -211,7 +211,7 @@ function Conflict_West_Border()
         Conflict_East_Border()
       end
 end
-local switch = math.random (1,2)
+local switch = math.random (1,1)
 
 if switch == 1 then
     Conflict_East_Border()
