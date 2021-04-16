@@ -1,0 +1,5 @@
+atisMozdok=ATIS:New(AIRBASE.Caucasus.Mozdok, 321.650)
+atisMozdok:SetRadioRelayUnitName("ATIS Mozdok")
+atisMozdok:SetTowerFrequencies({129.400, 321.600})
+atisMozdok:SetImperialUnits()
+atisMozdok:Start()

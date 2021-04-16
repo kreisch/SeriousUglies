@@ -79,7 +79,7 @@ end
 local Nugget05Active = false
 local Nugget05Trucks = SPAWN:New("Nugget 05 - Trucks")
 local Nugget05BTRs = SPAWN:New("Nugget 05 - BTRs")
-local Nugget05Bunkers = SPAWN:New("Nugget 05 - Bunker")
+--local Nugget05Bunkers = SPAWN:New("Nugget 05 - Bunker")
 
 function Nugget05Start()
  if not Nugget05Active then
@@ -87,7 +87,7 @@ function Nugget05Start()
    Nugget05Active = true
    Nugget05Trucks:ReSpawn()
    Nugget05BTRs:ReSpawn()
-   Nugget05Bunkers:ReSpawn()
+   --Nugget05Bunkers:ReSpawn()
    
    MessageToAll("Nugget 05 - Einheiten sind gespawned!",60,"Nugget 05 Spawn")
    
@@ -103,7 +103,7 @@ function Nugget05End()
   Nugget05Active = false
   Nugget05Trucks:GetLastAliveGroup():Destroy()
   Nugget05BTRs:GetLastAliveGroup():Destroy()
-  Nugget05Bunkers:GetLastAliveGroup():Destroy()
+  --Nugget05Bunkers:GetLastAliveGroup():Destroy()
   
   
   MessageToAll("Nugget 05 - Einheiten sind despawned!",60,"Nugget 05 Despawn")
@@ -208,4 +208,4 @@ local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Nugget 06 : St
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Nugget 06 : Ende", MenuCoalitionBlueMissionSetupNuggets06, Nugget06End)
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Nugget 07 : Start", MenuCoalitionBlueMissionSetupNuggets07, Nugget07Start)
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Nugget 07 : Ende", MenuCoalitionBlueMissionSetupNuggets07, Nugget07End)
--- MENÜ STRUKTUR ############################################################################################################################################  
+ -- MENÜ STRUKTUR ############################################################################################################################################  

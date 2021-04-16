@@ -1,0 +1,5 @@
+atisBeslan=ATIS:New(AIRBASE.Caucasus.Beslan, 272.350)
+atisBeslan:SetRadioRelayUnitName("ATIS Beslan")
+atisBeslan:SetTowerFrequencies({143.500, 272.300})
+atisBeslan:SetImperialUnits()
+atisBeslan:Start()

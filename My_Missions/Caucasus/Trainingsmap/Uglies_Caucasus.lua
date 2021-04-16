@@ -42,10 +42,40 @@ local Marcos2UnitsMedium4 = SPAWN:New("S3_Medium")
 local Marcos2UnitsHard1 = SPAWN:New("S3_SA2_Hard")
 
 
+local SATrainingUnitsEasy1 = SPAWN:New("S4_L1_SHORAD-1")
+local SATrainingUnitsEasy2 = SPAWN:New("S4_L1_SHORAD-2")
+local SATrainingUnitsEasy3 = SPAWN:New("S4_L1_SHORAD-3")
+local SATrainingUnitsEasy4 = SPAWN:New("S4_L1_SHORAD-4")
+local SATrainingUnitsEasy5 = SPAWN:New("S4_L1_SHORAD-5")
+local SATrainingUnitsEasy6 = SPAWN:New("S4_L1_SHORAD-6")
+local SATrainingUnitsEasy7 = SPAWN:New("S4_L1_SHORAD-7")
+local SATrainingUnitsEasy8 = SPAWN:New("S4_L1_SHORAD-8")
+local SATrainingUnitsEasy9 = SPAWN:New("S4_L1_SHORAD-9")
+local SATrainingUnitsEasy10 = SPAWN:New("S4_L1_SHORAD-10")
+local SATrainingUnitsEasy11 = SPAWN:New("S4_L1_SHORAD-11")
+
+local SATrainingUnitsMedium1 = SPAWN:New("S4_L2_SHORAD-1")
+local SATrainingUnitsMedium2 = SPAWN:New("S4_L2_SHORAD-2")
+local SATrainingUnitsMedium3 = SPAWN:New("S4_L2_SHORAD-3")
+local SATrainingUnitsMedium4 = SPAWN:New("S4_L2_SHORAD-4")
+local SATrainingUnitsMedium5 = SPAWN:New("S4_L2_SHORAD-5")
+local SATrainingUnitsMedium6 = SPAWN:New("S4_L2_SHORAD-6")
+
+local redBomberStrike1 = SPAWN:New("Bomber Runway 1")
+local redBomberStrike2 = SPAWN:New("Bomber Runway 1-1")
+local redBomberStrike3 = SPAWN:New("Bomber Runway 1-2")
+
+local f5CapGroup1 = SPAWN:New("Mig28_CAP1")
+local f5CapGroup2 = SPAWN:New("Mig28_CAP2")
+
+
 local carlos = -1
 local marcos = -1
 local marcos2 = -1
+local satraining = -1
 local shipDrones = -1
+local redBomberStrike = false
+local F5CAP = false
 
 -- START Drohnen
 
@@ -53,9 +83,9 @@ local droneWillie1 = SPAWN:New("Willie1")
 local droneWillie2 = SPAWN:New("Willie2")
 local droneWillie3 = SPAWN:New("Willie3")
 local droneWillie4 = SPAWN:New("Willie4")
-local droneWillie5 = SPAWN:New("Willie5")
+--local droneWillie5 = SPAWN:New("Willie5")
 local droneWillie6 = SPAWN:New("Willie6")
-local droneWillie7 = SPAWN:New("Willie7")
+--local droneWillie7 = SPAWN:New("Willie7")
 
 local droneIL76Active = false
 
@@ -66,9 +96,9 @@ local function DroneStart()
    droneWillie2:ReSpawn()
    droneWillie3:ReSpawn()
    droneWillie4:ReSpawn()
-   droneWillie5:ReSpawn()
+   --droneWillie5:ReSpawn()
    droneWillie6:ReSpawn()
-   droneWillie7:ReSpawn()
+   --droneWillie7:ReSpawn()
 
    
    droneIL76Active = true
@@ -87,9 +117,9 @@ local function DroneEnd()
   droneWillie2:GetLastAliveGroup():Destroy()
   droneWillie3:GetLastAliveGroup():Destroy()
   droneWillie4:GetLastAliveGroup():Destroy()
-  droneWillie5:GetLastAliveGroup():Destroy()
+  --droneWillie5:GetLastAliveGroup():Destroy()
   droneWillie6:GetLastAliveGroup():Destroy()
-  droneWillie7:GetLastAliveGroup():Destroy()
+  --droneWillie7:GetLastAliveGroup():Destroy()
 
   droneIL76Active = false
   MessageToAll("WARNING: Drohne Willie offline!",60,"Drone Willie Despawn")
@@ -321,21 +351,135 @@ local function Marcos2End()
       marcos2 = -1
 end
 
+local function SATrainingStart(difficult)
+satraining = difficult
+  if satraining >= 1 then
+    SATrainingUnitsEasy1:ReSpawn()
+    SATrainingUnitsEasy2:ReSpawn()
+    SATrainingUnitsEasy3:ReSpawn()
+    SATrainingUnitsEasy4:ReSpawn()
+    SATrainingUnitsEasy5:ReSpawn()
+    SATrainingUnitsEasy6:ReSpawn()
+    SATrainingUnitsEasy7:ReSpawn()
+    SATrainingUnitsEasy8:ReSpawn()
+    SATrainingUnitsEasy9:ReSpawn()
+    SATrainingUnitsEasy10:ReSpawn()
+    SATrainingUnitsEasy11:ReSpawn()
+  end
+   if satraining >= 2 then
+    SATrainingUnitsMedium1:ReSpawn()
+    SATrainingUnitsMedium2:ReSpawn()
+    SATrainingUnitsMedium3:ReSpawn()
+    SATrainingUnitsMedium4:ReSpawn()
+    SATrainingUnitsMedium5:ReSpawn()
+    SATrainingUnitsMedium6:ReSpawn()
+
+    end
+      MessageToAll("SA-Training Units spawned!",60,"SA-Training active")
+end
+
+local function SATrainingEnd()
+  if satraining >= 1 then
+    SATrainingUnitsEasy1:GetLastAliveGroup():Destroy()
+    SATrainingUnitsEasy2:GetLastAliveGroup():Destroy()
+    SATrainingUnitsEasy3:GetLastAliveGroup():Destroy()
+    SATrainingUnitsEasy4:GetLastAliveGroup():Destroy()
+    SATrainingUnitsEasy5:GetLastAliveGroup():Destroy()
+    SATrainingUnitsEasy6:GetLastAliveGroup():Destroy()
+    SATrainingUnitsEasy7:GetLastAliveGroup():Destroy()
+    SATrainingUnitsEasy8:GetLastAliveGroup():Destroy()
+    SATrainingUnitsEasy9:GetLastAliveGroup():Destroy()
+    SATrainingUnitsEasy10:GetLastAliveGroup():Destroy()
+    SATrainingUnitsEasy11:GetLastAliveGroup():Destroy()
+  end
+   if satraining >= 2 then
+    SATrainingUnitsMedium1:GetLastAliveGroup():Destroy()
+    SATrainingUnitsMedium2:GetLastAliveGroup():Destroy()
+    SATrainingUnitsMedium3:GetLastAliveGroup():Destroy()
+    SATrainingUnitsMedium4:GetLastAliveGroup():Destroy()
+    SATrainingUnitsMedium5:GetLastAliveGroup():Destroy()
+    SATrainingUnitsMedium6:GetLastAliveGroup():Destroy()
+ end
+      MessageToAll("SA-Training De-Spawned",60,"SA-Training inactive")
+      satraining = -1
+end
+
+
+
+
+local function RedBomberStrikeStart()
+ if not redBomberStrike then
+ 
+   redBomberStrike1:ReSpawn()
+   redBomberStrike2:ReSpawn()
+   redBomberStrike3:ReSpawn()
+   
+   redBomberStrike = true
+   MessageToAll("WARNING: Red Bomber Strike on Gudauta activated!",60,"Bomber Strike Spawn")  
+   else  
+   MessageToAll("WARNING: Red Bomber Strike already active",10,"Bomber Strike Error Spawn")  
+ end
+end
+
+
+local function RedBomberStrikeEnd()
+ if redBomberStrike then
+  redBomberStrike1:GetLastAliveGroup():Destroy()
+  redBomberStrike2:GetLastAliveGroup():Destroy()
+  redBomberStrike3:GetLastAliveGroup():Destroy()
+
+  redBomberStrike = false
+  MessageToAll("WARNING: Red Bomber Strike on Gudauta de-activated!",60,"Bomber Strike Despawn")
+  else 
+   MessageToAll("WARNING: Red Bomber Strike already inactive!",10,"Bomber Strike Despawn")  
+ end 
+end
+
+local function F5CAPStart()
+ if not F5CAP then
+ 
+   f5CapGroup1:ReSpawn()
+   f5CapGroup2:ReSpawn()
+   
+   F5CAP = true
+   MessageToAll("WARNING: Red CAP activated!",60,"Red CAP Spawn")  
+   else  
+   MessageToAll("WARNING: Red CAP already active",10,"Red CAP Error Spawn")  
+ end
+end
+
+
+local function F5CAPEnd()
+ if F5CAP then
+  f5CapGroup1:GetLastAliveGroup():Destroy()
+  f5CapGroup2:GetLastAliveGroup():Destroy()
+
+  F5CAP = false
+  MessageToAll("WARNING: Red CAP de-activated!",60,"Red CAP Despawn")
+  else 
+   MessageToAll("WARNING: Red CAP already inactive!",10,"Red CAP Despawn")  
+ end 
+end
+
 
 -- Menüstruktur
 -- 1st Level!
 MenuCoalitionBlueA2G = MENU_COALITION:New( coalition.side.BLUE, "MissionSetup A2G..." )
 MenuCoalitionBlueA2A = MENU_COALITION:New( coalition.side.BLUE, "MissionSetup A2A..." )
 
+
 -- 2nd Level!
 local MenuCoalitionBlueMissionSetupA2GCarlosMarcos = MENU_COALITION:New( coalition.side.BLUE, "Carlos and Marcos...", MenuCoalitionBlueA2G)
 local MenuCoalitionBlueMissionSetupA2ADrones = MENU_COALITION:New( coalition.side.BLUE, "Drones...", MenuCoalitionBlueA2A)
-local MenuCoalitionBlueMissionSetupA2ADroneIL76 = MENU_COALITION:New( coalition.side.BLUE, "Drohne Willie (IL76)...", MenuCoalitionBlueMissionSetupA2ADrones)
+local MenuCoalitionBlueMissionSetupA2BomberRunway = MENU_COALITION:New( coalition.side.BLUE, "Red Bomber Strike Gudauta ...", MenuCoalitionBlueA2A)
+local MenuCoalitionBlueMissionSetupA2AF5CAP = MENU_COALITION:New( coalition.side.BLUE, "F5 CAP ...", MenuCoalitionBlueA2A)
+local MenuCoalitionBlueMissionSetupA2GSATraining = MENU_COALITION:New( coalition.side.BLUE, "SA-Training...", MenuCoalitionBlueA2G)
 
 -- 3rd Level !
 local MenuCoalitionBlueMissionSetupA2GCarlos = MENU_COALITION:New( coalition.side.BLUE, "Carlos...", MenuCoalitionBlueMissionSetupA2GCarlosMarcos)
 local MenuCoalitionBlueMissionSetupA2GMarcos = MENU_COALITION:New( coalition.side.BLUE, "Marcos...", MenuCoalitionBlueMissionSetupA2GCarlosMarcos)
 local MenuCoalitionBlueMissionSetupA2GShips = MENU_COALITION:New( coalition.side.BLUE, "Ships...", MenuCoalitionBlueA2G)
+local MenuCoalitionBlueMissionSetupA2ADroneIL76 = MENU_COALITION:New( coalition.side.BLUE, "Drohne Willie (IL76)...", MenuCoalitionBlueMissionSetupA2ADrones)
 
 -- Action Level!
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Drohne Willie (IL76) : Start", MenuCoalitionBlueMissionSetupA2ADroneIL76, DroneStart )
@@ -353,7 +497,15 @@ local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Marcos S3 Medi
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Marcos S3 Hard : Start", MenuCoalitionBlueMissionSetupA2GMarcos, Marcos2Start , 3 )
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Marcos S3 : End", MenuCoalitionBlueMissionSetupA2GMarcos, Marcos2End)
 
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "SA-Training S4 Easy : Start", MenuCoalitionBlueMissionSetupA2GSATraining, SATrainingStart , 1 )
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "SA-Training S4 Medium : Start", MenuCoalitionBlueMissionSetupA2GSATraining, SATrainingStart , 2 )
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "SA-Training S4 : End", MenuCoalitionBlueMissionSetupA2GSATraining, SATrainingEnd)
 
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Red Bomber Strike : Start", MenuCoalitionBlueMissionSetupA2BomberRunway, RedBomberStrikeStart)
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Red Bomber Strike : End", MenuCoalitionBlueMissionSetupA2BomberRunway, RedBomberStrikeEnd)
+
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "F5 CAP : Start", MenuCoalitionBlueMissionSetupA2AF5CAP, F5CAPStart)
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "F5 CAP : End", MenuCoalitionBlueMissionSetupA2AF5CAP, F5CAPEnd)
 
 
 
