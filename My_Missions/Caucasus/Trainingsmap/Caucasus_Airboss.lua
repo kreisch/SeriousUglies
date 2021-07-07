@@ -1,27 +1,4 @@
--- S-3B Recovery Tanker spawning in air. Groupname
-local tanker=RECOVERYTANKER:New("CVN-74 Stennis", "ShellCarrier")
-tanker:SetRadio(121)
-tanker:SetModex(911)
-tanker:SetTACAN(21, "SHL11")
-tanker:SetTakeoffAir()
-tanker:Start()
 
------- E-2D AWACS spawning on Stennis.
---local awacs=RECOVERYTANKER:New("CVN-74 Stennis", "Wizard")
---awacs:SetAWACS()
---awacs:SetRadio(240.400)
---awacs:SetAltitude(20000)
---awacs:SetCallsign(CALLSIGN.AWACS.Wizard)
---awacs:SetRacetrackDistances(30, 15)
---awacs:SetModex(611)
---awacs:SetTakeoffAir()
---awacs:__Start(1)
-
----- Rescue Helo with home base Lake Erie. Has to be a global object! Group name for helo
---rescuehelo=RESCUEHELO:New("CVN-74 Stennis", "Rescue Helo")
---rescuehelo:SetHomeBase(AIRBASE:FindByName("PerryHeli"))
---rescuehelo:SetModex(012)
---rescuehelo:__Start(1)
 
 
 -- Create AIRBOSS object. Use Unit name

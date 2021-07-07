@@ -1,0 +1,6 @@
+SPAWN:New('Naval-1'):InitLimit(1,0):SpawnScheduled(600,.9)
+SPAWN:New('Naval-2'):InitLimit(1,0):SpawnScheduled(600,.9)
+SPAWN:New('Naval-3'):InitLimit(1,0):SpawnScheduled(600,.9)
+SPAWN:New('Naval-4'):InitLimit(1,0):SpawnScheduled(600,.9)
+SPAWN:New('Naval-5'):InitLimit(1,0):SpawnScheduled(600,.9)
+SPAWN:New('Naval-6'):InitLimit(1,0):SpawnScheduled(600,.9)
