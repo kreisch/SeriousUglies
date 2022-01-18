@@ -440,7 +440,7 @@ ctld.unitLoadLimits = {
     ["SA342L"] = 2,
     ["SA342M"] = 2,
     ["UH-1H"] = 12,
-    ["Mi-8MTV2"] = 28,
+    ["Mi-8MT"] = 28,
     ["Mi-24P"] = 8,
 
 }
@@ -506,6 +506,7 @@ ctld.loadableGroups = {
     {name = "Anti Tank", inf = 2, at = 6  },
     {name = "Mortar Squad", mortar = 6 },
     {name = "Spetsnaz", inf = 4, mg = 2 , at = 2},     -- loadable via Mi-24
+    {name = "Big Inf Mi8", inf = 24, mg = 2, jtac = 1},
     {name = "JTAC Group", inf = 4, jtac = 1 }, -- will make a loadable group with 4 infantry and a JTAC soldier for both coalitions
     {name = "Single JTAC", jtac = 1 }, -- will make a loadable group witha single JTAC soldier for both coalitions
     -- {name = "Mortar Squad Red", inf = 2, mortar = 5, side =1 }, --would make a group loadable by RED only

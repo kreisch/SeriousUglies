@@ -1,56 +1,60 @@
-local MinakhWeaponsRangeUnitsTrucks1 = SPAWN:New("Mi_Trucks-1")
-local MinakhWeaponsRangeUnitsTrucks2 = SPAWN:New("Mi_Trucks-2")
-local MinakhWeaponsRangeUnitsBTRs = SPAWN:New("Mi_BTRs-1")
-local MinakhWeaponsRangeUnitsAAA = SPAWN:New("Mi_AAA-1")
-local MinakhWeaponsRangeUnitsDerby = SPAWN:New("Mi_SAM-1")
+local MinakhWeaponsRangeUnitsTrucks1 = SPAWN:New("Mi_Trucks-1"):InitRandomizePosition(true,10,40)
+local MinakhWeaponsRangeUnitsTrucks2 = SPAWN:New("Mi_Trucks-2"):InitRandomizePosition(true,10,40)
+local MinakhWeaponsRangeUnitsBTRs = SPAWN:New("Mi_BTRs-1"):InitRandomizePosition(true,10,40)
+local MinakhWeaponsRangeUnitsAAA = SPAWN:New("Mi_AAA-1"):InitRandomizePosition(true,10,40)
+local MinakhWeaponsRangeUnitsDerby = SPAWN:New("Mi_SAM-1"):InitRandomizePosition(true,10,40)
 
 local MinakhWeaponsRange = -1
 
 
-local YB34RangeUnitsTrucks = SPAWN:New("YB34_Trucks-1")
-local YB34RangeUnitsBMPs = SPAWN:New("YB34_BMPs-1")
-local YB34RangeUnitsAAAs = SPAWN:New("YB34_AAA-1")
-local YB34RangeUnitsSAMs = SPAWN:New("YB34_SAMs-1")
+local YB34RangeUnitsTrucks = SPAWN:New("YB34_Trucks-1"):InitRandomizePosition(true,10,40)
+local YB34RangeUnitsBMPs = SPAWN:New("YB34_BMPs-1"):InitRandomizePosition(true,10,40)
+local YB34RangeUnitsAAAs = SPAWN:New("YB34_AAA-1"):InitRandomizePosition(true,10,40)
+local YB34RangeUnitsSAMs = SPAWN:New("YB34_SAMs-1"):InitRandomizePosition(true,10,40)
 
 local YB34Range = -1
 
 
-local BT36WeaponsRangeUnitsEasy1 = SPAWN:New("BT36_Easy-1")
-local BT36WeaponsRangeUnitsEasy2 = SPAWN:New("BT36_Easy-2")
-local BT36WeaponsRangeUnitsMedium = SPAWN:New("BT36_Medium-1")
+local BT36WeaponsRangeUnitsEasy1 = SPAWN:New("BT36_Easy-1"):InitRandomizePosition(true,10,40)
+local BT36WeaponsRangeUnitsEasy2 = SPAWN:New("BT36_Easy-2"):InitRandomizePosition(true,10,40)
+local BT36WeaponsRangeUnitsMedium = SPAWN:New("BT36_Medium-1"):InitRandomizePosition(true,10,40)
 
 local BT36WeaponsRange = -1
 
 
-local AlZabadaniUrbanHellUnitsEasy1 = SPAWN:New("UH_easy-1")
-local AlZabadaniUrbanHellUnitsEasy2 = SPAWN:New("UH_easy-2")
-local AlZabadaniUrbanHellUnitsEasy3 = SPAWN:New("UH_easy-3")
-local AlZabadaniUrbanHellUnitsEasy4 = SPAWN:New("UH_easy-4")
-local AlZabadaniUrbanHellUnitsEasy5 = SPAWN:New("UH_easy-5")
-local AlZabadaniUrbanHellUnitsEasy6 = SPAWN:New("UH_easy-6")
-local AlZabadaniUrbanHellUnitsEasy7 = SPAWN:New("UH_easy-7")
-local AlZabadaniUrbanHellUnitsEasy8 = SPAWN:New("UH_easy-8")
-local AlZabadaniUrbanHellUnitsEasy9 = SPAWN:New("UH_easy-9")
-local AlZabadaniUrbanHellUnitsEasy10 = SPAWN:New("UH_easy-10")
-local AlZabadaniUrbanHellUnitsEasy11 = SPAWN:New("UH_easy-11")
-local AlZabadaniUrbanHellUnitsEasy12 = SPAWN:New("UH_easy-12")
-local AlZabadaniUrbanHellUnitsEasy13 = SPAWN:New("UH_easy-13")
-local AlZabadaniUrbanHellUnitsEasy14 = SPAWN:New("UH_easy-14")
-local AlZabadaniUrbanHellUnitsEasy15 = SPAWN:New("UH_easy-15")
-local AlZabadaniUrbanHellUnitsEasy16 = SPAWN:New("UH_easy-16")
-local AlZabadaniUrbanHellUnitsEasy17 = SPAWN:New("UH_easy-17")
-local AlZabadaniUrbanHellUnitsEasy18 = SPAWN:New("UH_easy-18")
-local AlZabadaniUrbanHellUnitsEasy19 = SPAWN:New("UH_easy-19")
-local AlZabadaniUrbanHellUnitsEasy20 = SPAWN:New("UH_easy-20")
-local AlZabadaniUrbanHellUnitsEasy21 = SPAWN:New("UH_easy-21")
-local AlZabadaniUrbanHellUnitsEasy22 = SPAWN:New("UH_easy-22")
-local AlZabadaniUrbanHellUnitsMedium1 = SPAWN:New("UH_medium-1")
-local AlZabadaniUrbanHellUnitsMedium2 = SPAWN:New("UH_medium-2")
-local AlZabadaniUrbanHellUnitsMedium3 = SPAWN:New("UH_medium-3")
-local AlZabadaniUrbanHellUnitsMedium4 = SPAWN:New("UH_medium-4")
-local AlZabadaniUrbanHellUnitsMedium5 = SPAWN:New("UH_medium-5")
+local AlZabadaniUrbanHellUnitsEasy1 = SPAWN:New("UH_easy-1"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy2 = SPAWN:New("UH_easy-2"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy3 = SPAWN:New("UH_easy-3"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy4 = SPAWN:New("UH_easy-4"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy5 = SPAWN:New("UH_easy-5"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy6 = SPAWN:New("UH_easy-6"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy7 = SPAWN:New("UH_easy-7"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy8 = SPAWN:New("UH_easy-8"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy9 = SPAWN:New("UH_easy-9"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy10 = SPAWN:New("UH_easy-10"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy11 = SPAWN:New("UH_easy-11"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy12 = SPAWN:New("UH_easy-12"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy13 = SPAWN:New("UH_easy-13"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy14 = SPAWN:New("UH_easy-14"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy15 = SPAWN:New("UH_easy-15"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy16 = SPAWN:New("UH_easy-16"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy17 = SPAWN:New("UH_easy-17"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy18 = SPAWN:New("UH_easy-18"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy19 = SPAWN:New("UH_easy-19"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy20 = SPAWN:New("UH_easy-20"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy21 = SPAWN:New("UH_easy-21"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsEasy22 = SPAWN:New("UH_easy-22"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsMedium1 = SPAWN:New("UH_medium-1"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsMedium2 = SPAWN:New("UH_medium-2"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsMedium3 = SPAWN:New("UH_medium-3"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsMedium4 = SPAWN:New("UH_medium-4"):InitRandomizePosition(true,10,40)
+local AlZabadaniUrbanHellUnitsMedium5 = SPAWN:New("UH_medium-5"):InitRandomizePosition(true,10,40)
 
 local UrbanHell = -1
+
+
+local ScudConvoyEasy1 = SPAWN:New("Scud_Convoy_Easy_1"):InitRandomizePosition(true,10,40)
+local ScudConvoyDifficulty = -1
 
 
 --local ZahleConvoyUnits = SPAWN:New("ZA_Convoy-1")
@@ -219,6 +223,22 @@ local function UrbanHellEnd()
 	UrbanHell = -1
 end
 
+local function ScudConvoyStart(difficult)
+	ScudConvoyDifficulty = difficult
+		if difficult >= 1 then
+			ScudConvoyEasy1:ReSpawn()
+		end
+		MessageToAll("Scud Convoy started - Happy hunting!",60,"Scud Convoy active")
+end
+
+local function ScudConvoyEnd()
+	if ScudConvoyDifficulty >= 1 then
+		ScudConvoyEasy1:GetLastAliveGroup():Destroy()
+	end
+	MessageToAll("Scud Convoy de-activated",10,"Scud Convoy de-activated")
+	ScudConvoyEasy1 = -1
+end
+
 -- Menüstruktur
 -- 1st Level!
 MenuCoalitionBlueA2G = MENU_COALITION:New( coalition.side.BLUE, "Mission Setup A2G" )
@@ -226,12 +246,14 @@ MenuCoalitionBlueA2G = MENU_COALITION:New( coalition.side.BLUE, "Mission Setup A
 -- 2nd Level!
 local MenuCoalitionBlueA2GMissionSetupA2GFixedWing = MENU_COALITION:New( coalition.side.BLUE, "Fixed Wing Training Ranges", MenuCoalitionBlueA2G)
 local MenuCoalitionBlueMissionSetupA2GHeliRange = MENU_COALITION:New( coalition.side.BLUE, "Helicopter Training Ranges", MenuCoalitionBlueA2G) 
+local MenuCoalitionBlueMissionSetupA2GGeneralRange = MENU_COALITION:New( coalition.side.BLUE, "General Training Ranges", MenuCoalitionBlueA2G) 
 
 -- 3rd Level!
 local MenuCoalitionBlueMissionSetupA2GWeaponsRange = MENU_COALITION:New( coalition.side.BLUE, "Minakh Weapons Range (north)", MenuCoalitionBlueA2GMissionSetupA2GFixedWing)
 local MenuCoalitionBlueA2GTrainingSouthernRange = MENU_COALITION:New( coalition.side.BLUE, "YB34 Weapons Range (south)", MenuCoalitionBlueA2GMissionSetupA2GFixedWing)
 local MenuCoalitionBlueMissionSetupA2GBT36Range = MENU_COALITION:New( coalition.side.BLUE, "BT36 Range", MenuCoalitionBlueMissionSetupA2GHeliRange)
 local MenuCoalitionBlueMissionSetupA2GUrbanHell = MENU_COALITION:New( coalition.side.BLUE, "Helicopter Mission: Urban Hell", MenuCoalitionBlueMissionSetupA2GHeliRange)
+local MenuCoalitionBlueMissionSetupA2GScudConvoy = MENU_COALITION:New( coalition.side.BLUE, "General Mission: Convoy", MenuCoalitionBlueMissionSetupA2GGeneralRange)
 --local MenuCoalitionBlueMissionSetupA2GZahleConvoy = MENU_COALITION:New( coalition.side.BLUE, "Helicopter Mission: Convoy Escort", MenuCoalitionBlueMissionSetupA2GHeliRange)
 --local MenuCoalitionBlueMissionSetupA2GCombinedArmsGolan = MENU_COALITION:New( coalition.side.BLUE, "Combined Arms: Golan Heights", MenuCoalitionBlueMissionSetupA2GHeliRange)
 
@@ -252,6 +274,9 @@ local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Weaponsrange B
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Al Zabadani Urban Hell: Easy", MenuCoalitionBlueMissionSetupA2GUrbanHell, UrbanHellStart, 1)
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Al Zabadani Urban Hell: Medium", MenuCoalitionBlueMissionSetupA2GUrbanHell, UrbanHellStart, 2)
 local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Al Zabadani Urban Hell: End", MenuCoalitionBlueMissionSetupA2GUrbanHell, UrbanHellEnd)
+
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Scud Convoy: Start", MenuCoalitionBlueMissionSetupA2GScudConvoy, ScudConvoyStart, 1)
+local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Scud Convoy: End", MenuCoalitionBlueMissionSetupA2GScudConvoy, ScudConvoyEnd)
 --local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Convoy Escort: Easy", MenuCoalitionBlueMissionSetupA2GZahleConvoy, ZahleConvoyStart, 1)
 --local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Convoy Escort: Medium", MenuCoalitionBlueMissionSetupA2GZahleConvoy, ZahleConvoyStart, 2)
 --local MenuAdd = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Convoy Escort: End", MenuCoalitionBlueMissionSetupA2GZahleConvoy, ZahleConvoyEnd)

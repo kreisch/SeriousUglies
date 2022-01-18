@@ -2,7 +2,7 @@ env.info("AIRBOSS: Loading configuration")
 
 
 -- S-3B Recovery Tanker spawning in air. Groupname
-local tanker2=RECOVERYTANKER:New("CVN-72 Lincoln", "ShellCarrier Lincoln")
+local tanker2=RECOVERYTANKER:New("USS George Washington", "RecoveryTanker")
 --tanker:SetTakeoffAir()
 tanker2:SetRadio(121)
 tanker2:SetModex(912)
@@ -11,7 +11,7 @@ tanker2:SetTakeoffAir()
 tanker2:Start()
 
 ---- E-2D AWACS spawning on Stennis.
-local awacs2=RECOVERYTANKER:New("CVN-72 Lincoln", "E-2D Magic Lincoln")
+local awacs2=RECOVERYTANKER:New("USS George Washington", "US_E2Hawkers")
 awacs2:SetAWACS()
 awacs2:SetRadio(251)
 awacs2:SetAltitude(20000)
@@ -22,7 +22,7 @@ awacs2:SetTakeoffAir()
 awacs2:__Start(1)
 
 -- Rescue Helo with home base Lake Erie. Has to be a global object! Group name for helo
-rescuehelo2=RESCUEHELO:New("CVN-72 Lincoln", "Rescue Helo Lincoln")
+rescuehelo2=RESCUEHELO:New("USS George Washington", "RescueHelo")
 rescuehelo2:SetHomeBase(AIRBASE:FindByName("PerryAirfield1"))
 rescuehelo2:SetModex(41)
 rescuehelo2:SetTakeoffAir()
@@ -31,11 +31,11 @@ rescuehelo2:__Start(1)
 
 
 -- Create AIRBOSS object. Use Unit name
-local AirbossGWashington=AIRBOSS:New("CVN-72 Lincoln")
+local AirbossGWashington=AIRBOSS:New("USS George Washington")
 AirbossGWashington:SetDebugModeON()
 
-AirbossGWashington:SetICLS(2,"LNCLN")
-AirbossGWashington:SetTACAN(72,"X","LNCLN")
+AirbossGWashington:SetICLS(3,"GWN")
+AirbossGWashington:SetTACAN(73,"X","GWN")
 -- Erlaubt das Einfliegen in das Landepattern ohne Marshall
 AirbossGWashington:SetAirbossNiceGuy(true)
 -- Stackhöhe setzen
@@ -48,16 +48,16 @@ AirbossGWashington:SetLSORadio(127.700,"AM")
 
 -- Radio relay units.
 AirbossGWashington:SetRadioRelayLSO(tanker2:GetUnitName())
-AirbossGWashington:SetRadioRelayMarshal("E-2D Magic Lincoln")
+--AirbossGWashington:SetRadioRelayMarshal("E-2D Magic Lincoln")
 
 -- Set folder of airboss sound files within miz file.
-AirbossGWashington:SetSoundfilesFolder("Airboss Soundfiles/")
+--AirbossGWashington:SetSoundfilesFolder("Airboss Soundfiles/")
 
 -- Skipper menu.
-AirbossGWashington:SetMenuRecovery(90, 20, true)
+AirbossGWashington:SetMenuRecovery(30, 20, true)
 
 -- Carrier fährt nach letztem WP zum ersten.
-AirbossGWashington:SetPatrolAdInfinitum(true)
+--AirbossGWashington:SetPatrolAdInfinitum(true)
 
 -- Remove landed AI planes from flight deck.
 AirbossGWashington:SetDespawnOnEngineShutdown()
@@ -77,11 +77,11 @@ AirbossGWashington:SetRecoveryTanker(tanker2)
 -- Set AWACS.
 AirbossGWashington:SetAWACS(awacs2)
 
-AirbossGWashington:SetHandleAION()
+--AirbossGWashington:SetHandleAION()
 
 AirbossGWashington:SetInitialMaxAlt(1500)
 AirbossGWashington:SetRefuelAI(15)
-AirbossGWashington:SetStaticWeather(false)
+AirbossGWashington:SetStaticWeather(true)
 
 
 -- Start airboss class.

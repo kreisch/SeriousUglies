@@ -24,7 +24,7 @@ tankerBoys:SetSkill(AI.Skill.HIGH)
 tankerBoys:AddMissionCapability({AUFTRAG.Type.TANKER},100)
 tankerBoys:SetMissionRange(700)
 
-local harriers=SQUADRON:New("US_Harriers", 40, "US_Harriers") --Ops.Squadron#SQUADRON
+local harriers=SQUADRON:New("US_Harriers", 20, "US_Harriers") --Ops.Squadron#SQUADRON
 harriers:SetRadio(251)
 harriers:SetSkill(AI.Skill.HIGH)
 harriers:AddMissionCapability({AUFTRAG.Type.CAS, AUFTRAG.Type.BAI},100)
@@ -44,66 +44,60 @@ local SW_Recon_Zone = ZONE:New("SW_Recon_Zone")
 local AFAC_South = ZONE:New("AFAC_Zone_South")
  
 --Create the Airwing; Each Airwing conisits of "N" squadrons 
- local CVN73=AIRWING:New("Ramat David", "Ramat David")
+ --local CVN73=AIRWING:New("Ramat David", "Ramat David")
+ local CVN73=AIRWING:New("USS George Washington", "USS George Washington")
  local Tarawa=AIRWING:New("LHA-1 Tarawa","LHA-1 Tarawa")
  
  Tarawa:AddSquadron(harriers)
- 
-  local SchedulerAddNewSquadrons = SCHEDULER:New( nil, 
-  function()
-     CVN73:AddSquadron(f18Wildcats)
-     CVN73:AddSquadron(e2Hawkers)
-     CVN73:AddSquadron(tankerBoys)
-     
-     local mission=AUFTRAG:NewPATROLZONE(SW_Recon_Zone,350,15000)
-mission:SetRepeatOnFailure(99)
-mission:SetRepeatOnSuccess(99)
+ CVN73:AddSquadron(f18Wildcats)
+ CVN73:AddSquadron(e2Hawkers)
+ CVN73:AddSquadron(tankerBoys)
+   
+   
+local mission=AUFTRAG:NewPATROLZONE(SW_Recon_Zone,350,15000)
+mission:SetRepeatOnFailure(999)
+mission:SetRepeatOnSuccess(999)
 CVN73:AddMission(mission)
 
 local mission=AUFTRAG:NewCAP(BLUE_CAP_South, 10000, 350)
-mission:SetRepeatOnFailure(99)
-mission:SetRepeatOnSuccess(99)
+mission:SetRepeatOnFailure(999)
+mission:SetRepeatOnSuccess(999)
 CVN73:AddMission(mission)
 
 local mission=AUFTRAG:NewCAP(BLUE_CAP_CENTRAL, 10000, 350)
-mission:SetRepeatOnFailure(99)
-mission:SetRepeatOnSuccess(99)
+mission:SetRepeatOnFailure(999)
+mission:SetRepeatOnSuccess(999)
 CVN73:AddMission(mission)
 
 local mission=AUFTRAG:NewCAP(BLUE_CAP_NORTH, 10000, 350)
-mission:SetRepeatOnFailure(99)
-mission:SetRepeatOnSuccess(99)
+mission:SetRepeatOnFailure(999)
+mission:SetRepeatOnSuccess(999)
 CVN73:AddMission(mission)
 
 local mission=AUFTRAG:NewAWACS(BLUE_CAP_NORTH:GetCoordinate(),24000,350,270,20)
-mission:SetRepeatOnFailure(99)
-mission:SetRepeatOnSuccess(99)
+mission:SetRepeatOnFailure(999)
+mission:SetRepeatOnSuccess(999)
 CVN73:AddMission(mission)
 
 local mission=AUFTRAG:NewCAS(AFAC_South,16000,350)
-mission:SetRepeatOnFailure(99)
-mission:SetRepeatOnSuccess(99)
+mission:SetRepeatOnFailure(999)
+mission:SetRepeatOnSuccess(999)
 Tarawa:AddMission(mission)
 
 local mission=AUFTRAG:NewTANKER(AAR_South:GetCoordinate(),18000,385,20,20,0)
-mission:SetRepeatOnFailure(99)
-mission:SetRepeatOnSuccess(99)
+mission:SetRepeatOnFailure(999)
+mission:SetRepeatOnSuccess(999)
 mission:SetRadio(131)
 mission:SetTACAN(31,"TCN")
 CVN73:AddMission(mission)
 
 local mission=AUFTRAG:NewTANKER(AAR_South:GetCoordinate(),18000,385,20,20,1)
-mission:SetRepeatOnFailure(99)
-mission:SetRepeatOnSuccess(99)
+mission:SetRepeatOnFailure(999)
+mission:SetRepeatOnSuccess(999)
 mission:SetRadio(121)
 mission:SetTACAN(21,"TCN")
 CVN73:AddMission(mission)
      
-     trigger.action.outText("CIA: We were just resupplied!", 10)
-     env.info("CIA: CVN73 were resupplied after time")
-     
-  end, {}, 1, 10800
-  )
 
  function f18Wildcats:OnEventUnitLost(EventData)
   deadF18 = deadF18+1
@@ -111,6 +105,7 @@ CVN73:AddMission(mission)
       CVN73:AddSquadron(f18Wildcats)
       trigger.action.outText("CIA: All Wildcats shot down! We were just resupplied!", 10)
       env.info("CIA: CVN73 resupplied all killed")
+      deadF18 = 0
   end
  end
  
@@ -123,11 +118,12 @@ CVN73:AddMission(mission)
  
  
  CVN73:Start()
+ Tarawa:Start()
  
  env.info("Squadrons and Airwings: Ended configuration")
  env.info("Squadrons and Airwings: Setting up Intelligence")
  
- local AgentSet=SET_GROUP:New():FilterCoalitions("blue"):FilterCategoryAirplane():FilterStart()
+local AgentSet=SET_GROUP:New():FilterCoalitions("blue"):FilterCategoryAirplane():FilterStart()
  
  --Declare an INTEL based off that SET, for BLUE coalition
 local cia=INTEL:New(AgentSet, coalition.side.BLUE)  
@@ -140,7 +136,7 @@ function ATO(contact)
 if (contact.attribute == "Ground_EWR") then
     
     local target=GROUP:FindByName(contact.groupname)
-    local auftrag=AUFTRAG:NewSEAD(target, 25000)
+    local auftrag=AUFTRAG:NewSEAD(target, 20000)
     if (contact.attribute == "Ground_SAM") then
       auftrag:SetRepeatOnFailure(2)
     else
