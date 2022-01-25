@@ -7,10 +7,10 @@ local MinakhWeaponsRangeUnitsDerby = SPAWN:New("Mi_SAM-1"):InitRandomizePosition
 local MinakhWeaponsRange = -1
 
 
-local YB34RangeUnitsTrucks = SPAWN:New("YB34_Trucks-1"):InitRandomizePosition(true,10,40)
-local YB34RangeUnitsBMPs = SPAWN:New("YB34_BMPs-1"):InitRandomizePosition(true,10,40)
-local YB34RangeUnitsAAAs = SPAWN:New("YB34_AAA-1"):InitRandomizePosition(true,10,40)
-local YB34RangeUnitsSAMs = SPAWN:New("YB34_SAMs-1"):InitRandomizePosition(true,10,40)
+--local YB34RangeUnitsTrucks = SPAWN:New("YB34_Trucks-1"):InitRandomizePosition(true,10,40)
+--local YB34RangeUnitsBMPs = SPAWN:New("YB34_BMPs-1"):InitRandomizePosition(true,10,40)
+--local YB34RangeUnitsAAAs = SPAWN:New("YB34_AAA-1"):InitRandomizePosition(true,10,40)
+--local YB34RangeUnitsSAMs = SPAWN:New("YB34_SAMs-1"):InitRandomizePosition(true,10,40)
 
 local YB34Range = -1
 
@@ -22,57 +22,38 @@ local BT36WeaponsRangeUnitsMedium = SPAWN:New("BT36_Medium-1"):InitRandomizePosi
 local BT36WeaponsRange = -1
 
 
--- Define Zones for Urban Hell
-local UrbanHellZone1              = ZONE:New("UrbanHell-1")
-local UrbanHellZone2              = ZONE:New("UrbanHell-2")
-local UrbanHellZone3              = ZONE:New("UrbanHell-3")
-local UrbanHellZone4              = ZONE:New("UrbanHell-4")
-local UrbanHellZone5              = ZONE:New("UrbanHell-5")
-local UrbanHellZone6              = ZONE:New("UrbanHell-6")
-local UrbanHellZone7              = ZONE:New("UrbanHell-7")
-local UrbanHellZone8              = ZONE:New("UrbanHell-8")
-local UrbanHellZone9              = ZONE:New("UrbanHell-9")
-local UrbanHellZone10             = ZONE:New("UrbanHell-10")
-local UrbanHellZone11             = ZONE:New("UrbanHell-11")
-local UrbanHellZone12             = ZONE:New("UrbanHell-12")
-local UrbanHellZone13             = ZONE:New("UrbanHell-13")
-local UrbanHellZone14             = ZONE:New("UrbanHell-14")
-local UrbanHellZoneTable = {ZONE:New( "UrbanHell-1" ), ZONE:New( "UrbanHell-2" ), ZONE:New( "UrbanHell-3" ), ZONE:New( "UrbanHell-4" ), ZONE:New( "UrbanHell-5" )
-                            , ZONE:New( "UrbanHell-6" ), ZONE:New( "UrbanHell-7") , ZONE:New( "UrbanHell-8" ), ZONE:New( "UrbanHell-9" ), ZONE:New( "UrbanHell-10" ), ZONE:New( "UrbanHell-11" )
-                            , ZONE:New( "UrbanHell-12" ), ZONE:New( "UrbanHell-13" ), ZONE:New( "UrbanHell-14" )}
-local AlZabadaniUrbanHellUnitsEasy1 = SPAWN:New("UH_easy-1"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy2 = SPAWN:New("UH_easy-2"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy3 = SPAWN:New("UH_easy-3"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy4 = SPAWN:New("UH_easy-4"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy5 = SPAWN:New("UH_easy-5"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy6 = SPAWN:New("UH_easy-6"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy7 = SPAWN:New("UH_easy-7"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy8 = SPAWN:New("UH_easy-8"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy9 = SPAWN:New("UH_easy-9"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy10 = SPAWN:New("UH_easy-10"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy11 = SPAWN:New("UH_easy-11"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy12 = SPAWN:New("UH_easy-12"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy13 = SPAWN:New("UH_easy-13"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy14 = SPAWN:New("UH_easy-14"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy15 = SPAWN:New("UH_easy-15"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy16 = SPAWN:New("UH_easy-16"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy17 = SPAWN:New("UH_easy-17"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy18 = SPAWN:New("UH_easy-18"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy19 = SPAWN:New("UH_easy-19"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy20 = SPAWN:New("UH_easy-20"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy21 = SPAWN:New("UH_easy-21"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsEasy22 = SPAWN:New("UH_easy-22"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsMedium1 = SPAWN:New("UH_medium-1"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsMedium2 = SPAWN:New("UH_medium-2"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsMedium3 = SPAWN:New("UH_medium-3"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsMedium4 = SPAWN:New("UH_medium-4"):InitRandomizePosition(true,10,40)
-local AlZabadaniUrbanHellUnitsMedium5 = SPAWN:New("UH_medium-5"):InitRandomizePosition(true,10,40)
+
+--local AlZabadaniUrbanHellUnitsEasy1 = SPAWN:New("UH_easy-1"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy2 = SPAWN:New("UH_easy-2"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy3 = SPAWN:New("UH_easy-3"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy4 = SPAWN:New("UH_easy-4"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy5 = SPAWN:New("UH_easy-5"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy6 = SPAWN:New("UH_easy-6"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy7 = SPAWN:New("UH_easy-7"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy8 = SPAWN:New("UH_easy-8"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy9 = SPAWN:New("UH_easy-9"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy10 = SPAWN:New("UH_easy-10"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy11 = SPAWN:New("UH_easy-11"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy12 = SPAWN:New("UH_easy-12"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy13 = SPAWN:New("UH_easy-13"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy14 = SPAWN:New("UH_easy-14"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy15 = SPAWN:New("UH_easy-15"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy16 = SPAWN:New("UH_easy-16"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy17 = SPAWN:New("UH_easy-17"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy18 = SPAWN:New("UH_easy-18"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy19 = SPAWN:New("UH_easy-19"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy20 = SPAWN:New("UH_easy-20"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy21 = SPAWN:New("UH_easy-21"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsEasy22 = SPAWN:New("UH_easy-22"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsMedium1 = SPAWN:New("UH_medium-1"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsMedium2 = SPAWN:New("UH_medium-2"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsMedium3 = SPAWN:New("UH_medium-3"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsMedium4 = SPAWN:New("UH_medium-4"):InitRandomizePosition(true,10,40)
+--local AlZabadaniUrbanHellUnitsMedium5 = SPAWN:New("UH_medium-5"):InitRandomizePosition(true,10,40)
 
 local UrbanHell = -1
 
 
-local ScudConvoyEasy1 = SPAWN:New("Scud_Convoy_Easy_1"):InitRandomizePosition(true,10,40)
-local ScudConvoyDifficulty = -1
 
 
 --local ZahleConvoyUnits = SPAWN:New("ZA_Convoy-1")

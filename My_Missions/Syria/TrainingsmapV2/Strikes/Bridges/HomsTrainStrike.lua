@@ -19,4 +19,6 @@ TrainbridgeV3     = TrainbridgeZone:GetVec3()
 
 -- trigger.action.markToAll(number id , string text , table vec3 , boolean readOnly, string message)
 -- trigger.action.removeMark(Lz_1_id[NewGroupNumber])
-trigger.action.markToAll(Trainbridge_id , "Bridge 1" , TrainbridgeV3 , true, "Message")
+function StartHomsTrainStrike ()
+  trigger.action.markToAll(Trainbridge_id , "Bridge 1" , TrainbridgeV3 , true, "Mission: Homs Train Strike activated.")
+end

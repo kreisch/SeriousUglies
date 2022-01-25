@@ -6,27 +6,26 @@ local Templates = { "Ground-1", "Ground-2", "Ground-3"}
 
 
 
-function SpawnGroupsOfTemplatesInListOfZones(NumberOfGroups)
+function SpawnGroupsOfTemplatesInListOfZones(NumberOfGroups, ZoneTable,Templates)
 JTACs = {}
 JTACcounter = 0
 
 local spawns = {}
 local i = 1
 
-for k = 1, NumberOfGroups, 1 do
-  local tempGrpAlias = "Taftanaz-" .. i
-  spawns[i] = SPAWN:NewWithAlias("Randomizer",tempGrpAlias)
-  :InitRandomizeZones( ZoneTable )
-  :InitRandomizeTemplate(Templates)
-  :Spawn()
-  local position = spawns[i]:GetPositionVec3()
-  --spawnJTAC(position)
-  i = i + 1
-     
-    if debug then  
-      trigger.action.outText("hello " .. #spawns, 5)
-    end
-end
+  for k = 1, NumberOfGroups, 1 do
+    local tempGrpAlias = "Taftanaz-" .. i
+    spawns[i] = SPAWN:NewWithAlias("Randomizer",tempGrpAlias)
+    :InitRandomizeZones( ZoneTable )
+    :InitRandomizeTemplate(Templates)
+    :Spawn()
+    local position = spawns[i]:GetPositionVec3()
+    --spawnJTAC(position)
+    i = i + 1
+      if debug then  
+        trigger.action.outText("hello " .. #spawns, 5)
+      end
+  end
   
 end
 
