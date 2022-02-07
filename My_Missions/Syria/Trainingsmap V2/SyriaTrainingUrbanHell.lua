@@ -91,8 +91,6 @@ end
 
 -- Definition of F10 structure
 -- Define A2G Operations
-local MenuCoalitionBlueA2G                = MENU_COALITION:New( coalition.side.BLUE, "Mission Setup A2G" )
-local MenuCoalitionBlueA2GMissions        = MENU_COALITION:New( coalition.side.BLUE, "CAS Missions", MenuCoalitionBlueA2G )
 local MenuCoalitionBlueA2GMissionTaftanaz = MENU_COALITION:New( coalition.side.BLUE, "Mission: CAS Urban Hell", MenuCoalitionBlueA2GMissions)
 local MenuAdd                             = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Urban Hell Easy: Start", MenuCoalitionBlueA2GMissionTaftanaz, SpawnUrbanHell, 1 )
 local MenuAdd                             = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Urban Hell Medium: Start", MenuCoalitionBlueA2GMissionTaftanaz, SpawnUrbanHell, 2 )

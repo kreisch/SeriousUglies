@@ -32,12 +32,12 @@ CsarRayakActive = false
 CsarHomsActive  = false
 CsarRoshPinaActive = false
 
-local spawnedPilots       = 0
 local spawnZoneList       = {}
+
+my_csar:SpawnCSARAtZone( "CSTest", coalition.side.BLUE, "Unlucky Ugly", true )
 
 
 function SpawnCSAR(ZoneIdentifier)
-  if (spawnedPilots < CSAR_SPAWNED_PILOTS_LIMIT) then
     if ZoneIdentifier == CSAR_ZONE_RAYAK then
       spawnZoneList   = CsarRakayZonesList
       CsarRayakActive = true
@@ -56,10 +56,6 @@ function SpawnCSAR(ZoneIdentifier)
 --          local CsarMapMarker  = MARKER:New(spawnZoneList[i]:GetCoordinate(), "CSAR requested"):ToAll()
 --        end
         spawnZoneList = {}
-    else
-       MessageToAll("Too many CSARs already spawned, go rescue them! Limit is " ..CSAR_SPAWNED_PILOTS_LIMIT)
-       
-    end
 end
 
 function EndCsar(area)
@@ -75,7 +71,6 @@ end
 
 function my_csar:OnAfterPilotDown(from, event, to, spawnedgroup, frequency, groupname, coordinates_text)
   MessageToAll("Pilot downed! Beacon frequency: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text)
-  spawnedPilots = spawnedPilots + 1
   if STTS_ENABLED then
     STTS.TextToSpeech("Mayday Mayday Mayday, Pilot down!","127.500","AM","1.0","SRS",2)
   end
@@ -84,14 +79,19 @@ function my_csar:OnAfterPilotDown(from, event, to, spawnedgroup, frequency, grou
   end
 end
 
-function my_csar:OnAfterApproach(from, event, to, heliname, groupname)
-  MessageToAll("Approaching downed pilot.".. heliname .. " request flare or smoke for assistance.")
-end
+--function my_csar:OnAfterApproach(from, event, to, heliname, groupname)
+  --MessageToAll("Approaching downed pilot.".. heliname .. " request flare or smoke for assistance.")
+--end
 
-function my_csar:OnAfterReturning(from, event, to, heliname, groupname)
-  MessageToAll(heliname .. " picked up downed pilot - return to next base immediately.")
-  spawnedPilots = spawnedPilots - 1
-end
+--function my_csar:OnAfterBoarded(from, event, to, heliname, groupname)
+  
+--end
+
+--function my_csar:OnAfterReturning(from, event, to, heliname, groupname)
+  --MessageToAll(heliname .. " picked up downed pilot - return to next base immediately.")
+    -- Stop helo.
+    --self:__Stop(2)
+--end
 
 function my_csar:OnAfterRescued(from, event, to, heliunit, heliname, pilotssaved)
   MessageToAll("Downed pilot succesfully delivered to more capable hands in MASH. Thank you " .. heliname .."!")
