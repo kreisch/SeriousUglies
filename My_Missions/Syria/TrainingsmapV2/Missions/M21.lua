@@ -1,0 +1,2 @@
+local MortarAmbushSet = SET_GROUP:New():FilterCoalitions("red"):FilterPrefixes("M21_RU_Mortar"):FilterOnce()
+local MortarAmbushTargetsSet = SET_ZONE:New():FilterPrefixes("Mortar_Ambush_Target"):FilterOnce()

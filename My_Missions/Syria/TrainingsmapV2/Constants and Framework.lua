@@ -1,9 +1,13 @@
 Trainbridge_id = 11
 UrbanHell_id = 1
+UrbanHell_FARP_id = 2
 
-CSAR_START_ID = 9000
+STTS_ENABLED = true
 CSAR_SPAWNED_PILOTS_LIMIT = 5
 CSAR_MARKS_ON_PILOTS = true
+CSAR_ZONE_HOMS        = 2
+CSAR_ZONE_RAYAK       = 1
+CSAR_ZONE_ROSHPINA    = 3
 
 -- STTS.TextToSpeech("Hello DCS WORLD","251","AM","1.0","SRS",2) -- Dran denken STTS zu benutzen, sobald es sich anbietet.
 --local DismountsGroupSet=SET_GROUP:New():FilterPrefixes("Dismount"):FilterOnce()
@@ -33,14 +37,16 @@ function AddAdditionalScriptsToGroups(MyGroup)
         -- Check if it is arty and blue side, then add the arty-script
 end
 
-function SpawnGroupsOfTemplatesInListOfZones(NumberOfGroups, ZoneTable,Templates, Prefix)
-
+function SpawnGroupsOfTemplatesInListOfZones(NumberOfGroups, ZoneTable,Templates, Prefix, radius)
+    if radius == nil then
+    radius = 5
+    end
 local spawns = {}
   for k = 1, NumberOfGroups, 1 do
     local tempGrpAlias = Prefix .. k
     spawns[k] = SPAWN:NewWithAlias("Randomizer",tempGrpAlias)
     :InitRandomizeZones( ZoneTable )
-    :InitRandomizePosition(true,200)
+    :InitRandomizePosition(true,radius)
     :InitRandomizeTemplate(Templates)
     :Spawn()
     AddAdditionalScriptsToGroups(spawns[k])
@@ -79,4 +85,10 @@ function zoneSetToList (zoneSet)
   end
   )
   return _zoneList
+end
+
+
+
+function SpawnManpadWhenDamaged()
+
 end
