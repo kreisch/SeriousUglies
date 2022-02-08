@@ -40,9 +40,11 @@ my_ctld:UnitCapabilities("Hercules", true, true, 15, 64, 25)
 my_ctld:AddCratesCargo("FOB",{"Template_Blue_FOB-1"},CTLD_CARGO.Enum.FOB,2,500,nil)
 my_ctld:AddStaticsCargo("Ammunition-1",50,nil) -- ammuntion weight 50kg ;) stock 25 pc
 
-my_ctld:AddTroopsCargo("Infantry Squad 12",{"Template_CTLD_Blue_Inf12"},CTLD_CARGO.Enum.TROOPS,12,80)
-my_ctld:AddTroopsCargo("Infantry Mortar-Team",{"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6,200)
-my_ctld:AddTroopsCargo("No Weight:Infantry Squad 12",{"Template_CTLD_Blue_Inf12"},CTLD_CARGO.Enum.TROOPS,12)
+my_ctld:AddTroopsCargo("Infantry Squad 12",             {"Template_CTLD_Blue_Inf12"},CTLD_CARGO.Enum.TROOPS,12,80)
+my_ctld:AddTroopsCargo("Infantry Squad 8",              {"Template_CTLD_Blue_Inf8"},CTLD_CARGO.Enum.TROOPS,8,80)
+my_ctld:AddTroopsCargo("Infantry Mortar-Team",          {"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6,200)
+my_ctld:AddTroopsCargo("No Weight:Infantry Squad 12",   {"Template_CTLD_Blue_Inf12"},CTLD_CARGO.Enum.TROOPS,12)
+my_ctld:AddTroopsCargo("No Weight:Infantry Squad 8",    {"Template_CTLD_Blue_Inf8"},CTLD_CARGO.Enum.TROOPS,8)
 my_ctld:AddTroopsCargo("No Weight:Infantry Mortar-Team",{"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6)
 
 my_ctld:AddCTLDZone("LHA-1 Tarawa",CTLD.CargoZoneType.SHIP,SMOKECOLOR.Blue,true,true,240,20)
