@@ -1,6 +1,9 @@
 my_csar = CSAR:New(coalition.side.BLUE,"Downed Pilot", "CSAR")
 
 -- options
+my_csar.limitmaxdownedpilots = true
+my_csar.suppressmessages = true
+my_csar.maxdownedpilots = 10
 my_csar.FARPRescueDistance = 1000 -- you need to be this close to a FARP or Airport for the pilot to be rescued.
 my_csar.autosmoke = false -- automatically smoke a downed pilot\'s location when a heli is near.
 my_csar.autosmokedistance = 1000 -- distance for autosmoke
@@ -76,7 +79,7 @@ function my_csar:OnAfterPilotDown(from, event, to, spawnedgroup, frequency, grou
     STTS.TextToSpeech("Mayday Mayday Mayday, Pilot down!","127.500","AM","1.0","SRS",2)
   end
   if (CSAR_MARKS_ON_PILOTS) then
-     CsarMapMarker  = MARKER:New(spawnedgroup:GetCoordinate(), "Pilot downed! Beacon frequency: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text):ToAll()
+     CsarMapMarker  = MARKER:New(spawnedgroup:GetCoordinate(), "Pilot downed! Beacon frequency: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text):ReadOnly():ToAll()
   end
 end
 

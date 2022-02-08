@@ -36,7 +36,7 @@ function initMission()
     --Declare an INTEL based off that SET, for BLUE coalition
     IntelBlue = INTEL:New(BlueReconSet, coalition.side.BLUE) 
     --IntelBlue:SetClusterAnalysis(true,true)
-    IntelBlue:SetVerbosity(2)
+    --IntelBlue:SetVerbosity(2)
     IntelBlue:AddAcceptZone(Zone_MT01) --give it an inclusive area  
           --- Function called when a NEW contact is detected by the specified Agents.
       function IntelBlue:OnAfterNewContact(From, Event, To, Contact)
@@ -150,6 +150,7 @@ function checkEnemyPresenceInMissionArea()
         if Coalition == coalition.side.BLUE then
           trigger.action.outText("The US forces secured the area! You may despawn the mission.", 30)
           trigger.action.outSound("Murica.ogg")
+          ZoneCaptureCoalition:Stop()
         else
           trigger.action.outText("The insurgents have overwhelmed our forces, get back ASAP!", 30)
         end
@@ -193,19 +194,17 @@ function startMissionMT01 ()
                 function()
                   if droppedGroup:IsAlive() then
                   lastKnownPosition = droppedGroup:GetPointVec2()
-                  MESSAGE:New("Is alive " .. droppedGroup:GetName(), 5):ToCoalition(coalition.side.BLUE)
+                  --MESSAGE:New("Is alive " .. droppedGroup:GetName(), 5):ToCoalition(coalition.side.BLUE)
                   else   
-                    MESSAGE:New("Is dead", 25):ToCoalition(coalition.side.BLUE)
-                    my_csar:SpawnCASEVAC(lastKnownPosition,2)
+                    --MESSAGE:New("Is dead", 25):ToCoalition(coalition.side.BLUE)
+                    --my_csar:SpawnCASEVAC(lastKnownPosition,2) -- läuft absolut Amok....Warum?
                     isGroupDead:Stop()   
                   end
               end, {}, 15, 30 )  
               
                if string.find(name,"Template_CTLD_Blue_Mortar") then
-                  -- Add the group to a Mortar Script...?
-                    
                     local counter = #armygroup
-                    armygroup[counter + 1] = droppedGroup
+                    armygroup[counter + 1] = droppedGroup -- Packt die Mortars in eine Liste, sodass sie vom Arty_Script genutzt werden
                 end             
         end
     end
@@ -219,7 +218,7 @@ function removeAllUnits()
   MT01_Red_Inf_1_Spawn:SpawnScheduleStop()
   MT01_Red_Inf_2_Spawn:SpawnScheduleStop()
   MT01_Red_Inf_3_Spawn:SpawnScheduleStop()
-
+  MT01_FOB_Prince_Spawn:Despawn()
   local UnitSetMT01 = SET_GROUP:New():FilterCategoryGround():FilterZones({Zone_MT01}):FilterOnce()
   if UnitSetMT01:Count() > 0 then
     UnitSetMT01:ForEachGroup( 
