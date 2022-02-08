@@ -115,10 +115,10 @@ local MenuCoalitionBlueMarkHeliports    = MENU_COALITION_COMMAND:New( coalition.
 local MenuCoalitionBlueRemoveMash       = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Remove MASH Marks", MenuCoalitionBlueCSARMarker, RemoveMASHMarks)
 
 local MenuCoalitionBlueCSARRayakStart   = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Start CSAR", MenuCoalitionBlueCSARRayak, SpawnCSAR, CSAR_ZONE_RAYAK)
-local MenuCoalitionBlueCSARRayakEnd     = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "End CSAR", MenuCoalitionBlueCSARRayak, EndCSAR, CSAR_ZONE_RAYAK)
+--local MenuCoalitionBlueCSARRayakEnd     = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "End CSAR", MenuCoalitionBlueCSARRayak, EndCSAR, CSAR_ZONE_RAYAK)
 local MenuCoalitionBlueCSARHomsStart    = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Start CSAR", MenuCoalitionBlueCSARHoms, SpawnCSAR, CSAR_ZONE_HOMS)
-local MenuCoalitionBlueCSARHomsEnd      = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "End CSAR", MenuCoalitionBlueCSARRayak, EndCSAR, CSAR_ZONE_HOMS)
+--local MenuCoalitionBlueCSARHomsEnd      = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "End CSAR", MenuCoalitionBlueCSARRayak, EndCSAR, CSAR_ZONE_HOMS)
 local MenuCoalitionBlueCSARRPStart      = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Start CSAR", MenuCoalitionBlueCSARRoshPina, SpawnCSAR, CSAR_ZONE_ROSHPINA)
-local MenuCoalitionBlueCSARRPEnd        = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "End CSAR", MenuCoalitionBlueCSARRoshPina, EndCSAR, CSAR_ZONE_ROSHPINA)
+--local MenuCoalitionBlueCSARRPEnd        = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "End CSAR", MenuCoalitionBlueCSARRoshPina, EndCSAR, CSAR_ZONE_ROSHPINA)
 
 MessageToAll("Added CSAR Menu")
