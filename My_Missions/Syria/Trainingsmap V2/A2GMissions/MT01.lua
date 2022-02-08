@@ -26,6 +26,7 @@ function initMission()
     MT01_Red_Inf_2_Spawn  = nil
     MT01_Red_Inf_3_Spawn  = nil
     MT01_FOB_Prince_Spawn = nil
+    MT01_JTac_Spawn       = nil
 
     MT01_Blue_Inf_1_Spawn = nil
     MT01_Blue_Inf_2_Spawn = nil
@@ -73,6 +74,7 @@ function spawnEnemyForcesAtHelipad18 ()
   armygroup[1]:AddWeaponRange(0, UTILS.KiloMetersToNM(6))
 
   MT01_FOB_Prince_Spawn = SPAWN:New("MT01_FOB_Prince"):Spawn()
+  MT01_JTac_Spawn       = SPAWN:New("MT01_JTac_Widow1-1"):Spawn()
   
   
 end
@@ -81,7 +83,7 @@ function MarkF10 ()
     Marker_Helipad19  = MARKER:New(Zone_Helipad19:GetCoordinate(), "MT01: Transport Infantry to the Dropzone!"):ReadOnly():ToAll()
     Marker_Helipad27  = MARKER:New(Zone_Helipad27:GetCoordinate(), "MT01: Transport Infantry to the Dropzone!"):ReadOnly():ToAll()
     Marker_Helipad18  = MARKER:New(Zone_Helipad18:GetCoordinate(), "MT01: Infantry will advance to secure this position, provide support!"):ReadOnly():ToAll()
-    Marker_FOB_Prince  = MARKER:New(MT01_FOB_Prince_Spawn:GetCoordinate(), "MT01: FOB Prince"):ReadOnly():ToAll()
+    Marker_FOB_Prince = MARKER:New(MT01_FOB_Prince_Spawn:GetCoordinate(), "MT01: FOB Prince"):ReadOnly():ToAll()
 end
 
 function MarkF10Remove ()
