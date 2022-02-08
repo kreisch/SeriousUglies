@@ -234,7 +234,7 @@ function stopMissionMT01 ()
     removeAllUnits()
     removeCtldZones()
     MarkF10Remove()
-
+    ZoneCaptureCoalition:Stop()
     IntelBlue:__Stop(5)
     MT01MissionActive = false
     trigger.action.outText("Mission MT01 stopped.", 15)
