@@ -26,6 +26,7 @@ local CsarHomsZonesSet    = SET_ZONE:New():FilterPrefixes("CSAR_Homs"):FilterOnc
 local CsarHomsZonesList   = zoneSetToList(CsarHomsZonesSet)
 local CsarRoshPinaZonesSet    = SET_ZONE:New():FilterPrefixes("CSAR_RoshPina"):FilterOnce()
 local CsarRoshPinaZonesList   = zoneSetToList(CsarRoshPinaZonesSet)
+local CsarMapMarker = {}
 
 -- Variablen um Aktivitaet der Zonen zu triggern - Automatisches erneutes spawnen in aktiven Bereichen, wenn Pilot gerettet wurde
 CsarRayakActive = false
@@ -34,7 +35,7 @@ CsarRoshPinaActive = false
 
 local spawnZoneList       = {}
 
-my_csar:SpawnCSARAtZone( "CSTest", coalition.side.BLUE, "Unlucky Ugly", true )
+--my_csar:SpawnCSARAtZone( "CSTest", coalition.side.BLUE, "Unlucky Ugly", true )
 
 
 function SpawnCSAR(ZoneIdentifier)
@@ -70,12 +71,12 @@ function EndCsar(area)
 end
 
 function my_csar:OnAfterPilotDown(from, event, to, spawnedgroup, frequency, groupname, coordinates_text)
-  MessageToAll("Pilot downed! Beacon frequency: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text)
+--  MessageToAll("Pilot downed! Beacon frequency: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text)
   if STTS_ENABLED then
     STTS.TextToSpeech("Mayday Mayday Mayday, Pilot down!","127.500","AM","1.0","SRS",2)
   end
   if (CSAR_MARKS_ON_PILOTS) then
-     local CsarMapMarker  = MARKER:New(spawnedgroup:GetCoordinate(), "Pilot downed! Beacon frequency: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text):ToAll()
+     CsarMapMarker  = MARKER:New(spawnedgroup:GetCoordinate(), "Pilot downed! Beacon frequency: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text):ToAll()
   end
 end
 
@@ -83,25 +84,28 @@ end
   --MessageToAll("Approaching downed pilot.".. heliname .. " request flare or smoke for assistance.")
 --end
 
---function my_csar:OnAfterBoarded(from, event, to, heliname, groupname)
-  
---end
+function my_csar:OnAfterBoarded(from, event, to, heliname, groupname)
+  --MessageToAll("my_csar:OnAfterBoarded")
+  CsarMapMarker:Remove()
+  --CsarMapMarker = {}
+end
 
 --function my_csar:OnAfterReturning(from, event, to, heliname, groupname)
-  --MessageToAll(heliname .. " picked up downed pilot - return to next base immediately.")
+  --MessageToAll("my_csar:OnAfterReturning")
     -- Stop helo.
-    --self:__Stop(2)
+--  self:__Stop(2)
 --end
 
 function my_csar:OnAfterRescued(from, event, to, heliunit, heliname, pilotssaved)
-  MessageToAll("Downed pilot succesfully delivered to more capable hands in MASH. Thank you " .. heliname .."!")
+  --MessageToAll("my_csar:OnAfterRescued")
+  --  MessageToAll("Downed pilot succesfully delivered to more capable hands in MASH. Thank you " .. heliname .."!")
     if STTS_ENABLED then
       STTS.TextToSpeech("We will take care of the patient, you are good to go!","127.500","AM","1.0","SRS",2)
     end
 end
 
 
-MessageToAll("Adding CSAR Menu")
+--MessageToAll("Adding CSAR Menu")
 
 -- Define CSAR
 local MenuCoalitionBlueCSAR             = MENU_COALITION:New( coalition.side.BLUE, "Mission Setup CSAR" )

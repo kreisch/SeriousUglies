@@ -74,3 +74,5 @@ end
 
 
 my_ctld:__Start(5)
+
+MessageToAll("Added CTLD Menu")
