@@ -189,19 +189,24 @@ function startMissionMT01 ()
       if (Unit:IsInZone(Zone_MT01)) then
               local name = Troops:GetName()
               local droppedGroup = GROUP:FindByName(name)
-              local lastKnownPosition = droppedGroup:GetPointVec2()          
-              isGroupDead = SCHEDULER:New( nil,
-                function()
-                  if droppedGroup:IsAlive() then
-                  lastKnownPosition = droppedGroup:GetPointVec2()
-                  --MESSAGE:New("Is alive " .. droppedGroup:GetName(), 5):ToCoalition(coalition.side.BLUE)
-                  else   
-                    --MESSAGE:New("Is dead", 25):ToCoalition(coalition.side.BLUE)
-                    --my_csar:SpawnCASEVAC(lastKnownPosition,2) -- läuft absolut Amok....Warum?
-                    isGroupDead:Stop()   
-                  end
-              end, {}, 15, 30 )  
-              
+              -- local lastKnownPosition = droppedGroup:GetPointVec2()          
+              -- isGroupDead = SCHEDULER:New( nil,
+              --   function()
+              --     if droppedGroup:IsAlive() then
+              --     lastKnownPosition = droppedGroup:GetPointVec2()
+              --     --MESSAGE:New("Is alive " .. droppedGroup:GetName(), 5):ToCoalition(coalition.side.BLUE)
+              --     else   
+              --       --MESSAGE:New("Is dead", 25):ToCoalition(coalition.side.BLUE)
+              --       --my_csar:SpawnCASEVAC(lastKnownPosition,2) -- läuft absolut Amok....Warum?
+              --       isGroupDead:Stop()   
+              --     end
+              -- end, {}, 15, 30 )  
+              droppedGroup:HandleEvent(EVENTS.Dead)
+              function droppedGroup:OnEventDead( EventData)
+                  self:E("Group died.." .. EventData.iniGroupName)
+                  local lastKnownPosition = droppedGroup:GetPointVec2()
+                  my_csar:SpawnCASEVAC(lastKnownPosition,2) -- läuft absolut Amok....Warum?
+              end
                if string.find(name,"Template_CTLD_Blue_Mortar") then
                     local counter = #armygroup
                     armygroup[counter + 1] = droppedGroup -- Packt die Mortars in eine Liste, sodass sie vom Arty_Script genutzt werden
