@@ -1,8 +1,17 @@
-
-
+ioDesanitized = false
 
 local MarkerHelipads                 = {}
 local MarkerMASH                     = {}
+
+if io and lfs and os then
+    trigger.action.outText("lfs and io available", 30)
+    ioDesanitized = true
+  else
+    trigger.action.outText("lfs and io not available -> MissionScripting.lua has to be modified to use this mission!", 6000)
+  end
+
+
+
 
 function MarkHeliPorts()
     local HeliPortSet = SET_ZONE:New():FilterPrefixes("Helipad"):FilterStart()
@@ -42,6 +51,9 @@ function RemoveMASHMarks()
     MarkerMASH = {}
 end
 
+function extendTable(t1, t2)
+    return table.move(t2, 1, #t2, #t1 + 1, t1)
+end
 
 
 ---- Function used to call dismounts.

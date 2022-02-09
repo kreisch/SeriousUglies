@@ -156,21 +156,6 @@ function checkEnemyPresenceInMissionArea()
         end
         self:__Guard( 30 )
       end
-
-      -- --- @param Functional.Protect#ZONE_CAPTURE_COALITION self
-      -- function ZoneCaptureCoalition:OnEnterAttacked()
-      --   ZoneCaptureCoalition:Smoke( SMOKECOLOR.White )
-      --   local Coalition = self:GetCoalition()
-      --   self:E({Coalition = Coalition})
-      --   if Coalition == coalition.side.BLUE then
-      --     US_CC:MessageTypeToCoalition( string.format( "%s is under attack by Russia", ZoneCaptureCoalition:GetZoneName() ), MESSAGE.Type.Information )
-      --     RU_CC:MessageTypeToCoalition( string.format( "We are attacking %s", ZoneCaptureCoalition:GetZoneName() ), MESSAGE.Type.Information )
-      --   else
-      --     RU_CC:MessageTypeToCoalition( string.format( "%s is under attack by the USA", ZoneCaptureCoalition:GetZoneName() ), MESSAGE.Type.Information )
-      --     US_CC:MessageTypeToCoalition( string.format( "We are attacking %s", ZoneCaptureCoalition:GetZoneName() ), MESSAGE.Type.Information )
-      --   end
-      -- end
-
   ZoneCaptureCoalition:__Guard( 1 )
   ZoneCaptureCoalition:Start( 30, 30 )
 
@@ -189,24 +174,24 @@ function startMissionMT01 ()
       if (Unit:IsInZone(Zone_MT01)) then
               local name = Troops:GetName()
               local droppedGroup = GROUP:FindByName(name)
-              -- local lastKnownPosition = droppedGroup:GetPointVec2()          
-              -- isGroupDead = SCHEDULER:New( nil,
-              --   function()
-              --     if droppedGroup:IsAlive() then
-              --     lastKnownPosition = droppedGroup:GetPointVec2()
-              --     --MESSAGE:New("Is alive " .. droppedGroup:GetName(), 5):ToCoalition(coalition.side.BLUE)
-              --     else   
-              --       --MESSAGE:New("Is dead", 25):ToCoalition(coalition.side.BLUE)
-              --       --my_csar:SpawnCASEVAC(lastKnownPosition,2) -- läuft absolut Amok....Warum?
-              --       isGroupDead:Stop()   
-              --     end
-              -- end, {}, 15, 30 )  
-              droppedGroup:HandleEvent(EVENTS.Dead)
-              function droppedGroup:OnEventDead( EventData)
-                  self:E("Group died.." .. EventData.iniGroupName)
-                  local lastKnownPosition = droppedGroup:GetPointVec2()
-                  my_csar:SpawnCASEVAC(lastKnownPosition,2) -- läuft absolut Amok....Warum?
-              end
+              local lastKnownPosition = droppedGroup:GetPointVec2()          
+              isGroupDead = SCHEDULER:New( nil,
+                function()
+                  if droppedGroup:IsAlive() then
+                  lastKnownPosition = droppedGroup:GetPointVec2()
+                  --MESSAGE:New("Is alive " .. droppedGroup:GetName(), 5):ToCoalition(coalition.side.BLUE)
+                  else   
+                    MESSAGE:New("Is dead", 25):ToCoalition(coalition.side.BLUE)
+                    isGroupDead:Stop()  
+                    my_csar:SpawnCASEVAC(lastKnownPosition,2) -- läuft absolut Amok....Warum?
+                  end
+              end, {}, 15, 30 )  
+              -- droppedGroup:HandleEvent(EVENTS.Dead)
+              -- function droppedGroup:OnEventDead( EventData)
+              --     self:E("Group died.." .. EventData.iniGroupName)
+              --     local lastKnownPosition = droppedGroup:GetPointVec2()
+              --     my_csar:SpawnCASEVAC(lastKnownPosition,2) -- läuft absolut Amok....Warum?
+              -- end
                if string.find(name,"Template_CTLD_Blue_Mortar") then
                     local counter = #armygroup
                     armygroup[counter + 1] = droppedGroup -- Packt die Mortars in eine Liste, sodass sie vom Arty_Script genutzt werden
@@ -218,6 +203,24 @@ function startMissionMT01 ()
     trigger.action.outSound("Murica.ogg")
   end
 end
+
+
+-- debugGroupSet:ForEachGroup( -- WORKAROUND No1. geht
+--   --- @param Wrapper.Group#GROUP MooseGroup
+--   function( MooseGroup ) 
+--     local droppedGroup = MooseGroup
+--     --trigger.action.outText("Trigger active for " .. droppedGroup:GetName(), 30)
+--     droppedGroup:HandleEvent(EVENTS.Dead)
+--     function droppedGroup:OnEventDead( EventData)
+--             local _unit = EventData.IniUnit
+--             local _name = _unit:GetName()
+--             trigger.action.outText("Unit died.." .. _name, 30)
+--         if string.match(_name, "CASEVAC") then
+--             my_csar:SpawnCASEVAC(droppedGroup:GetPointVec2(),2) -- läuft absolut Amok....Warum?
+--         end
+--     end
+--   end 
+-- )
 
 function removeAllUnits()
   MT01_Red_Inf_1_Spawn:SpawnScheduleStop()

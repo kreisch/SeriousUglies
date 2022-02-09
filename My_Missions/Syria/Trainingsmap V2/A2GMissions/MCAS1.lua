@@ -110,5 +110,26 @@ BlueChief:AddRejectZone(ReconZone3)
 BlueChief:AddStrategicZone(ReconZone2,1,1)
 BlueChief:SetStrategy(CHIEF.Strategy.OFFENSIVE)
 BlueChief:AllowGroundTransport()
-
+BlueChief:AddConflictZone(BlueConflictZone)
 BlueChief:__Start(2)
+
+local BlueInitalAuftrag = AUFTRAG:NewARMOREDGUARD(Blue_Logi_Zone:GetCoordinate())
+BlueChief:AddMission(BlueInitalAuftrag)
+AddMissionToQueue(BlueInitalAuftrag)
+
+local BlueInitalAuftrag2 = AUFTRAG:NewONGUARD(ReconZonePL:GetCoordinate())
+BlueInitalAuftrag2:SetRequiredTransport(ReconZonePL,1,1,ReconZonePL)
+BlueChief:AddMission(BlueInitalAuftrag2)
+AddMissionToQueue(BlueInitalAuftrag2)
+
+local BlueInitalAuftrag3 = AUFTRAG:NewPATROLZONE(ReconZone1,20)
+Blue_Brigade_One:AddMission(BlueInitalAuftrag3)
+AddMissionToQueue(BlueInitalAuftrag3)
+
+local BlueInitalAuftrag4 = AUFTRAG:NewFUELSUPPLY(Blue_Logi_Zone)
+Blue_Brigade_One:AddMission(BlueInitalAuftrag4)
+AddMissionToQueue(BlueInitalAuftrag4)
+
+local BlueInitalAuftrag5 = AUFTRAG:NewAMMOSUPPLY(Blue_Logi_Zone)
+Blue_Brigade_One:AddMission(BlueInitalAuftrag5)
+AddMissionToQueue(BlueInitalAuftrag5)
