@@ -19,12 +19,12 @@ local BlueInterceptLimit = 3
 local BlueMissionQueue = {}
 local _BlueMissionCounter = 0
 
-function AddMissionToQueue(mission)
+local function AddMissionToQueue(mission)
   _BlueMissionCounter = _BlueMissionCounter + 1
   BlueMissionQueue[_BlueMissionCounter] = mission
 end
 
-function BlueHouseKeeping()
+local function BlueHouseKeeping()
   for _index,_auftrag in pairs(BlueMissionQueue) do
     local auftrag = _auftrag -- Ops.Auftrag#AUFTRAG
     if auftrag and auftrag:IsOver() then

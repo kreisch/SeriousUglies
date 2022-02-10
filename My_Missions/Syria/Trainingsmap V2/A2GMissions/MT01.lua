@@ -8,9 +8,27 @@
 -- Rote Infanterie spawnt in den Movezonen
 -- Blaue M�rser er�ffnen Feuer auf diese Positionen, sobald rote Infanterie aufgekl�rt wird.
 local MT01MissionActive = false
+local armygroup = {}
 
-function initMission()
+--THIS IS A CUSTOM FUNCTION TO CREATE A MISSION FOR ALL DETECTIONS OF THE RIGHT TYPE
+local function ATO(contact)
+  --trigger.action.outText("CIA: I found a " .. contact.attribute .. " called " ..  contact.groupname, 30)
+  if (contact.attribute == "Ground_APC") or (contact.attribute == "Ground_Artillery") or (contact.attribute =="Ground_Truck") or (contact.attribute =="Ground_Tank") 
+  or (contact.attribute =="Ground_Infantry") then
+          local target=GROUP:FindByName(contact.groupname)
+          if (target) then
+            contactMarker = MARKER:New(target:GetCoordinate(), "TIC! We need aircover ASAP!"):ReadOnly():ToAll()
+            
+            local auftrag=AUFTRAG:NewARTY(target, 5, 30)
+            for k=1, #armygroup, 1 do
+              armygroup[k]:AddMission(auftrag)
+            end
+          end
+    end
 
+end --endfunc
+
+local function initMission()
     Zone_Helipad19  = ZONE:New("Helipad_Kiryat_Shmona-19")
     Zone_Helipad27  = ZONE:New("Helipad_Kiryat_Shmona-27")
     Zone_Helipad18  = ZONE:New("Helipad_Kiryat_Shmona-18")
@@ -46,23 +64,19 @@ function initMission()
     IntelBlue:Start() --start it
 
     armygroup = {}
-
 end
 
-function spawnEnemyForcesAtHelipad18 ()
+local function spawnEnemyForcesAtHelipad18 ()
   MT01_Red_Inf_1_Spawn = SPAWN
   :New( "MT01_Red_Inf-1" )
-  :InitLimit( 15, 5 )
   :SpawnScheduled( 5, .5 )
   
   MT01_Red_Inf_2_Spawn = SPAWN
   :New( "MT01_Red_Inf-2" )
-  :InitLimit( 15, 5 )
   :SpawnScheduled( 5, .5 )
   
   MT01_Red_Inf_3_Spawn = SPAWN
   :New( "MT01_Red_Inf-3" )
-  :InitLimit( 15, 5 )
   :SpawnScheduled( 5, .5 )
   
   MT01_Blue_Inf_1_Spawn = SPAWN:New("MT01_Blue_Inf-1"):Spawn()
@@ -75,25 +89,23 @@ function spawnEnemyForcesAtHelipad18 ()
 
   MT01_FOB_Prince_Spawn = SPAWN:New("MT01_FOB_Prince"):Spawn()
   MT01_JTac_Spawn       = SPAWN:New("MT01_JTac_Widow1-1"):Spawn()
-  
-  
 end
 
-function MarkF10 ()
+local function MarkF10 ()
     Marker_Helipad19  = MARKER:New(Zone_Helipad19:GetCoordinate(), "MT01: Transport Infantry to the Dropzone!"):ReadOnly():ToAll()
     Marker_Helipad27  = MARKER:New(Zone_Helipad27:GetCoordinate(), "MT01: Transport Infantry to the Dropzone!"):ReadOnly():ToAll()
     Marker_Helipad18  = MARKER:New(Zone_Helipad18:GetCoordinate(), "MT01: Infantry will advance to secure this position, provide support!"):ReadOnly():ToAll()
     Marker_FOB_Prince = MARKER:New(MT01_FOB_Prince_Spawn:GetCoordinate(), "MT01: FOB Prince"):ReadOnly():ToAll()
 end
 
-function MarkF10Remove ()
+local function MarkF10Remove ()
     Marker_Helipad19:Remove()
     Marker_Helipad27:Remove()
     Marker_Helipad18:Remove()
     Marker_FOB_Prince:Remove()
 end
 
-function addCtldZones ()
+local function addCtldZones ()
     my_ctld:AddCTLDZone("Helipad_Kiryat_Shmona-19",CTLD.CargoZoneType.DROP,SMOKECOLOR.Red,true,true)
     my_ctld:AddCTLDZone("Helipad_Kiryat_Shmona-27",CTLD.CargoZoneType.DROP,SMOKECOLOR.Red,true,true)  
     
@@ -103,10 +115,9 @@ function addCtldZones ()
     my_ctld:AddCTLDZone("CTLD debug",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true)
 
     my_ctld:AddCTLDZone("MT01_FOB_Prince",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true)
-    
 end
 
-function removeCtldZones()
+local function removeCtldZones()
     my_ctld:DeactivateZone("Helipad_Kiryat_Shmona-19",CTLD.CargoZoneType.DROP)
     my_ctld:DeactivateZone("Helipad_Kiryat_Shmona-27",CTLD.CargoZoneType.DROP)
     my_ctld:DeactivateZone("MT01_MZ1",CTLD.CargoZoneType.MOVE)
@@ -116,30 +127,9 @@ function removeCtldZones()
     my_ctld:DeactivateZone("CTLD MT01_FOB_Prince",CTLD.CargoZoneType.LOAD)
 end
 
-
---THIS IS A CUSTOM FUNCTION TO CREATE A MISSION FOR ALL DETECTIONS OF THE RIGHT TYPE
-function ATO(contact)
-    --trigger.action.outText("CIA: I found a " .. contact.attribute .. " called " ..  contact.groupname, 30)
-    if (contact.attribute == "Ground_APC") or (contact.attribute == "Ground_Artillery") or (contact.attribute =="Ground_Truck") or (contact.attribute =="Ground_Tank") 
-    or (contact.attribute =="Ground_Infantry") then
-            local target=GROUP:FindByName(contact.groupname)
-            if (target) then
-              contactMarker = MARKER:New(target:GetCoordinate(), "TIC! We need aircover ASAP!"):ReadOnly():ToAll()
-              
-              local auftrag=AUFTRAG:NewARTY(target, 5, 30)
-              for k=1, #armygroup, 1 do
-                armygroup[k]:AddMission(auftrag)
-              end
-            end
-      end
-
-end --endfunc
-
-
-
 -- Create a scheduler to check every 30 seconds if enemies are still in the mission zone
 -- Or just use a "Capture Zone" feature....
-function checkEnemyPresenceInMissionArea()
+local function checkEnemyPresenceInMissionArea()
   CaptureZone           = ZONE:New( "MT01Area" )
   ZoneCaptureCoalition  = ZONE_CAPTURE_COALITION:New( CaptureZone, coalition.side.RED ) 
 
@@ -163,7 +153,7 @@ end
 
 
 -- Starts the Mission with the ID MT01
-function startMissionMT01 ()
+local function startMissionMT01 ()
   if MT01MissionActive == false then
     initMission()
     spawnEnemyForcesAtHelipad18()
@@ -222,7 +212,7 @@ end
 --   end 
 -- )
 
-function removeAllUnits()
+local function removeAllUnits()
   MT01_Red_Inf_1_Spawn:SpawnScheduleStop()
   MT01_Red_Inf_2_Spawn:SpawnScheduleStop()
   MT01_Red_Inf_3_Spawn:SpawnScheduleStop()
@@ -238,8 +228,7 @@ function removeAllUnits()
    end
 end
 
-
-function stopMissionMT01 ()
+local function stopMissionMT01 ()
     removeAllUnits()
     removeCtldZones()
     MarkF10Remove()

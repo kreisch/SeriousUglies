@@ -1,4 +1,4 @@
-function initMission()
+local function initMission()
     -- Fortschrittsvariablen
     TraindepotDestroyed   = false
     Traindepot1Destroyed   = false
@@ -42,16 +42,7 @@ function initMission()
     -- SpawnedAAA      = {}
 end
 
-
-function startMissionTrainStrike(configuration)
-  initMission()
-  HandleSceneryEvents()
-  addF10Marker()
-  SpawnUnits(configuration)
-
-end
-
-function addF10Marker()
+local function addF10Marker()
   TraindepotMarker  = MARKER:New(TraindepotZone:GetCoordinate(), "What a fookin' nice Train Depot...a...shame"):ReadOnly():ToAll()
   Traindepot1Marker = MARKER:New(Traindepot1Zone:GetCoordinate(), "What a fookin' nice Train Depot...a...shame"):ReadOnly():ToAll()
   Traindepot2Marker = MARKER:New(Traindepot2Zone:GetCoordinate(), "What a fookin' nice Train Depot...a...shame"):ReadOnly():ToAll()
@@ -62,7 +53,16 @@ function addF10Marker()
   Traindepot7Marker = MARKER:New(Traindepot7Zone:GetCoordinate(), "What a fookin' nice Train Depot...a...shame"):ReadOnly():ToAll()
 end
 
-function removeF10Marker()
+local function SpawnUnits(configuration)
+  if configuration == 1 then
+    trigger.action.outText("Size of Zone Trainstrike Table.." .. #MS01_TrainStrike_Zones_Table, 30)
+    SpawnGroupsOfTemplatesInListOfZones(3, MS01_TrainStrike_Zones_Table, UnitTable_ShoRads, "Trainstrike_Shorads",100)
+    SpawnGroupsOfTemplatesInListOfZones(10, MS01_TrainStrike_Zones_Table, UnitTable_SamUnitsAAA, "Trainstrike_AAA",100)
+    SpawnGroupsOfTemplatesInListOfZones(2, MS01_TrainStrike_Zones_Table, UnitTable_SamUnitsMANPAD, "Trainstrike_Manpad",100)
+  end
+end
+
+local function removeF10Marker()
   TraindepotMarker:Remove()
   Traindepot1Marker:Remove()
   Traindepot2Marker:Remove()
@@ -74,24 +74,7 @@ function removeF10Marker()
 
 end
 
-function endMissionTrainStrike()
-   removeF10Marker()
-   DespawnUnits()
-  -- Todo: Wie kriegt man den Eventhandler inaktiv?
-
-end
-
-function SpawnUnits(configuration)
-  if configuration == 1 then
-    trigger.action.outText("Size of Zone Trainstrike Table.." .. #MS01_TrainStrike_Zones_Table, 30)
-    SpawnGroupsOfTemplatesInListOfZones(3, MS01_TrainStrike_Zones_Table, UnitTable_ShoRads, "Trainstrike_Shorads",100)
-    SpawnGroupsOfTemplatesInListOfZones(10, MS01_TrainStrike_Zones_Table, UnitTable_SamUnitsAAA, "Trainstrike_AAA",100)
-    SpawnGroupsOfTemplatesInListOfZones(2, MS01_TrainStrike_Zones_Table, UnitTable_SamUnitsMANPAD, "Trainstrike_Manpad",100)
-  end
-
-end
-
-function DespawnUnits()
+local function DespawnUnits()
   local zoneRemover = ZONE:New("MS01Remove-1")
   local unitsToKill = SET_GROUP:New():FilterCategoryGround():FilterZones({zoneRemover}):FilterOnce()
   if unitsToKill:Count() > 0 then
@@ -102,12 +85,16 @@ function DespawnUnits()
         end 
       )
    end
-
 end
 
+local function endMissionTrainStrike()
+   removeF10Marker()
+   DespawnUnits()
+  -- Todo: Wie kriegt man den Eventhandler inaktiv?
+end
 
 --- Function to handle SCENERY Death EVENTS
-function HandleSceneryEvents()
+local function HandleSceneryEvents()
   DeathEventHandler = EVENTHANDLER:New()
   DeathEventHandler:HandleEvent(EVENTS.Dead)
     function DeathEventHandler:OnEventDead(EventData)
@@ -162,8 +149,12 @@ function HandleSceneryEvents()
   end
 end
 
-
-
+local function startMissionTrainStrike(configuration)
+  initMission()
+  HandleSceneryEvents()
+  addF10Marker()
+  SpawnUnits(configuration)
+end
 
 -- Build Menu
 local MenuCoalitionBlueHomsTrainStrikeMenu        = MENU_COALITION:New( coalition.side.BLUE,          "Homs: Train Strike", MenuCoalitionBlueA2GMissions )

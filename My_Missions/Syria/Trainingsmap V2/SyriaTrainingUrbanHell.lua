@@ -31,7 +31,7 @@ local UrbanHellActive                = false
 local UrbanHellMarkerTGT             = nil
 local UrbanHellMarkerFARP            = nil
 
-function SpawnUrbanHell(difficulty)
+local function SpawnUrbanHell(difficulty)
   if (UrbanHellActive) == false then
     UrbanHellZoneTable = zoneSetToList(UrbanHellSet)
     UrbanHellFarpsTable= zoneSetToList(UrbanHellFarpsSet)
@@ -55,7 +55,7 @@ function SpawnUrbanHell(difficulty)
   end
 end
 
-function DeSpawnUrbanHell()
+local function DeSpawnUrbanHell()
     for k = 1, #UrbanHellspawnedUnitsEasy, 1 do
         UrbanHellspawnedUnitsEasy[k]:Destroy()
     end
