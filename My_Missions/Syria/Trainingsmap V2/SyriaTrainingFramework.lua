@@ -130,3 +130,12 @@ end
 function SpawnManpadWhenDamaged()
 
 end
+
+function GetNamesOfZonesFromZoneTable(table)
+    local _table = table
+    local _zoneNamesTable = {}
+        for i = 1, #_table, 1 do
+            _zoneNamesTable[i] = _table[i]:GetName()
+        end
+    return _zoneNamesTable
+end

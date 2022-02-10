@@ -1,12 +1,7 @@
-
-    --local Zone_SAM_Spawns_South         = ZONE:New("SAM_Spawns_South")
-    --local Zone_SAM_Spawns_Central       = ZONE:New("SAM_Spawns_Central")
     local SamSectorSouthSet             = SET_ZONE:New():FilterPrefixes("SAM_Spawns_South"):FilterOnce()
     local SamSectorNorthSet             = SET_ZONE:New():FilterPrefixes("SAM_Spawns_North"):FilterOnce()
     local ZoneTableSouth                = zoneSetToList(SamSectorSouthSet)
     local ZoneTableNorth                = zoneSetToList(SamSectorNorthSet)
-    MessageToAll ("Sam Zones South " .. #ZoneTableSouth,60,"YB34 Range activated")
-    MessageToAll ("Sam Zones North " .. #ZoneTableNorth,60,"YB34 Range activated")
 
     local SamUnitsMANPAD                = {"Template_Red_ManpadTeam"}
     local SamUnitsAAA                   = {"Template_Red_ZU23WithStrela", "Template_Red_AAATruck"}
@@ -60,34 +55,9 @@ end
     end
 end
 
-function MarkAllGroups()
-    -- for i = 1, #SAM_SitesManpads, 1 do
-    --     MarkerTableManpads[i] = MARKER:New(SAM_SitesManpads[i]:GetCoordinate(), "Danger..."):ReadOnly():ToAll()
-    -- end
-    -- for i = 1, #SAM_SitesShorads, 1 do
-    --     MarkerTableShorads[i] = MARKER:New(SAM_SitesShorads[i]:GetCoordinate(), "Danger..."):ReadOnly():ToAll()
-    -- end
-    -- for i = 1, #SAM_SitesAAA, 1 do
-    --     MarkerTableAAA[i] = MARKER:New(SAM_SitesAAA[i]:GetCoordinate(), "Danger..."):ReadOnly():ToAll()
-    -- end
-    -- for i = 1, #SAM_SitesLorads, 1 do
-    --     MarkerTableLorads[i] = MARKER:New(SAM_SitesLorads[i]:GetCoordinate(), "Danger..."):ReadOnly():ToAll()
-    -- end
-    -- if #SAM_SitesLoradsModern then
-    --     for i = 1, #SAM_SitesLoradsModern, 1 do
-    --         MarkerTableLoradsModern[i] = MARKER:New(SAM_SitesLoradsModern[i]:GetCoordinate(), "Danger..."):ReadOnly():ToAll()
-    --     end
-    -- end
-    -- for i = 1, #SAM_SitesLoradsFunkyShit, 1 do
-    --     MarkerTableLoradsFunkyShit[i] = MARKER:New(SAM_SitesLoradsFunkyShit[i]:GetCoordinate(), "Danger..."):ReadOnly():ToAll()
-    -- end
 
-end
-
-function DeSpawnSamSites(sector)
-    local _sector = sector
-    if sector == 1 then
-        local unitsToKill = SET_GROUP:New():FilterCategoryGround():FilterZones({SAM_Spawns_North}):FilterOnce()
+function DeSpawnSamSites()
+            local unitsToKill = SET_GROUP:New():FilterCategoryGround():FilterZones(SamSectorNorthSet):FilterOnce()
         if unitsToKill:Count() > 0 then
             unitsToKill:ForEachGroup( 
             function( MooseGroup ) 
@@ -96,9 +66,7 @@ function DeSpawnSamSites(sector)
               end 
             )
          end
-    end
-    if sector == 2 then
-        local unitsToKill = SET_GROUP:New():FilterCategoryGround():FilterZones({SAM_Spawns_South}):FilterOnce()
+            local unitsToKill = SET_GROUP:New():FilterCategoryGround():FilterZones(SamSectorSouthSet):FilterOnce()
         if unitsToKill:Count() > 0 then
             unitsToKill:ForEachGroup( 
             function( MooseGroup ) 
@@ -107,38 +75,20 @@ function DeSpawnSamSites(sector)
               end 
             )
          end
-    end
-
+         MarkerDeleteAll()
 end
 
 function MarkerDeleteAll()
-    if _configuration == 1 then
-        
+    for i = 1, #ZoneTableSouth, 1 do
+        MarkerTableSouth[i]:Remove()
     end
-    if _configuration == 2 then
-        
+    for i = 1, #ZoneTableNorth, 1 do
+        MarkerTableNorth[i]:Remove()
     end
-    -- for i = 1, #MarkerTableManpads, 1 do
-    --     MarkerTableManpads[i]:Remove()
-    -- end
-    -- for i = 1, #MarkerTableShorads, 1 do
-    --     MarkerTableShorads[i]:Remove()
-    -- end
-    -- for i = 1, #MarkerTableAAA, 1 do
-    --     MarkerTableAAA[i]:Remove()
-    -- end
-    -- for i = 1, #MarkerTableLorads, 1 do
-    --     MarkerTableLorads[i]:Remove()
-    -- end
-    -- for i = 1, #MarkerTableLoradsModern, 1 do
-    --     MarkerTableLoradsModern[i]:Remove()
-    -- end
-    -- for i = 1, #MarkerTableLoradsFunkyShit, 1 do
-    --     MarkerTableLoradsFunkyShit[i]:Remove()
-    -- end
 end
 
-SpawnSamSites({2,2})
-MarkAllGroups()
-local mytimer=TIMER:New(MarkerDeleteAll)
-mytimer:Start(20)
+
+local MenuCoalitionBlueSamSiteControl           = MENU_COALITION        :New( coalition.side.BLUE, "SAM Control", MenuCoalitionBlueA2G)
+local MenuCoalitionBlueSamSiteControlActivate   = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Spawn SAMs North", MenuCoalitionBlueSamSiteControl, SpawnSamSites,{2,1})
+local MenuCoalitionBlueSamSiteControlActivate   = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Spawn SAMs South", MenuCoalitionBlueSamSiteControl, SpawnSamSites,{2,2})
+local MenuCoalitionBlueSamSiteControlDeactive   = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Despawn ALL SAMs", MenuCoalitionBlueSamSiteControl, DeSpawnSamSites)
