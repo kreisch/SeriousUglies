@@ -90,7 +90,7 @@ function MarkF10Remove ()
     Marker_Helipad19:Remove()
     Marker_Helipad27:Remove()
     Marker_Helipad18:Remove()
-    Marker_FOB_Price:Remove()
+    Marker_FOB_Prince:Remove()
 end
 
 function addCtldZones ()
@@ -226,7 +226,7 @@ function removeAllUnits()
   MT01_Red_Inf_1_Spawn:SpawnScheduleStop()
   MT01_Red_Inf_2_Spawn:SpawnScheduleStop()
   MT01_Red_Inf_3_Spawn:SpawnScheduleStop()
-  MT01_FOB_Prince_Spawn:Despawn()
+  MT01_FOB_Prince_Spawn:Destroy()
   local UnitSetMT01 = SET_GROUP:New():FilterCategoryGround():FilterZones({Zone_MT01}):FilterOnce()
   if UnitSetMT01:Count() > 0 then
     UnitSetMT01:ForEachGroup( 
