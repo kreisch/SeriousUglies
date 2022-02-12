@@ -38,7 +38,7 @@ CsarRoshPinaActive = false
 
 local spawnZoneList       = {}
 
---my_csar:SpawnCSARAtZone( "CSTest", coalition.side.BLUE, "Unlucky Ugly", true )
+my_csar:SpawnCSARAtZone( "CSTest", coalition.side.BLUE, "Unlucky Ugly", true )
 
 
 function SpawnCSAR(ZoneIdentifier)
@@ -74,7 +74,7 @@ function EndCsar(area)
 end
 
 function my_csar:OnAfterPilotDown(from, event, to, spawnedgroup, frequency, groupname, coordinates_text)
---  MessageToAll("Pilot downed! Beacon frequency: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text)
+  MessageToAll("Mayday Mayday Mayday, Pilot down! Contact at: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text)
   if STTS_ENABLED then
     STTS.TextToSpeech("Mayday Mayday Mayday, Pilot down!","127.500","AM","1.0","SRS",2)
   end
@@ -83,11 +83,14 @@ function my_csar:OnAfterPilotDown(from, event, to, spawnedgroup, frequency, grou
   end
 end
 
---function my_csar:OnAfterApproach(from, event, to, heliname, groupname)
-  --MessageToAll("Approaching downed pilot.".. heliname .. " request flare or smoke for assistance.")
---end
+function my_csar:OnAfterApproach(from, event, to, heliname, groupname)
+--  MessageToAll("Approaching downed pilot. ".. heliname .. " request flare or smoke for assistance.")
+--  MESSAGE:New( "Approaching downed pilot - look out for smoke!"):ToGroup(UNIT:FindByName(heliname):GetGroup())  
+end
 
 function my_csar:OnAfterBoarded(from, event, to, heliname, groupname)
+--  MESSAGE:New( "Picked up downed pilot. Return to nearest MASH or Airfield immediately!"):ToGroup(UNIT:FindByName(heliname):GetGroup())  
+  MessageToAll(heliname .. " - Picked up downed pilot. Return to nearest MASH or Airfield immediately.")
   --MessageToAll("my_csar:OnAfterBoarded")
   CsarMapMarker:Remove()
   --CsarMapMarker = {}
@@ -101,10 +104,12 @@ end
 
 function my_csar:OnAfterRescued(from, event, to, heliunit, heliname, pilotssaved)
   --MessageToAll("my_csar:OnAfterRescued")
-  --  MessageToAll("Downed pilot succesfully delivered to more capable hands in MASH. Thank you " .. heliname .."!")
-    if STTS_ENABLED then
-      STTS.TextToSpeech("We will take care of the patient, you are good to go!","127.500","AM","1.0","SRS",2)
-    end
+  MessageToAll("Downed pilot succesfully delivered to more capable hands in MASH. Thank you " .. heliname .."!")
+--  MESSAGE:New( "We will take care of the patient, you are good to go!"):ToGroup(UNIT:FindByName(heliname):GetGroup())  
+
+  if STTS_ENABLED then
+    STTS.TextToSpeech("We will take care of the patient, you are good to go!","127.500","AM","1.0","SRS",2)
+  end
 end
 
 
