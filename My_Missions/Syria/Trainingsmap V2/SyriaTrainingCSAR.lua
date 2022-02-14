@@ -14,8 +14,14 @@ my_csar.allowFARPRescue         = true -- allows pilots to be rescued by landing
 my_csar.csarOncrash             = true -- (WIP) If set to true, will generate a downed pilot when a plane crashes as well.
 my_csar.pilotRuntoExtractPoint  = true -- Downed pilot will run to the rescue helicopter up to self.extractDistance in meters. 
 my_csar.extractDistance         = 500 -- Distance the downed pilot will start to run to the rescue helicopter.
-my_csar.loadDistance            = 75 -- configure distance for pilots to get into helicopter in meters.
+my_csar.loadDistance            = 25 -- configure distance for pilots to get into helicopter in meters.
 my_csar.mashprefix = {"MASH"}
+my_csar.csarUsePara = true
+
+--my_csar.useSRS = true -- Use FF\'s SRS integration
+--my_csar.SRSPath = STTS.DIRECTORY -- adjust your own path in your server(!)
+--my_csar.SRSchannel = 251 -- radio channel
+--my_csar.SRSModulation = radio.modulation.AM -- modulation
 
 -- start the FSM
 my_csar:__Start(5)
@@ -74,6 +80,7 @@ function EndCsar(area)
 end
 
 function my_csar:OnAfterPilotDown(from, event, to, spawnedgroup, frequency, groupname, coordinates_text)
+  --MessageToAll("my_csar:OnAfterPilotDown")
   MessageToAll("Mayday Mayday Mayday, Pilot down! Contact at: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text)
   if STTS_ENABLED then
     STTS.TextToSpeech("Mayday Mayday Mayday, Pilot down!","127.500","AM","1.0","SRS",2)
@@ -84,14 +91,15 @@ function my_csar:OnAfterPilotDown(from, event, to, spawnedgroup, frequency, grou
 end
 
 function my_csar:OnAfterApproach(from, event, to, heliname, groupname)
+  --MessageToAll("my_csar:OnAfterApproach")
 --  MessageToAll("Approaching downed pilot. ".. heliname .. " request flare or smoke for assistance.")
---  MESSAGE:New( "Approaching downed pilot - look out for smoke!"):ToGroup(UNIT:FindByName(heliname):GetGroup())  
+  MESSAGE:New( "Approaching downed pilot - look out for smoke!"):ToGroup(UNIT:FindByName(heliname):GetGroup())  
 end
 
 function my_csar:OnAfterBoarded(from, event, to, heliname, groupname)
---  MESSAGE:New( "Picked up downed pilot. Return to nearest MASH or Airfield immediately!"):ToGroup(UNIT:FindByName(heliname):GetGroup())  
-  MessageToAll(heliname .. " - Picked up downed pilot. Return to nearest MASH or Airfield immediately.")
   --MessageToAll("my_csar:OnAfterBoarded")
+  --MessageToAll(heliname .. " - Picked up downed pilot. Return to nearest MASH or Airfield immediately.")
+  MESSAGE:New( "Picked up downed pilot. Return to nearest MASH or Airfield immediately!"):ToGroup(UNIT:FindByName(heliname):GetGroup())  
   CsarMapMarker:Remove()
   --CsarMapMarker = {}
 end
@@ -99,13 +107,13 @@ end
 --function my_csar:OnAfterReturning(from, event, to, heliname, groupname)
   --MessageToAll("my_csar:OnAfterReturning")
     -- Stop helo.
---  self:__Stop(2)
+  --self:__Stop(2)
 --end
 
 function my_csar:OnAfterRescued(from, event, to, heliunit, heliname, pilotssaved)
   --MessageToAll("my_csar:OnAfterRescued")
-  MessageToAll("Downed pilot succesfully delivered to more capable hands in MASH. Thank you " .. heliname .."!")
---  MESSAGE:New( "We will take care of the patient, you are good to go!"):ToGroup(UNIT:FindByName(heliname):GetGroup())  
+  MessageToAll("Downed pilot succesfully delivered to more capable hands in MASH. Thank you!")
+  --MESSAGE:New( "We will take care of the patient, you are good to go!"):ToGroup(UNIT:FindByName(heliname):GetGroup())  
 
   if STTS_ENABLED then
     STTS.TextToSpeech("We will take care of the patient, you are good to go!","127.500","AM","1.0","SRS",2)

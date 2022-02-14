@@ -4,11 +4,12 @@ local MarkerHelipads                 = {}
 local MarkerMASH                     = {}
 
 if io and lfs and os then
-    trigger.action.outText("lfs and io available", 30)
+    trigger.action.outText("io, lfs and os are available", 30)
     ioDesanitized = true
-  else
-    trigger.action.outText("lfs and io not available -> MissionScripting.lua has to be modified to use this mission!", 6000)
-  end
+else
+    trigger.action.outText("io, lfs or os not available -> MissionScripting.lua has to be modified to use this mission!",
+        6000)
+end
 
 
 

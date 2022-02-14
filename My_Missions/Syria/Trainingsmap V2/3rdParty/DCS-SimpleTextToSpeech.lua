@@ -160,7 +160,7 @@ function STTS.TextToSpeech(message,freqs,modulations, volume,name, coalition,poi
         cmd = cmd .. string.format(" -s %s",speed)
     end
 
-    if volume ~= 1.0 then
+    if volume < 1.0 then
         cmd = cmd .. string.format(" -v %s",volume)
     end
 

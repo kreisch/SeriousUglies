@@ -9,14 +9,14 @@ local function initMission ()
                                                     -- Sie MÜSSEN im Format "NAME_NAME" sein und werden mit "-X" am Ende iteriert, sprich "NAME_NAME-X"
                                                     -- Erstellt einfach einen Trigger mit bspw. "MEINE_MISSION-1" und kopiert diesen, so oft ihr wollt.
                                                     -- HINWEIS: Ihr MÜSST eine Zone erstellen, die alle anderen Zonen beinhaltet. Diese muss "MISSIONNAME_Delete" heißen!
-    MissionBriefing                 = "BRIEFING"    -- Hier tragt ihr eine kurze Beschreibung ein, was im Einsatz zu erwarten ist. Dieser Text wird mittels F10 Marker angezeigt.
+    MissionBriefing                 = "BRIEFING"    -- Hier tragt ihr eine kurze(!) Beschreibung ein, was im Einsatz zu erwarten ist. Dieser Text wird mittels F10 Marker angezeigt.
 
-    NumberOfTable1Spawns            = 15    -- The number of how many groups of this Table you want to spawn
-    NumberOfTable2Spawns            = 10    -- The number of how many groups of this Table you want to spawn
-    NumberOfTable3Spawns            = 2     -- The number of how many groups of this Table you want to spawn
-    UnitTable_1                     = {"TEMPLATE_NAME","TEMPLATE_NAME2"} -- Die Gruppen-Namen der "Late-Activated" Gruppen, die gespawned werden sollen - Stufe 1
-    UnitTable_2                     = {"TEMPLATE_NAME","TEMPLATE_NAME2"} -- Die Gruppen-Namen der "Late-Activated" Gruppen, die gespawned werden sollen - Stufe 2
-    UnitTable_3                     = {"TEMPLATE_NAME","TEMPLATE_NAME2"} -- Die Gruppen-Namen der "Late-Activated" Gruppen, die gespawned werden sollen - Stufe 3
+    NumberOfEasySpawns              = 15    -- The number of how many groups of this Table you want to spawn
+    NumberOfMediumSpawns            = 10    -- The number of how many groups of this Table you want to spawn
+    NumberOfHardSpawns              = 2     -- The number of how many groups of this Table you want to spawn
+    UnitTable_Easy                  = {"TEMPLATE_NAME","TEMPLATE_NAME2"} -- Die Gruppen-Namen der "Late-Activated" Gruppen, die gespawned werden sollen - Stufe 1
+    UnitTable_Medium                = {"TEMPLATE_NAME","TEMPLATE_NAME2"} -- Die Gruppen-Namen der "Late-Activated" Gruppen, die gespawned werden sollen - Stufe 2
+    UnitTable_Hard                  = {"TEMPLATE_NAME","TEMPLATE_NAME2"} -- Die Gruppen-Namen der "Late-Activated" Gruppen, die gespawned werden sollen - Stufe 3
 
     -- Ende! Verändert ab hier nur noch dann die Werte, wenn ihr wisst, was ihr tut!
     -- --------------------------------------
@@ -35,16 +35,16 @@ end
 local function spawnUnits(configuration)
     _configuration = configuration
     if (Mission_Active == true) then
-        trigger.action.outText("Mission " .. MissionName .. " already spawned, Despawn it first!", 30)
+        trigger.action.outText("Mission " .. MissionName .. " is already spawned, despawn it first!", 30)
     elseif (Mission_Active == false) then
         if (configuration >= 1) then
-            SpawnGroupsOfTemplatesInListOfZones(NumberOfTable1Spawns, MISSIONNAME_Zones_Table, UnitTable_1, MissionName .."_Table1",100)
+            SpawnGroupsOfTemplatesInListOfZones(NumberOfEasySpawns, MISSIONNAME_Zones_Table, UnitTable_Easy, MissionName .."_Table1",100)
         end
         if (configuration >=2) then
-            SpawnGroupsOfTemplatesInListOfZones(NumberOfTable2Spawns, MISSIONNAME_Zones_Table, UnitTable_2, MissionName .."_Table2",100)
+            SpawnGroupsOfTemplatesInListOfZones(NumberOfMediumSpawns, MISSIONNAME_Zones_Table, UnitTable_Medium, MissionName .."_Table2",100)
         end
         if (configuration >= 3) then
-            SpawnGroupsOfTemplatesInListOfZones(NumberOfTable3Spawns, MISSIONNAME_Zones_Table, UnitTable_3, MissionName .."_Table3",100) 
+            SpawnGroupsOfTemplatesInListOfZones(NumberOfHardSpawns, MISSIONNAME_Zones_Table, UnitTable_Hard, MissionName .."_Table3",100) 
         end
     end
 end
