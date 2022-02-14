@@ -3,12 +3,16 @@ local MissionInitialized = false
 local function initMission ()
     _configuration = nil
     MissionName                                 = "SA_Training"
+    MissionBriefing                             = "Zone of SA-Training, be careful."
     Range_SA_Training_Zones_Set                 = SET_ZONE:New():FilterPrefixes(MissionName):FilterOnce()
     Range_SA_Training_Zones_Table               = zoneSetToList(Range_SA_Training_Zones_Set)
     Range_SA_Training_Delete_Zone               = ZONE:New("SA_TrainingDelete")
     Range_SA_Training_Delete_Zone_Marker        = nil
     Mission_Active                              = false
 
+    NumberOfTable1Spawns            = 15 -- The number of how many groups of this Table you want to spawn
+    NumberOfTable2Spawns            = 10 -- The number of how many groups of this Table you want to spawn
+    NumberOfTable3Spawns            = 2 -- The number of how many groups of this Table you want to spawn
     UnitTable_Easy          = {"Template_Red_AAATruck", "Template_Red_ZU23" ,"Template_Red_ZSU57-2","Template_Red_Shilka"}
     UnitTable_Medium        = {"Template_Red_SA-8OSA", "Template_Red_SA-9Strela", "Template_Red_ManpadTeam"}
     UnitTable_Hard          = {"Template_Red_SA-15Tor"}
@@ -22,13 +26,13 @@ local function spawnUnits(configuration)
 
     elseif (Mission_Active == false) then
         if (configuration >= 1) then
-            SpawnGroupsOfTemplatesInListOfZones(15, Range_SA_Training_Zones_Table, UnitTable_Easy, "SA_Training_Easy",100)
+            SpawnGroupsOfTemplatesInListOfZones(NumberOfTable1Spawns, Range_SA_Training_Zones_Table, UnitTable_Easy, MissionName .."_Table1",100)
         end
         if (configuration >=2) then
-            SpawnGroupsOfTemplatesInListOfZones(10, Range_SA_Training_Zones_Table, UnitTable_Medium, "SA_Training_Medium",100)
+            SpawnGroupsOfTemplatesInListOfZones(NumberOfTable2Spawns, Range_SA_Training_Zones_Table, UnitTable_Medium, MissionName .."_Table2",100)
         end
         if (configuration >= 3) then
-            SpawnGroupsOfTemplatesInListOfZones(2, Range_SA_Training_Zones_Table, UnitTable_Hard, "SA_Training_Hard",100) 
+            SpawnGroupsOfTemplatesInListOfZones(NumberOfTable3Spawns, Range_SA_Training_Zones_Table, UnitTable_Hard, MissionName .."_Table3",100) 
         end
     end
 
@@ -49,7 +53,7 @@ end
 
 local function addF10Marker()
     if Mission_Active == false then
-        Range_SA_Training_Delete_Zone_Marker        = MARKER:New(Range_SA_Training_Delete_Zone:GetCoordinate(), "Zone of SA-Training, be careful."):ReadOnly():ToAll()
+        Range_SA_Training_Delete_Zone_Marker        = MARKER:New(Range_SA_Training_Delete_Zone:GetCoordinate(), MissionBriefing):ReadOnly():ToAll()
     end
 
 end
