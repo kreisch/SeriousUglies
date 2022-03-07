@@ -69,14 +69,17 @@ end
 local function spawnEnemyForcesAtHelipad18 ()
   MT01_Red_Inf_1_Spawn = SPAWN
   :New( "MT01_Red_Inf-1" )
+  :InitLimit( 15, 5 )
   :SpawnScheduled( 5, .5 )
   
   MT01_Red_Inf_2_Spawn = SPAWN
   :New( "MT01_Red_Inf-2" )
+  :InitLimit( 15, 5 )
   :SpawnScheduled( 5, .5 )
   
   MT01_Red_Inf_3_Spawn = SPAWN
   :New( "MT01_Red_Inf-3" )
+  :InitLimit( 15, 5 )
   :SpawnScheduled( 5, .5 )
   
   MT01_Blue_Inf_1_Spawn = SPAWN:New("MT01_Blue_Inf-1"):Spawn()

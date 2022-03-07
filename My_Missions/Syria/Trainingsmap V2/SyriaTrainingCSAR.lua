@@ -1,13 +1,13 @@
 my_csar = CSAR:New(coalition.side.BLUE,"Downed Pilot", "CSAR")
 
 -- options
-my_csar.limitmaxdownedpilots = true
-my_csar.suppressmessages = true
-my_csar.maxdownedpilots = 10
-my_csar.FARPRescueDistance = 1000 -- you need to be this close to a FARP or Airport for the pilot to be rescued.
-my_csar.autosmoke = true -- automatically smoke a downed pilot\'s location when a heli is near.
-my_csar.autosmokedistance = 1000 -- distance for autosmoke
-my_csar.coordtype = 1 -- Use Lat/Long DDM (0), Lat/Long DMS (1), MGRS (2), Bullseye imperial (3) or Bullseye metric (4) for coordinates.
+my_csar.limitmaxdownedpilots    = true
+my_csar.suppressmessages        = false -- Show default messages
+my_csar.maxdownedpilots         = 15
+my_csar.FARPRescueDistance      = 1000 -- you need to be this close to a FARP or Airport for the pilot to be rescued.
+my_csar.autosmoke               = true -- automatically smoke a downed pilot\'s location when a heli is near.
+my_csar.autosmokedistance       = 1000 -- distance for autosmoke
+my_csar.coordtype               = 1 -- Use Lat/Long DDM (0), Lat/Long DMS (1), MGRS (2), Bullseye imperial (3) or Bullseye metric (4) for coordinates.
 my_csar.invisiblecrew           = false -- downed pilot spawn is visible
 my_csar.useprefix               = false -- allow all helicopter to be CSAR
 my_csar.allowFARPRescue         = true -- allows pilots to be rescued by landing at a FARP or Airbase. Else MASH only!
@@ -15,13 +15,16 @@ my_csar.csarOncrash             = true -- (WIP) If set to true, will generate a 
 my_csar.pilotRuntoExtractPoint  = true -- Downed pilot will run to the rescue helicopter up to self.extractDistance in meters. 
 my_csar.extractDistance         = 500 -- Distance the downed pilot will start to run to the rescue helicopter.
 my_csar.loadDistance            = 25 -- configure distance for pilots to get into helicopter in meters.
-my_csar.mashprefix = {"MASH"}
-my_csar.csarUsePara = true
+my_csar.mashprefix              = {"MASH"}
+my_csar.csarUsePara             = true
+my_csar.rescuehoverheight       = 30
+my_csar.rescuehoverdistance     = 20
+my_csar.messageTime             = 20
 
---my_csar.useSRS = true -- Use FF\'s SRS integration
---my_csar.SRSPath = STTS.DIRECTORY -- adjust your own path in your server(!)
---my_csar.SRSchannel = 251 -- radio channel
---my_csar.SRSModulation = radio.modulation.AM -- modulation
+my_csar.useSRS = true -- Use FF\'s SRS integration
+my_csar.SRSPath = STTS.DIRECTORY -- adjust your own path in your server(!)
+my_csar.SRSchannel = 127.500 -- radio channel
+my_csar.SRSModulation = radio.modulation.AM -- modulation
 
 -- start the FSM
 my_csar:__Start(5)
@@ -29,34 +32,38 @@ my_csar:__Start(5)
 
 
 --Get the zones
-local CsarRayakZonesSet   = SET_ZONE:New():FilterPrefixes("CSAR_Rayak"):FilterOnce()
-local CsarRakayZonesList  = zoneSetToList(CsarRayakZonesSet)
-local CsarHomsZonesSet    = SET_ZONE:New():FilterPrefixes("CSAR_Homs"):FilterOnce()
-local CsarHomsZonesList   = zoneSetToList(CsarHomsZonesSet)
+local CsarRayakZonesSet       = SET_ZONE:New():FilterPrefixes("CSAR_Rayak"):FilterOnce()
+local CsarRakayZonesList      = zoneSetToList(CsarRayakZonesSet)
+local CsarHomsZonesSet        = SET_ZONE:New():FilterPrefixes("CSAR_Homs"):FilterOnce()
+local CsarHomsZonesList       = zoneSetToList(CsarHomsZonesSet)
 local CsarRoshPinaZonesSet    = SET_ZONE:New():FilterPrefixes("CSAR_RoshPina"):FilterOnce()
 local CsarRoshPinaZonesList   = zoneSetToList(CsarRoshPinaZonesSet)
-local CsarMapMarker = {}
+local CsarMapMarker           = {} -- Issue: Derzeit überschreiben wir den Marker beim Spawn, dadurch werden alte Marker nicht entfernt!
+
+local CsarCASEVACTemplates    = {"Template_Red_15Inf_1Truck","Template_Red_15Inf_1Truck","Template_Red_15Inf","Template_Red_15Inf_1Truck","Template_Red_15Inf_1Truck", --Mehrmals gelistet für Gewichtung der Wahrscheinlichkeit
+                                  "Template_Red_AAATruck"} 
 
 -- Variablen um Aktivitaet der Zonen zu triggern - Automatisches erneutes spawnen in aktiven Bereichen, wenn Pilot gerettet wurde
-CsarRayakActive = false
-CsarHomsActive  = false
-CsarRoshPinaActive = false
-
+CsarRayakActive     = false
+CsarHomsActive      = false
+CsarRoshPinaActive  = false
+local casevac       = false
 local spawnZoneList       = {}
 
 my_csar:SpawnCSARAtZone( "CSTest", coalition.side.BLUE, "Unlucky Ugly", true )
 
 
-function SpawnCSAR(ZoneIdentifier)
-    if ZoneIdentifier == CSAR_ZONE_RAYAK then
+function SpawnCSAR(configuration)
+    casevac = configuration[2]
+    if configuration[1] == CSAR_ZONE_RAYAK then
       spawnZoneList   = CsarRakayZonesList
       CsarRayakActive = true
     end
-    if ZoneIdentifier == CSAR_ZONE_HOMS then
+    if configuration[1] == CSAR_ZONE_HOMS then
       spawnZoneList   = CsarHomsZonesList
       CsarHomsActive  = true
     end
-    if ZoneIdentifier == CSAR_ZONE_ROSHPINA then
+    if configuration[1] == CSAR_ZONE_ROSHPINA then
       spawnZoneList = CsarRoshPinaZonesList
       CsarRoshPinaActive = true
     end
@@ -67,6 +74,7 @@ function SpawnCSAR(ZoneIdentifier)
 --        end
         spawnZoneList = {}
 end
+
 
 function EndCsar(area)
     if (area == CSAR_ZONE_RAYAK) then
@@ -87,6 +95,14 @@ function my_csar:OnAfterPilotDown(from, event, to, spawnedgroup, frequency, grou
   end
   if (CSAR_MARKS_ON_PILOTS) then
      CsarMapMarker  = MARKER:New(spawnedgroup:GetCoordinate(), "Pilot downed! Beacon frequency: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text):ReadOnly():ToAll()
+  end
+  if casevac == true then
+    local identifier = math.random(1,9999)
+    local amountGroups = math.random(1,3)
+    local unitname = spawnedgroup:GetUnit(1):GetName()
+    MessageToAll("Die abgesprungene Einheit heisst: " .. unitname, 30)
+    local zonePilotDown = ZONE_UNIT:New("Crashsite" .. identifier, UNIT:FindByName(unitname), 50)
+    SpawnGroupsOfTemplatesInListOfZones(amountGroups, {zonePilotDown}, CsarCASEVACTemplates, "CasEvacRed_"..identifier,800, 300)
   end
 end
 
@@ -134,11 +150,12 @@ local MenuCoalitionBlueRemoveMarkHeliports    = MENU_COALITION_COMMAND:New( coal
 local MenuCoalitionBlueMarkHeliports    = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Mark MASH", MenuCoalitionBlueCSARMarker, MarkMASH)
 local MenuCoalitionBlueRemoveMash       = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Remove MASH Marks", MenuCoalitionBlueCSARMarker, RemoveMASHMarks)
 
-local MenuCoalitionBlueCSARRayakStart   = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Start CSAR", MenuCoalitionBlueCSARRayak, SpawnCSAR, CSAR_ZONE_RAYAK)
+local MenuCoalitionBlueCSARRayakStart   = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Start CSAR", MenuCoalitionBlueCSARRayak, SpawnCSAR, {CSAR_ZONE_RAYAK, false})
 --local MenuCoalitionBlueCSARRayakEnd     = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "End CSAR", MenuCoalitionBlueCSARRayak, EndCSAR, CSAR_ZONE_RAYAK)
-local MenuCoalitionBlueCSARHomsStart    = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Start CSAR", MenuCoalitionBlueCSARHoms, SpawnCSAR, CSAR_ZONE_HOMS)
+local MenuCoalitionBlueCSARHomsStart    = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Start CSAR", MenuCoalitionBlueCSARHoms, SpawnCSAR, {CSAR_ZONE_HOMS, false})
 --local MenuCoalitionBlueCSARHomsEnd      = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "End CSAR", MenuCoalitionBlueCSARRayak, EndCSAR, CSAR_ZONE_HOMS)
-local MenuCoalitionBlueCSARRPStart      = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Start CSAR", MenuCoalitionBlueCSARRoshPina, SpawnCSAR, CSAR_ZONE_ROSHPINA)
+local MenuCoalitionBlueCSARRPStart      = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Start CSAR", MenuCoalitionBlueCSARRoshPina, SpawnCSAR, {CSAR_ZONE_ROSHPINA, false})
+local MenuCoalitionBlueCSARRPStart      = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Start CASEVAC", MenuCoalitionBlueCSARRoshPina, SpawnCSAR, {CSAR_ZONE_ROSHPINA, true})
 --local MenuCoalitionBlueCSARRPEnd        = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "End CSAR", MenuCoalitionBlueCSARRoshPina, EndCSAR, CSAR_ZONE_ROSHPINA)
 
 MessageToAll("Added CSAR Menu")

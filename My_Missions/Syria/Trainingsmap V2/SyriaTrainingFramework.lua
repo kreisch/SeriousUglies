@@ -68,7 +68,7 @@ function AddAdditionalScriptsToGroups(MyGroup)
         local typeName = Unit.getTypeName(units[i])
         local unitName = Unit.getName(units[i])
         if string.match(typeName, "BMP") or string.match(typeName, "BTR") or string.match(typeName, "Cobra") or
-            string.match(typeName, "ZIL-135") or string.match(typeName, "Kamaz 43101") then
+            string.match(typeName, "135") or string.match(typeName, "Kamaz 43101") then
             AddDismounts(unitName, "RifleINS")
         elseif string.match(typeName, "Bradley") then
             AddDismounts(unitName, "Rifle")
@@ -82,15 +82,19 @@ function AddAdditionalScriptsToGroups(MyGroup)
     -- Check if it is arty and blue side, then add the arty-script
 end
 
-function SpawnGroupsOfTemplatesInListOfZones(NumberOfGroups, ZoneTable, Templates, Prefix, radius)
-    if radius == nil then
-        radius = 5
+-- Function returns a Table of Groups
+function SpawnGroupsOfTemplatesInListOfZones(NumberOfGroups, ZoneTable, Templates, Prefix, outerradius, innerradius)
+    if outerradius == nil then
+        outerradius = 5
+    end
+    if innerradius == nil then
+        innerradius = 1
     end
     local spawns = {}
     for k = 1, NumberOfGroups, 1 do
         local tempGrpAlias = Prefix .. k
         spawns[k] = SPAWN:NewWithAlias("Randomizer", tempGrpAlias):InitRandomizeZones(ZoneTable):InitRandomizePosition(
-            true, radius):InitRandomizeTemplate(Templates):Spawn()
+            true, outerradius, innerradius ):InitRandomizeTemplate(Templates):Spawn()
         AddAdditionalScriptsToGroups(spawns[k])
     end
 
@@ -140,3 +144,42 @@ function GetNamesOfZonesFromZoneTable(table)
         end
     return _zoneNamesTable
 end
+
+
+
+--Function to stop a fire
+function EndAFire(firecoord)
+    firecoord:StopBigSmokeAndFire()
+  end
+
+-- Function to start a Fire within a zone
+-- Returns the coord object of the fire
+function StartAFire(FireZone, Timed)
+    local rnd = math.random(1,8) -- Smoke size 1 = small smoke and fire; 8 = huge smoke
+    local firecoord = FireZone:GetRandomCoordinate() -- Core.Point#COORDINATE
+    firecoord:BigSmokeAndFire(rnd, nil, nil)
+    
+    if Timed == true then
+        local fireDuration = math.random(minimumDurationFire,maximumDurationFire)
+        local endFire=TIMER:New(EndAFire,firecoord)
+        endFire:Start(fireDuration)
+    end
+    
+    return firecoord
+end
+
+function StartAFireZoneList(ZoneList, Timed)
+    local listOfFires = {}
+    for i = 1, #ZoneList, 1 do
+        listOfFires[i] = StartAFire(ZoneList[i], Timed)
+    end
+
+    return listOfFires
+end
+
+function StopAFireZoneList(ZoneList)
+    for i = 1, #ZoneList, 1 do
+        EndAFire(ZoneList[i])
+    end
+end
+

@@ -10,6 +10,8 @@
 -- Nachdem die vorletzte Gruppe erledigt wurde, CASEVAC
 -- Fertig...?
 
+local playerWasInZone = false
+local activeMortarTrapZone = -1
 
 local function initMission(configuration)
     ZoneScheduler = nil
@@ -17,37 +19,43 @@ local function initMission(configuration)
 
     ClientSet = SET_CLIENT:New():FilterCoalitions("blue"):FilterActive():FilterStart()
 
-    ZoneDallas = ZONE:New("MCAS21_MissionStartArea")
+    ZoneDallas                          = ZONE:New("MCAS21_Delete")
+    ZoneDallasInfSet                    = SET_ZONE:New():FilterPrefixes("MCAS21BlueSpawn"):FilterOnce()
+    ZoneDallasInfTable                  = zoneSetToList(ZoneDallasInfSet)
+    ZoneDallasMortarTrapSet             = SET_ZONE:New():FilterPrefixes("MCAS21RedMortarSpawn1"):FilterOnce()
+    ZoneDallasMortarTrapSetTable        = zoneSetToList(ZoneDallasMortarTrapSet)
 
     MCAS21_FOB_Dallas                   = SPAWN:New("MCAS2_FOB_Dallas-1")
-    MCAS21_FOB_DallasInf                = SET_GROUP:New():FilterCategoryGround():FilterCoalitions("blue"):FilterPrefixes("MCAS2_US_DallasInf"):FilterOnce()
-    MCAS21_FOB_Dallas_RU_Mortar_Trap    = SET_GROUP:New():FilterCategoryGround():FilterCoalitions("red"):FilterPrefixes("MCAS2_RU_DallasMortarTrap"):FilterOnce()
+    MCAS21_FOB_DallasInfTemplate        = {"Template_CTLD_Blue_Inf12", "Template_CTLD_Blue_Inf8"}
+    MCAS21_FOB_Dallas_RU_Mortar_Trap_Spawn      = SPAWN:New("MCAS2_RU_DallasMortarTrap"):InitRandomizePosition( true , 50, 10 )
+    MCAS21_FOB_Dallas_RU_Mortar_Trap2_Spawn     = SPAWN:New("MCAS2_RU_DallasMortarTrap-1")
+    
 
 end
 
 local function spawnMortarTrapDallas()
-    if MCAS21_FOB_Dallas_RU_Mortar_Trap:Count() > 0 then -- Spawn Mortar Trap
-        MCAS21_FOB_Dallas_RU_Mortar_Trap:ForEachGroup( 
-        function( MooseGroup ) 
-            local _g = MooseGroup --Wrapper.GROUP object    
-            _g:Spawn()
-          end 
-        )
-     end
+    activeMortarTrapZone = math.random( 1, #ZoneDallasMortarTrapSetTable )
+    local ZoneName = ZoneDallasMortarTrapSetTable[activeMortarTrapZone]:GetName()
+    local SpawnVec3 = POINT_VEC3:NewFromVec3( ZONE:New( ZoneName ):GetVec3() )
+    MCAS21_FOB_Dallas_RU_Mortar_Trap_Spawn:SpawnFromVec3( SpawnVec3:GetVec3() )
+    MCAS21_FOB_Dallas_RU_Mortar_Trap2_Spawn:SpawnFromVec3( SpawnVec3:GetVec3() )
 
 end
 
 local function TimerPlayerArrivedAtDallas() -- Starts a scheduler to check if Player is around the FOB_Dallas; On arrival, start 2 minute Counter
     ZoneScheduler = SCHEDULER:New(nil,function() 
-        clientSet:ForEachClientInZone(actualZone,function(MooseUnit) 
+        ClientSet:ForEachClientInZone(ZoneDallas,function(MooseUnit) 
             ---@class UNIT:CONTROLLABLE
             local _Unit = MooseUnit
             local coal = _Unit:GetCoalition()
-            local type = _Unit:GetTypeName() -- kreisch: Sollte Typ wie z.B. UH-1H liefern
-            local category = _Unit:getCategory() -- kreisch: Sollte Type liefern: Airplane, Helicopter, Ground, Ship, Structure
+            --local type = _Unit:GetTypeName() -- kreisch: Sollte Typ wie z.B. UH-1H liefern
+            --local category = _Unit:getCategory() -- kreisch: Sollte Type liefern: Airplane, Helicopter, Ground, Ship, Structure
             if coal == coalition.side.BLUE then
-                spawnMortarTrapDallas()
-                ZoneScheduler:Stop()
+                if (playerWasInZone == false) then
+                    spawnMortarTrapDallas()
+                    ZoneScheduler:Stop()
+                    playerWasInZone = true
+                end
             else
                 -- Set you trigger
             end
@@ -62,19 +70,28 @@ end
 
 local function spawnUnits()
     MCAS21_FOB_Dallas:Spawn() -- Spawn Dallas
-    if MCAS21_FOB_DallasInf:Count() > 0 then -- Spawn Inf um Dallas herum
-        MCAS21_FOB_DallasInf:ForEachGroup( 
-        function( MooseGroup ) 
-            local _g = MooseGroup --Wrapper.GROUP object    
-            _g:Spawn()
-          end 
-        )
-     end
+    local usInfDallas = SpawnGroupsOfTemplatesInListOfZones(5, ZoneDallasInfTable, MCAS21_FOB_DallasInfTemplate, "MCAS21_Dallas_Inf_US",5) -- SpawnInf around Dallas
+    for i = 1, #usInfDallas, 1 do                       -- Add the Event listener for Event.Hit for US Inf.
+        usInfDallas[i]:HandleEvent( EVENTS.Hit )
+        local _g = usInfDallas[i]
+        function _g:OnEventHit( EventData )
+            self:E( "I just got hit and I am part of " .. EventData.TgtGroupName )
+            EventData.TgtUnit:MessageToAll( "I just got hit and I am part of " .. EventData.TgtGroupName, 15, "Alert!" )
+        end
+    end
 
 end
 
 local function DespawnUnits()
-
+    local unitsToKill = SET_GROUP:New():FilterCategoryGround():FilterZones({"MCAS21_Delete"}):FilterOnce()
+    if unitsToKill:Count() > 0 then
+        unitsToKill:ForEachGroup( 
+        function( MooseGroup ) 
+            local _g = MooseGroup --Wrapper.GROUP object    
+            _g:Destroy()
+          end 
+        )
+     end
 end
 
 local function addF10Marker()

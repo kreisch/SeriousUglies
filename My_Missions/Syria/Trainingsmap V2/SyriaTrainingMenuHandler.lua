@@ -1,7 +1,7 @@
 -- File to define the F10 menu structure
 
 
-if ioDesanitized then
+--if ioDesanitized then
     -- Menüstruktur
     -- 1st Level!
     MenuCoalitionBlueA2G                    = MENU_COALITION:New( coalition.side.BLUE, "Mission Setup A2G" )
@@ -16,4 +16,4 @@ if ioDesanitized then
     MenuCoalitionBlueMissionSetupA2GHeliRange           = MENU_COALITION:New( coalition.side.BLUE, "Helicopter Training Ranges" , MenuCoalitionBlueTrainingsRanges) 
     MenuCoalitionBlueMissionSetupA2GGeneralRange        = MENU_COALITION:New( coalition.side.BLUE, "General Training Ranges"    , MenuCoalitionBlueTrainingsRanges) 
 
-end
+--end
