@@ -110,6 +110,11 @@ function Mission:new (_name)
          return
       end
 
+      if o.startAdditional ~= nil then
+         env.info("Mission:startAdditional...")
+         o.startAdditional(_difLevel)
+      end
+
       o.placeMarker()
       o.Mission_Active = true
      
@@ -120,6 +125,12 @@ function Mission:new (_name)
    o.endMission = function ()
       o.despawnUnits()
       o.removeMarker()
+
+      if o.stopAdditional ~= nil then
+         env.info("Mission:stopAdditional...")
+         o.stopAdditional()
+      end
+
       o.Mission_Active = false
 
       trigger.action.outText("Mission: " .. o.MissionName .. " stopped!", 15)
@@ -206,6 +217,11 @@ function Mission:new (_name)
       return o.MissionName
    end
  
+   -- Optional callbacks. Add those functions in your mission to enable additional start/stop logic
+   -- E.g. spawn specific units, create Scheduler, etc. (see M03S how to use it.)
+   o.startAdditional = nil
+   o.stopAdditional = nil
+
    return o
 end
 
