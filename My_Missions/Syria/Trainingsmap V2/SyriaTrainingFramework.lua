@@ -132,10 +132,6 @@ function zoneSetToList(zoneSet)
     return _zoneList
 end
 
-function SpawnManpadWhenDamaged()
-
-end
-
 function GetNamesOfZonesFromZoneTable(table)
     local _table = table
     local _zoneNamesTable = {}

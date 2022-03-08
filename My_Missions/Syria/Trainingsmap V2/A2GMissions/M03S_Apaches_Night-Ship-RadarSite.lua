@@ -1,7 +1,6 @@
 local MissionInitialized = false
 local samSiteKH = nil
 local SamSiteTL = nil
-local ObjectiveScheduler = nil
 local MissionName                     = "M03S" -- Die Trigger-Zonen in der Mission dürfen nur einen "-" enthalten! 
 
 
