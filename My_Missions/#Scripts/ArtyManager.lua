@@ -1,4 +1,5 @@
 local artyGroup = {}
+local artilleryScheduler = nil
 
 local function fireArty(coalitionOfArty,TargetZonesSet)
     local coalitionOfTargets = nil
@@ -29,7 +30,6 @@ end
 
 local function getFireRangeOfArtyType(type)
     local _type = type
-    trigger.action.outText("_type is " .. _type, 15)
     local _range = {0,0}
     if _type        == "SAU Gvozdika" then
         _range[1] = 0.1
@@ -96,10 +96,22 @@ local function initArty(artyGroupsSet, coalitionOfArty, TargetZonesSet)
     end 
     )
     env.info('Arty: Loaded')
-    fireArty(coalitionOfArty, TargetZonesSet)
+
+    artilleryScheduler = SCHEDULER:New( nil,
+        function()
+                    fireArty(coalitionOfArty, TargetZonesSet)
+        end, {}, 15, 180 )
+
+    
     return artyGroup
 end
 
-local TargetZonesSet          = SET_ZONE:New():FilterPrefixes("Arty_Targets"):FilterOnce()
-local BlueArtySet=SET_GROUP:New():FilterCoalitions("blue"):FilterCategoryGround():FilterPrefixes({"US_Arty"}):FilterStart()
-initArty(BlueArtySet, "blue", TargetZonesSet)
+function stopArty()
+    artilleryScheduler:Stop()
+end
+
+local TargetZonesSet            = SET_ZONE:New():FilterPrefixes("Arty_Targets"):FilterOnce()
+local BlueArtySet               = SET_GROUP:New():FilterCoalitions("blue"):FilterCategoryGround():FilterPrefixes({"US_Arty"}):FilterStart()
+if BlueArtySet:Count() > 0 then
+    initArty(BlueArtySet, "blue", TargetZonesSet)
+end

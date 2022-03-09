@@ -12,17 +12,13 @@ BlueArtySet:ForEachGroup(
     local _group = MooseGroup
     local _unit1ofGroup = _group:GetUnit(1)
     local _type = _unit1ofGroup:GetTypeName()
-    trigger.action.outText("_type is " .. _type, 15)
-
     artyIndex = artyIndex + 1
     artyGroup[artyIndex] = MooseGroup
     artyGroup[artyIndex]=ARTY:New(GROUP:FindByName(artyGroup[artyIndex]:GetName()))
-    -- Set the max firing range. A Paladin unit has a range of 20 km.
     artyGroup[artyIndex]:SetMaxFiringRange(20)
     artyGroup[artyIndex]:SetReportOFF()
     artyGroup[artyIndex]:SetDebugOFF()
     artyGroup[artyIndex]:SetAutoRelocateToFiringRange(1)
-    -- Start ARTY process.
     artyGroup[artyIndex]:Start()
   end 
 )
