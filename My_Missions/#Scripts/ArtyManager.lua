@@ -65,7 +65,7 @@ local function getFireRangeOfArtyType(type)
         _range[1] = 9.5
         _range[2] = 31
     else
-        local _range = {0.1,20}
+         _range = {0.1,20}
         -- Fucked up the range?
     end
     return _range
