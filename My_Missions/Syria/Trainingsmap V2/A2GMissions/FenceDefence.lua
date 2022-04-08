@@ -101,7 +101,7 @@ end
 -- Create an attack if the maximum amount isn't exceeded
 local function createZoneAttack()
 
-  trigger.action.outText("createZoneAttack", 60, true)
+  env.info("OTF Debug: createZoneAttack.")
 
     if not activeZones then
         activeZones = 0
