@@ -666,7 +666,7 @@ local function TICcasevacOff()
 end
 
 if showTICmenu == true then
-  local MenuCoalitionTopLevel = MENU_COALITION:New( coalition.side.BLUE, " Troops in Contact!" )
+  local MenuCoalitionTopLevel = MENU_COALITION:New( coalition.side.BLUE, "Troops in Contact!" , MenuCoalitionBlueA2G)
   TROOPSINCONTACTonL = MENU_COALITION_COMMAND:New( coalition.side.BLUE,"TROOPS IN CONTACT LIGHT",MenuCoalitionTopLevel,TICsetflag, "light")
   TROOPSINCONTACTonH = MENU_COALITION_COMMAND:New( coalition.side.BLUE,"TROOPS IN CONTACT HEAVY",MenuCoalitionTopLevel,TICsetflag, "heavy")
   NewSmoke = MENU_COALITION_COMMAND:New( coalition.side.BLUE,"REQUEST NEW SMOKE",MenuCoalitionTopLevel,NewSmoke, "heavy")
