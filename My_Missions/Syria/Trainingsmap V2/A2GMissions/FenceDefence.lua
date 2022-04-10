@@ -5,6 +5,7 @@
 -- Infantry group templates to spawn
 
 -- Modified April 2022 by Skyfire for integration into the Ugly Syria Map
+-- Patrol in zone code adapted from RotorOps https://forum.dcs.world/topic/290744-rotorops-dynamic-mission-generator/
 
 FDF = {}
 
@@ -23,10 +24,11 @@ FDF.FenceDefenceStarted = false
 FDF.currentConfMultiplier = 1
 
 FDF.activeZones = 0
+FDF.zoneState = {} -- table if zone with active state
 FDF.totalAttacks = 0
-FDF.maxActiveZones = 2
+FDF.maxActiveZones = 4
 FDF.avgAttackTime = 180
-FDF.maxAttackAmount = 3
+FDF.maxAttackAmount = 5
 FDF.minInfantryGroups = 1
 FDF.maxInfantryGroups = 2
 FDF.minVehicleGroups = 1
@@ -44,6 +46,177 @@ FDF.clearBackground = {0, 0, 0, 0}
 -- this is the base value for the marker/circles added. Take care - wrong too low values can mess with the markers/drawings already in the mission
 FDF.UserIDFlag = 1000 
 
+local function hasValue (tab, val)
+  for index, value in ipairs(tab) do
+      if value == val then
+          return true
+      end
+  end
+  return false
+end
+
+local function getObjectVolume(obj)
+  local length = (obj:getDesc().box.max.x + math.abs(obj:getDesc().box.min.x))
+  local height = (obj:getDesc().box.max.y + math.abs(obj:getDesc().box.min.y))
+  local depth = (obj:getDesc().box.max.z + math.abs(obj:getDesc().box.min.z))
+  return length * height * depth
+end
+
+function FDF.sortOutInfantry(mixed_units)
+  local _infantry = {}
+  local _not_infantry = {}
+  for index, unit in pairs(mixed_units)
+  do
+    if unit:hasAttribute("Infantry") then
+      _infantry[#_infantry + 1] = unit
+    else _not_infantry[#_not_infantry + 1] = unit
+    end
+  end
+  return {infantry = _infantry, not_infantry = _not_infantry} 
+end
+
+
+function FDF.groupsFromUnits(units, table)  
+  local groups = {}
+  for i = 1, #units do 
+   if units[i]:isExist() then
+     if hasValue(groups, units[i]:getGroup():getName()) == false then 
+         groups[#groups + 1] = units[i]:getGroup():getName()
+     else 
+     end
+   end
+  end
+  return groups
+end
+
+FDF.removeMarkers = function()
+  for i = 1, #FDF.combatZones do
+    local markerId = i + FDF.UserIDFlag
+    local textId = i + FDF.UserIDFlag + #FDF.combatZones
+    trigger.action.removeMark(markerId)
+    trigger.action.removeMark(textId)
+  end
+end
+
+FDF.resetFenceDefence = function()
+  -- Cleaning up zones
+
+  for zone, state in pairs(FDF.zoneState) do 
+    if state then
+      env.info("FDF Debug: removing units of zone: " .. zone)
+      trigger.action.effectSmokeStop(zone)
+
+      local attacking_ground_units = mist.getUnitsInZones(mist.makeUnitTable({'[red][vehicle]'}), {zone .. " Large"})
+      local attacking_groups = FDF.groupsFromUnits(attacking_ground_units)
+
+      for index, group in pairs(attacking_groups) do 
+        if group then
+          Group.getByName(group):destroy()
+        end
+      end
+    end
+  end
+
+  FDF.removeMarkers()
+  FDF.zoneState = {}
+end
+
+FDF.patrolRadius = function(_grp, _zone)
+  env.info("FDF Debug: patrolRadius of: " .. _grp)
+
+  local grp = Group.getByName(_grp)
+  local first_valid_unit
+  if grp == nil or grp:isExist() ~= true then
+      return
+  end
+  for index, unit in pairs(grp:getUnits()) do
+      if unit:isExist() == true then
+          first_valid_unit = unit
+          break
+      else -- trigger.action.outText("a unit no longer exists", 15) 
+      end
+  end
+  if first_valid_unit == nil then
+      return
+  end
+  local start_point = first_valid_unit:getPoint()
+  local object_vol_thresh = 0
+  local max_waypoints = 5
+  local foundUnits = {}
+  -- local sphere = trigger.misc.getZone('town')
+  local volS = {
+      id = world.VolumeType.SPHERE,
+      params = {
+          point = trigger.misc.getZone(_zone).point, -- check if exists, maybe itterate through grp
+          radius = trigger.misc.getZone(_zone).radius
+      }
+  }
+
+  local ifFound = function(foundItem, val)
+      -- trigger.action.outText("found item: "..foundItem:getTypeName(), 5)  
+      if foundItem:hasAttribute("Infantry") ~= true then -- disregard infantry...we only want objects that might provide cover
+          if getObjectVolume(foundItem) > object_vol_thresh then
+              foundUnits[#foundUnits + 1] = foundItem
+              -- trigger.action.outText("valid cover item: "..foundItem:getTypeName(), 5) 
+          else -- debugMsg("object not large enough: "..foundItem:getTypeName()) 
+          end
+      else -- trigger.action.outText("object not the right type", 5)  
+      end
+      return true
+  end
+
+  world.searchObjects(1, volS, ifFound)
+  world.searchObjects(3, volS, ifFound)
+  world.searchObjects(5, volS, ifFound)
+  -- world.searchObjects(Object.Category.BASE, volS, ifFound)
+  local path = {}
+  path[1] = mist.ground.buildWP(start_point, '', 5)
+  local m = math.min(#foundUnits, max_waypoints)
+  for i = 1, m, 1 do
+      local rand_index = math.random(1, #foundUnits)
+      path[i + 1] = mist.ground.buildWP(foundUnits[rand_index]:getPoint(), '', 5)
+      --trigger.action.outText("waypoint to: "..foundUnits[rand_index]:getTypeName(), 5) 
+  end
+  if #path <= 3 then
+      for i = #path, max_waypoints, 1 do
+          path[#path + 1] = mist.ground.buildWP(mist.getRandPointInCircle(trigger.misc.getZone(_zone).point, trigger.misc.getZone(_zone).radius), '', 5)
+      end
+  end
+  
+--  trigger.action.outText("new waypoints created: "..(#path - 1), 5) 
+  mist.goRoute(grp, path)
+end
+ 
+FDF.schedulePatrol = function()
+  env.info("FDF Debug: schedulePatrol")
+
+  for zone, state in pairs(FDF.zoneState) do 
+    if state then
+      env.info("FDF Debug: scheduling patrol in zone: " .. zone)
+
+      local attacking_ground_units = mist.getUnitsInZones(mist.makeUnitTable({'[red][vehicle]'}), {zone .. " Large"})
+      local attacking_infantry = FDF.sortOutInfantry(attacking_ground_units).infantry
+      --local attacking_vehicles = RotorOps.sortOutInfantry(attacking_ground_units).not_infantry
+
+      local attacking_infantry_groups = FDF.groupsFromUnits(attacking_infantry)
+
+      for index, group in pairs(attacking_infantry_groups) do 
+        if group then
+          FDF.patrolRadius(group, zone)
+        end
+      end
+   
+    end
+  end
+
+--  local attackerUnits = mist.getUnitsInZones(mist.makeUnitTable({'[red][vehicle]'}), {zoneName .. " Large"}) -- Added a slightly larger zone than the spawn one in v1.1 to account for unit dispersion
+--  local attackerUnitsQty = #attackerUnits
+
+  if FDF.FenceDefenceStarted == true then
+    timer.scheduleFunction(FDF.schedulePatrol, nil, timer.getTime() + 120)
+  end
+end
+
 -- Check the active zones table ocasionally to see if they've been cleared of REDFOR
 FDF.checkZoneCompletion = function(zoneId)
   env.info("FDF Debug: FDF.checkZoneCompletion.")
@@ -60,11 +233,15 @@ FDF.checkZoneCompletion = function(zoneId)
       trigger.action.setMarkupText((zoneId + FDF.UserIDFlag + #FDF.combatZones), "Zone: " .. zoneName .. "\nStatus: CLEAR")
       trigger.action.effectSmokeStop(zoneName)
       FDF.activeZones = FDF.activeZones - 1
+      FDF.zoneState[zoneName] = nil
       env.info("FDF Debug: Zone " .. zoneName .. " reported as clear.")
+  elseif FDF.FenceDefenceStarted == false then
+    FDF.resetFenceDefence()
   elseif attackerUnitsQty > 0 then
       trigger.action.setMarkupText((zoneId + FDF.UserIDFlag + #FDF.combatZones), "Zone: " .. zoneName ..
           "\nStatus: UNDER ATTACK\nEnemy Strength: " .. attackerUnitsQty .. " hostiles")
       timer.scheduleFunction(FDF.checkZoneCompletion, zoneId, timer.getTime() + 20)
+      FDF.zoneState[zoneName] = true
       env.info("FDF Debug: Zone " .. zoneName .. " reported as under attack, enemy count updated.")
   end
 end
@@ -88,12 +265,8 @@ FDF.finalZoneCheck = function()
           60)
       trigger.action.outSound("complete.ogg")
       -- Remove the markers
-      for i = 1, #FDF.combatZones do
-          local markerId = i + FDF.UserIDFlag
-          local textId = i + #FDF.combatZones
-          trigger.action.removeMark(markerId)
-          trigger.action.removeMark(textId)
-      end
+      FDF.removeMarkers()
+
       env.info("FDF Debug: Mission complete!")
       FDF.FenceDefenceStarted = false
   else
@@ -106,6 +279,10 @@ end
 -- Create an attack if the maximum amount isn't exceeded
 FDF.createZoneAttack = function()
   env.info("FDF Debug: FDF.createZoneAttack.")
+
+  if FDF.FenceDefenceStarted == false then
+    return -- do nothing, quit here
+  end
 
   if not FDF.activeZones then
     FDF.activeZones = 0
@@ -260,6 +437,8 @@ FDF.setup = function()
   -- Start the attack generation
   --    timer.scheduleFunction(FDF.createZoneAttack, nil, timer.getTime() + 30)
   timer.scheduleFunction(FDF.createZoneAttack, nil, timer.getTime() + math.random(60 * 0.8, 60 * 1.2))
+  timer.scheduleFunction(FDF.schedulePatrol, nil, timer.getTime() + 10)
+
   -- Draw the initial markers
   FDF.initMarkZones()
   trigger.action.outText(
@@ -273,6 +452,9 @@ end
 -- Ends the mission and calls all necessary functions to despawn units and markers.
 FDF.endFenceDefence = function()
   env.info("FDF Debug: FDF.endFenceDefence: ")
+  trigger.action.outText(
+    "Fence Defence will be terminated. It will take a few seconds to completely remove all units and marker.",
+    20, true)
 
   FDF.FenceDefenceStarted = false
   FDF.currentConfMultiplier = 1
