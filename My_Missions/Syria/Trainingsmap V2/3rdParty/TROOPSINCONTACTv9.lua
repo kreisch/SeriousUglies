@@ -27,6 +27,7 @@ UseTICSounds = false
 TICArea1 = "TIC-grid-1"
 TICArea2 = "TIC-grid-2"
 TICArea3 = "TIC-grid-3"
+TICArea4 = "TIC-grid-4"
 
 -- TIC episode Zones: The names (quoted string) of the zones inside the TIC-grid-1 and TIC-grid-2 areas. Defaults are "grid1" and "grid2"
 -- Any, and all zones containing this string will be consumed into TIC as a possible TIC area. Don't use this string in unrelated zones.
@@ -38,6 +39,7 @@ TICArea3 = "TIC-grid-3"
 grid1zoneprefix = "grid1"
 grid2zoneprefix = "grid2"
 grid3zoneprefix = "grid3"
+grid4zoneprefix = "grid4"
 
 -- onstation_time: The unquoted number of seconds (interval) on which a check is made to see if there is an active helicopter or plane in a TIC grid.
 -- think of this as the maximum time you would fly around and wait to be called after either heavy or light are activated.
@@ -564,6 +566,16 @@ function GoldTICGrid3 ()
   TicZone = ZONE:New(TICArea3)    
   GoldTIC(Grid3Zones,TicZone)
 end
+--Grid 4
+function GoldTICGrid4 ()
+  local Grid4Zones = { }
+  local Grid4ZoneSet = SET_ZONE:New():FilterPrefixes(grid4zoneprefix):FilterOnce()
+  Grid4ZoneSet:ForEachZone(function (z)
+    table.insert(Grid4Zones, z)
+  end)
+  TicZone = ZONE:New(TICArea4)    
+  GoldTIC(Grid4Zones,TicZone)
+end
 
 function TICsetflag (arg)
 
@@ -641,8 +653,9 @@ Check_aircraft_in_grids = SCHEDULER:New( nil, function()
     local grid1 = ZONE:New(TICArea1)
     local grid2 = ZONE:New(TICArea2)
     local grid3 = ZONE:New(TICArea3)
-    local TICAreaTable = {grid1, grid2, grid3}
-    GoldTICFunctionsTable = {"GoldTICGrid1","GoldTICGrid2","GoldTICGrid3", }
+    local grid4 = ZONE:New(TICArea4)
+    local TICAreaTable = {grid1, grid2, grid3, grid4}
+    GoldTICFunctionsTable = {"GoldTICGrid1","GoldTICGrid2","GoldTICGrid3", "GoldTICGrid4"}
 
     for i=1,#TICAreaTable do
 
