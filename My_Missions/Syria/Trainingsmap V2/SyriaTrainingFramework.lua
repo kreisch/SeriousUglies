@@ -179,3 +179,84 @@ function StopAFireZoneList(ZoneList)
     end
 end
 
+function showDistanceToTankers(_client)
+    local TankerSet = SET_GROUP:New():FilterPrefixes("Arco"):FilterPrefixes("Shell"):FilterPrefixes("Texaco"):FilterStart()
+    local index = 1
+
+    local clientName = "Kein Player"
+
+    if _client:GetPlayer() then
+        clientName = _client:GetPlayer()
+    end
+
+    trigger.action.outText("We have the following tanker for you:", 30)
+
+    local distMap = {}
+
+    if TankerSet:Count() > 0 then
+        TankerSet:ForEachGroup(function(_group)
+
+          -- Player position.
+          local playerCoord=_client:GetClientGroupUnit():GetCoordinate()
+            
+          -- Distance.            
+          local dist=_group:GetCoordinate():Get3DDistance(playerCoord) -- into KM
+          local type_name = _group:GetUnits()[1]:GetTypeName()
+
+          distMap[#distMap+1] = {_group, type_name, dist}
+--          trigger.action.outText("Found: " .. _group:GetName() .. ", with distance: " .. UTILS.Round( UTILS.MetersToNM( dist ), 2 ) .. "NM", 60)
+        end)
+    else
+        trigger.action.outText("No tanker found!", 60)
+    end
+
+    -- this uses an custom sorting function ordering by score descending
+    table.sort(distMap, function (a, b) 
+            if a[2] == b[2] then return a[3] < b[3] 
+            else return a[2] > b[2] end
+        end)
+
+    local lastType = ""
+    local messageStr = ""
+
+    for i=1,#distMap do
+      if distMap[i][2] ~= lastType then
+          messageStr = messageStr .. "Type: " .. distMap[i][2] .. "\n"
+--          trigger.action.outText("Type: " .. distMap[i][2], 30)
+          lastType = distMap[i][2] 
+      end
+
+      local velocity =  UTILS.Round(distMap[i][1]:GetVelocityKNOTS(), 0)
+      local altitude =  UTILS.Round(UTILS.MetersToFeet(distMap[i][1]:GetHeight()), 0)
+
+      messageStr = messageStr .. distMap[i][1]:GetName() .. ", distance: " .. UTILS.Round( UTILS.MetersToNM( distMap[i][3] ), 2 ) .. "NM, speed: " .. velocity .. "kts, alt: " .. altitude .. "ft\n"
+--      trigger.action.outText(distMap[i][1]:GetName() .. ", distance: " .. UTILS.Round( UTILS.MetersToNM( distMap[i][3] ), 2 ) .. "NM, speed:" .. velocity .. "kts, alt:" .. altitude .. "ft", 30)
+    end
+
+    if messageStr ~= "" then
+        trigger.action.outText(messageStr, 30)
+    end
+end
+
+ClientSet = SET_CLIENT:New()
+                      :FilterOnce()
+
+function SetEventHandler()
+    ClientBirth = ClientSet:HandleEvent(EVENTS.PlayerEnterAircraft)
+end
+
+function ClientSet:OnEventPlayerEnterAircraft(event_data)
+    local unit_name = event_data.IniUnitName
+    local client = CLIENT:FindByName(unit_name)
+    local client_name = client:GetPlayer()
+
+    env.info("Client connected!")
+    env.info(unit_name)
+
+    MESSAGE:New("Welcome, " .. client_name):ToClient(client)
+
+    MenuTankerHelper           = MENU_COALITION_COMMAND:New( coalition.side.BLUE, "Show Me The Tanker", nil, showDistanceToTankers, client)
+end
+
+SetEventHandler()
+
