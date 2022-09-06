@@ -36,7 +36,7 @@ RedIntel:__Start(2)
 local SetCombatZones   = SET_ZONE:New():FilterPrefixes("CombatZone"):FilterOnce()
 RedIntel:SetAcceptZones(SetCombatZones)
 
-local SetRedCombatZone1 = SET_GROUP:New():FilterCoalitions("red"):FilterZones({CombatZone1}):FilterCategoryGround():FilterStart()
+local SetRedCombatZone1 = SET_GROUP:New():FilterCoalitions("red"):FilterZones({CombatZone1}):FilterCategoryGround():FilterPrefix("Red_Killer"):FilterStart()
 --local SetRedCombatZone1Alive = SetRedCombatZone1:GetAliveSet()
 
 
