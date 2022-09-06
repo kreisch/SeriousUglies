@@ -60,7 +60,7 @@ function RedIntel:OnAfterNewContact(From, Event, To, contact)
         if trgtGrp:IsCompletelyInZone(CombatZone1) then
             groupForTasking = SetRedCombatZone1:GetRandom()
             MESSAGE:New("Ziel ist in CombatZone1 " .. contact.groupname,15,"Blue Chief"):ToAll()
-            MESSAGE:New("Group f�r Tasking ist " .. groupForTasking:GetName(),15,"Blue Chief"):ToAll()
+            MESSAGE:New("Group für Tasking ist " .. groupForTasking:GetName(),15,"Blue Chief"):ToAll()
         else
               MESSAGE:New("Ziel nicht in CombatZone1 " .. contact.groupname,15,"Blue Chief"):ToAll()
         end
