@@ -1,0 +1,72 @@
+"Winter Nighttime": {
+    "start_time": "03:00",
+     "date": "2016-01-10",
+      "temperature": -10,
+       "clouds": "RainyPreset1",
+        "wind": {"at8000":  {"speed": 10, "dir":  105}, 
+        "at2000": {"speed": 10, "dir": 130},
+        "atGround": {"speed": 5, "dir": 20}}},
+
+"SY_Summer_Day_LightScattered_10kts_204": {
+    "start_time": "08:00",
+     "date": "2016-01-10",
+      "temperature": 28,
+       "clouds": "Light Scattered 2",
+        "wind": {"at8000":  {"speed": 10, "dir":  105}, 
+        "at2000": {"speed": 10, "dir": 130},
+        "atGround": {"speed": 10, "dir": 204}}},
+
+"SY_Summer_Day_LightScattered_15kts_204": {
+    "start_time": "08:00",
+     "date": "2016-01-10",
+      "temperature": 28,
+       "clouds": "Light Scattered 2",
+        "wind": {"at8000":  {"speed": 18, "dir":  246}, 
+        "at2000": {"speed": 35, "dir": 205},
+        "atGround": {"speed": 15, "dir": 204}}},
+
+"SY_Summer_Day_Broken_10kts_204": {
+    "start_time": "08:00",
+     "date": "2016-01-10",
+      "temperature": 28,
+       "clouds": "Broken 5",
+        "wind": {"at8000":  {"speed": 10, "dir":  105}, 
+        "at2000": {"speed": 10, "dir": 130},
+        "atGround": {"speed": 10, "dir": 204}}},
+
+"SY_Summer_Day_Broken_15kts_204": {
+    "start_time": "08:00",
+     "date": "2016-01-10",
+      "temperature": 28,
+       "clouds": "Broken 5",
+        "wind": {"at8000":  {"speed": 18, "dir":  246}, 
+        "at2000": {"speed": 35, "dir": 205},
+        "atGround": {"speed": 15, "dir": 204}}},
+
+"SY_Summer_Day_Rain_15kts_204": {
+    "start_time": "08:00",
+     "date": "2016-01-10",
+      "temperature": 19,
+       "clouds": "Overcast And Rain 3",
+        "wind": {"at8000":  {"speed": 18, "dir":  246}, 
+        "at2000": {"speed": 35, "dir": 205},
+        "atGround": {"speed": 15, "dir": 204}}},        
+
+
+"SY_Summer_Night_LightScattered_10kts_204": {
+    "start_time": "23:45",
+     "date": "2016-01-10",
+      "temperature": 17,
+       "clouds": "Light Scattered 2",
+        "wind": {"at8000":  {"speed": 10, "dir":  105}, 
+        "at2000": {"speed": 10, "dir": 130},
+        "atGround": {"speed": 10, "dir": 204}}},
+
+"SY_Summer_Night_Broken_10kts_204": {
+    "start_time": "23:45",
+     "date": "2016-01-10",
+      "temperature": 28,
+       "clouds": "Broken 5",
+        "wind": {"at8000":  {"speed": 10, "dir":  105}, 
+        "at2000": {"speed": 10, "dir": 130},
+        "atGround": {"speed": 10, "dir": 204}}},        
