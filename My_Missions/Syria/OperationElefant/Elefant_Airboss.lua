@@ -63,13 +63,13 @@ AirbossGWashington:SetMenuRecovery(30, 20, true)
 AirbossGWashington:SetDespawnOnEngineShutdown()
 
 -- Load all saved player grades from your "Saved Games\DCS" folder (if lfs was desanitized).
-AirbossGWashington:Load()
+--AirbossGWashington:Load()
 
 -- Automatically save player results to your "Saved Games\DCS" folder each time a player get a final grade from the LSO.
-AirbossGWashington:SetAutoSave()
+--AirbossGWashington:SetAutoSave()
 
 -- Enable trap sheet.
-AirbossGWashington:SetTrapSheet()
+--AirbossGWashington:SetTrapSheet()
 
 -- Set recovery tanker.
 AirbossGWashington:SetRecoveryTanker(tanker2)

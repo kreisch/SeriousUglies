@@ -20,6 +20,7 @@ local BlueOpsZoneThree = OPSZONE:New(CombatZone3,coalition.side.NEUTRAL)
 BlueOpsZoneOne:SetDrawZone(true)
 BlueOpsZoneOne:__Start(2)
 
+
 -- Define the INTEL
 -- Set up a detection group set. "FilterStart" to include respawns.
 local Red_DetectionSetGroup = SET_GROUP:New()
@@ -59,7 +60,7 @@ function RedIntel:OnAfterNewContact(From, Event, To, contact)
         if trgtGrp:IsCompletelyInZone(CombatZone1) then
             groupForTasking = SetRedCombatZone1:GetRandom()
             MESSAGE:New("Ziel ist in CombatZone1 " .. contact.groupname,15,"Blue Chief"):ToAll()
-            MESSAGE:New("Group für Tasking ist " .. groupForTasking:GetName(),15,"Blue Chief"):ToAll()
+            MESSAGE:New("Group fï¿½r Tasking ist " .. groupForTasking:GetName(),15,"Blue Chief"):ToAll()
         else
               MESSAGE:New("Ziel nicht in CombatZone1 " .. contact.groupname,15,"Blue Chief"):ToAll()
         end
@@ -101,7 +102,7 @@ function BlueOpsZoneOne:onafterCaptured(From,Event,To,Coalition)
   end
 
 
-local TankSpawn = SPAWN:New("Red_Killer-1"):InitLimit( 10, 99 ):SpawnScheduled(30,0.1):SpawnScheduleStart()
+--local TankSpawn = SPAWN:New("Red_Killer-1"):InitLimit( 10, 99 ):SpawnScheduled(30,0.1):SpawnScheduleStart()
 
 
 --   --RED ZONES SETUP
@@ -124,7 +125,4 @@ local TankSpawn = SPAWN:New("Red_Killer-1"):InitLimit( 10, 99 ):SpawnScheduled(3
 --     local text = string.format("NEW cluster #%d of size %d", Cluster.index, Cluster.size)
 --     MESSAGE:New(text,15,"KGB"):ToAll()
 --   end
-
-
-
 
