@@ -64,11 +64,12 @@ function RedIntel:OnAfterNewContact(From, Event, To, contact)
         else
               MESSAGE:New("Ziel nicht in CombatZone1 " .. contact.groupname,15,"Blue Chief"):ToAll()
         end
-          local armygroup = ARMYGROUP:New(groupForTasking:GetName())
-          armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
-          armygroup:AddWeaponRange(0,UTILS.KiloMetersToNM(2))
-          armygroup:AddMission(mission)
-          env.info("KGB: I found a " .. contact.attribute .. " called " ..  contact.groupname)
+
+        local armygroup = ARMYGROUP:New(groupForTasking:GetName())
+        armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
+        armygroup:AddWeaponRange(0,UTILS.KiloMetersToNM(2))
+        armygroup:AddMission(mission)
+        env.info("KGB: I found a " .. contact.attribute .. " called " ..  contact.groupname)
           
         
     end
