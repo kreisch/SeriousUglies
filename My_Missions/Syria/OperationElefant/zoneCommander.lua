@@ -867,29 +867,30 @@ do
 	
 	function BattleCommander:refreshShopMenuForCoalition(coalition)
 		missionCommands.removeItemForCoalition(coalition, {[1]='Support'})
-		
-		local shopmenu = missionCommands.addSubMenuForCoalition(coalition, 'Support')
-		local sub1
-		local count = 0
-		
-		local sorted = {}
-		for i,v in pairs(self.shops[coalition]) do table.insert(sorted,{i,v}) end
-		table.sort(sorted, function(a,b) return a[2].name < b[2].name end)
-		
-		for i2,v2 in pairs(sorted) do
-			local i = v2[1]
-			local v = v2[2]
-			count = count +1
-			if count<10 then
-				missionCommands.addCommandForCoalition(coalition, '['..v.cost..'] '..v.name, shopmenu, self.buyShopItem, self, coalition, i)
-			elseif count==10 then
-				sub1 = missionCommands.addSubMenuForCoalition(coalition, "More", shopmenu)
-				missionCommands.addCommandForCoalition(coalition, '['..v.cost..'] '..v.name, sub1, self.buyShopItem, self, coalition, i)
-			elseif count%9==1 then
-				sub1 = missionCommands.addSubMenuForCoalition(coalition, "More", sub1)
-				missionCommands.addCommandForCoalition(coalition, '['..v.cost..'] '..v.name, sub1, self.buyShopItem, self, coalition, i)
-			else
-				missionCommands.addCommandForCoalition(coalition, '['..v.cost..'] '..v.name, sub1, self.buyShopItem, self, coalition, i)
+		if ElefantConfiguration.enableSuppport then
+			local shopmenu = missionCommands.addSubMenuForCoalition(coalition, 'Support')
+			local sub1
+			local count = 0
+			
+			local sorted = {}
+			for i,v in pairs(self.shops[coalition]) do table.insert(sorted,{i,v}) end
+			table.sort(sorted, function(a,b) return a[2].name < b[2].name end)
+			
+			for i2,v2 in pairs(sorted) do
+				local i = v2[1]
+				local v = v2[2]
+				count = count +1
+				if count<10 then
+					missionCommands.addCommandForCoalition(coalition, '['..v.cost..'] '..v.name, shopmenu, self.buyShopItem, self, coalition, i)
+				elseif count==10 then
+					sub1 = missionCommands.addSubMenuForCoalition(coalition, "More", shopmenu)
+					missionCommands.addCommandForCoalition(coalition, '['..v.cost..'] '..v.name, sub1, self.buyShopItem, self, coalition, i)
+				elseif count%9==1 then
+					sub1 = missionCommands.addSubMenuForCoalition(coalition, "More", sub1)
+					missionCommands.addCommandForCoalition(coalition, '['..v.cost..'] '..v.name, sub1, self.buyShopItem, self, coalition, i)
+				else
+					missionCommands.addCommandForCoalition(coalition, '['..v.cost..'] '..v.name, sub1, self.buyShopItem, self, coalition, i)
+				end
 			end
 		end
 	end
@@ -1732,16 +1733,20 @@ do
 					end
 					
 					if (event.id==28) then --killed unit
+						trigger.action.outText("Eine Einheit wurde gekillt.", 30)
 						if event.target.getCoalition and side ~= event.target:getCoalition() then
+							trigger.action.outText("Eine Einheit wurde gekillt. Ebene 2", 30)
 							if self.context.playerContributions[side][pname] ~= nil then
 								local earning,message,stat = self.context:objectToRewardPoints2(event.target)
-								
+								trigger.action.outText("Eine Einheit wurde gekillt. Ebene 3", 30)
 								if earning and message then
 									trigger.action.outTextForGroup(groupid,'['..pname..'] '..message, 5)
 									self.context.playerContributions[side][pname] = self.context.playerContributions[side][pname] + earning
+									trigger.action.outText("Eine Einheit wurde gekillt. Ebene 4", 30)
 								end
 								
 								if stat then
+									trigger.action.outText("Eine Einheit wurde gekillt. Ebene 5", 30)
 									self.context:addTempStat(pname,stat,1)
 								end
 							end
@@ -1780,6 +1785,7 @@ do
 			end
 		end
 		
+		trigger.action.outText("AddingEventHandler for Scoring.", 120)
 		world.addEventHandler(ev)
 		
 		local resetPoints = function(context, side)

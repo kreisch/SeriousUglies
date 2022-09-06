@@ -4,11 +4,33 @@
 -- All TARGETS acquired by INTEL will result in an AUFTRAG to kill them
 -- Respawn of destroyed RED Units will be handled by SKYFIRE-FRAMEWORK-TM
 
+--#region define Airwings for RED
+local airwingErcan = AIRWING:New("Warehouse_Ercan", "Arwing Ercan")
+airwingErcan:Start()
+local Ercan1st  = SQUADRON:New("RU_Su25_Template", 8, "Ercan 1st")
+Ercan1st:AddMissionCapability({AUFTRAG.Type.SEAD, AUFTRAG.Type.BAI, AUFTRAG.Type.CAS})
+Ercan1st:SetGrouping(2)
+Ercan1st:SetSkill(AI.Skill.EXCELLENT)
+airwingErcan:AddSquadron(Ercan1st)
+airwingErcan:NewPayload(GROUP:FindByName("SU25_Template_SEAD"), 20, {AUFTRAG.Type.SEAD, AUFTRAG.Type.BAI, AUFTRAG.Type.CAS}, 80)
+airwingErcan:SetTakeoffAir()
 
--- Zonen definieren:
-local CombatZone1 = ZONE:New("CombatZone-1")
-local CombatZone2 = ZONE:New("CombatZone-2")
-local CombatZone3 = ZONE:New("CombatZone-3")
+local airwingGecitkale = AIRWING:New("Warehouse_Gecitkale", "Arwing Gecitkale")
+airwingGecitkale:Start()
+local Gecitkale1st = SQUADRON:New("RU_Mi28_Template", 8, "Gecitkale 1st")
+Gecitkale1st:AddMissionCapability({AUFTRAG.Type.CAS})
+Gecitkale1st:SetGrouping(2)
+Gecitkale1st:SetSkill(AI.Skill.EXCELLENT)
+airwingGecitkale:AddSquadron(Gecitkale1st)
+airwingGecitkale:NewPayload(GROUP:FindByName("Mi28_Template_CAS"), 20, {AUFTRAG.Type.CAS}, 80)
+airwingGecitkale:SetTakeoffAir()
+--#endregion
+
+--#region Zones
+--Zonen definieren:
+local CombatZone1 = ZONE:New("CombatZone-1") -- easy
+local CombatZone2 = ZONE:New("CombatZone-2") -- easy
+local CombatZone3 = ZONE:New("CombatZone-3") -- medium
 -- Opszonen definieren - warum? Jede Zone bekommt eigene Ops....weil darum.
 local BlueOpsZoneOne = OPSZONE:New(CombatZone1,coalition.side.NEUTRAL)
 BlueOpsZoneOne:SetDrawZone(true)
@@ -19,13 +41,14 @@ BlueOpsZoneOne:__Start(2)
 local BlueOpsZoneThree = OPSZONE:New(CombatZone3,coalition.side.NEUTRAL)
 BlueOpsZoneOne:SetDrawZone(true)
 BlueOpsZoneOne:__Start(2)
+--#endregion
 
 
 -- Define the INTEL
 -- Set up a detection group set. "FilterStart" to include respawns.
-local Red_DetectionSetGroup = SET_GROUP:New()
-Red_DetectionSetGroup:FilterPrefixes( { "RU_Recce","RU_EWR" } )
-Red_DetectionSetGroup:FilterStart()
+local Red_DetectionSetGroup = SET_GROUP:New():FilterCoalitions("red"):FilterActive():FilterStart()
+-- Red_DetectionSetGroup:FilterPrefixes( { "RU_Recce","RU_EWR" } )
+-- Red_DetectionSetGroup:FilterStart()
 
 -- New INTEL Type
 local RedIntel = INTEL:New(Red_DetectionSetGroup, "red", "KGB")
@@ -36,43 +59,95 @@ RedIntel:__Start(2)
 local SetCombatZones   = SET_ZONE:New():FilterPrefixes("CombatZone"):FilterOnce()
 RedIntel:SetAcceptZones(SetCombatZones)
 
-local SetRedCombatZone1 = SET_GROUP:New():FilterCoalitions("red"):FilterZones({CombatZone1}):FilterCategoryGround():FilterStart()
---local SetRedCombatZone1Alive = SetRedCombatZone1:GetAliveSet()
-
 
 
 
 
 -- Events to create AUFTRAG
+-- Sobald eine Recce-Gruppe ein Ziel gesichtet hat, wird eine Mission erstellt.
+-- possible contact.attribute:
+-- Air_AttackHelo
+-- Air_Fighter
+-- Ground_Infantry
+-- Ground_AAA
+-- Ground_SAM
+-- Air_TransportHelo
+-- Ground_OtherGround
 function RedIntel:OnAfterNewContact(From, Event, To, contact)
-    local text = string.format("NEW contact %s detected by %s", contact.groupname, contact.recce or "unknown")
-    MESSAGE:New(text, 15, "KGB"):ToAll()
-    if (contact.attribute == "Ground_APC") or (contact.attribute == "Ground_Artillery") or (contact.attribute =="Ground_Truck") or (contact.attribute =="Ground_Tank") then
-      trigger.action.outText("KGB: I found a " .. contact.attribute .. " called " ..  contact.groupname, 30)
-        -- Missionszuweisung muss unterteilt werden:
-        -- In welcher Zone wurde das Ziel gefunden?
-        -- Welche Truppen sind in der Zone vorhanden? (UnitSet?)
-        -- Zufällig den Truppen Ziel zuweisen
-        -- Bei Luft-Zielen Flugzeuge, bei Radar/SAMs SEAD Flüge erstellen.... wie Hubschrauber auslösen?
-        local mission = AUFTRAG:NewARMORATTACK(GROUP:FindByName(contact.groupname),UTILS.KmphToKnots(20),"Vee")
         local trgtGrp = GROUP:FindByName(contact.groupname)
-        local groupForTasking = nil
+        trigger.action.outText("KGB: I found a " .. contact.attribute .. " called " ..  contact.groupname, 30)
         if trgtGrp:IsCompletelyInZone(CombatZone1) then
-            groupForTasking = SetRedCombatZone1:GetRandom()
-            MESSAGE:New("Ziel ist in CombatZone1 " .. contact.groupname,15,"Blue Chief"):ToAll()
-            MESSAGE:New("Group f�r Tasking ist " .. groupForTasking:GetName(),15,"Blue Chief"):ToAll()
-        else
-              MESSAGE:New("Ziel nicht in CombatZone1 " .. contact.groupname,15,"Blue Chief"):ToAll()
+          TargetTaskingCombatZone1(contact)
+        elseif trgtGrp:IsCompletelyInZone(CombatZone2) then
+          TargetTaskingCombatZone2(contact)
         end
-          local armygroup = ARMYGROUP:New(groupForTasking:GetName())
-          armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
-          armygroup:AddWeaponRange(0,UTILS.KiloMetersToNM(2))
-          armygroup:AddMission(mission)
-          env.info("KGB: I found a " .. contact.attribute .. " called " ..  contact.groupname)
-          
-        
-    end
   end
+
+function TargetTaskingCombatZone1(contact)
+  MESSAGE:New("TargetTaskingCombatZone1", 20, "Debug"):ToAll()
+  local targetGroup = GROUP:FindByName(contact.groupname)
+
+  if (contact.attribute == "Ground_APC") or (contact.attribute == "Ground_Artillery") 
+  or (contact.attribute =="Ground_Truck") or (contact.attribute =="Ground_Tank") 
+  or (contact.attribute =="Ground_IFV") then
+    -- Spawn Groundattack
+    MESSAGE:New("GroundTarget is found in Sector 1\n Starting Tankattack", 20, "Debug"):ToAll()
+    local SetGroupsGround = SET_GROUP:New():FilterCoalitions("red"):FilterZones({CombatZone1}):FilterCategoryGround():FilterActive():FilterOnce() --Todo: Nur lebende enthalten? Laut Applevangelist ja; Active notwendig?
+      local mission = AUFTRAG:NewARMORATTACK(GROUP:FindByName(contact.groupname),UTILS.KmphToKnots(20),"Vee")
+      
+      local groupForTasking = SetGroupsGround:GetRandom()
+      local armygroup = ARMYGROUP:New(groupForTasking:GetName())
+      armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
+      armygroup:AddWeaponRange(0,UTILS.KiloMetersToNM(2))
+      armygroup:AddMission(mission)
+  elseif (contact.attribute == "Ground_EWR") or (contact.attribute == "Ground_SAM") or (contact.attribute == "Ground_AAA")then -- Spawn SEAD
+    -- Regel: Man kann nun schauen, dass man SEAD aus bestimmten Arealen holt, sollten entsprechende Bedingungen da sein.
+    local mission = AUFTRAG:NewSEAD(GROUP:FindByName(contact.groupname), 5000)
+    -- local zone = ZONE_GROUP:New("SEAD Zone", targetGroup, 500)
+    -- local mission = AUFTRAG:NewCAS(zone)
+    airwingErcan:AddMission(mission)
+    elseif (contact.attribute == "Air_Fighter") or (contact.attribute == "Air_AttackHelo") or (contact.attribute == "Air_TransportHelo") then
+      -- Figher anfordern beim nächsten Airfield
+  end
+end
+
+
+function TargetTaskingCombatZone2(contact)
+  MESSAGE:New("TargetTaskingCombatZone2", 20, "Debug"):ToAll()
+  local targetGroup = GROUP:FindByName(contact.groupname)
+
+  if (contact.attribute == "Ground_APC") or (contact.attribute == "Ground_Artillery") 
+  or (contact.attribute =="Ground_Truck") or (contact.attribute =="Ground_Tank") 
+  or (contact.attribute =="Ground_IFV") then
+    local SetGroupsGround = SET_GROUP:New():FilterCoalitions("red"):FilterZones({CombatZone2}):FilterCategoryGround():FilterActive():FilterOnce() --Todo: Nur lebende enthalten? Laut Applevangelist ja; Active notwendig?
+    local n = math.random(1,4)
+    if SetGroupsGround:Count() == 0 then
+      n = 4
+    end
+    if n<=3 then
+          -- Spawn Groundattack
+
+      MESSAGE:New("GroundTarget is found in Sector 2\n Starting Tankattack", 20, "Debug"):ToAll()
+      local mission = AUFTRAG:NewARMORATTACK(GROUP:FindByName(contact.groupname),UTILS.KmphToKnots(20),"Vee")
+      local groupForTasking = SetGroupsGround:GetRandom()
+      local armygroup = ARMYGROUP:New(groupForTasking:GetName())
+      armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
+      armygroup:AddWeaponRange(0,UTILS.KiloMetersToNM(2))
+      armygroup:AddMission(mission)
+    else
+        -- Start choppers
+        MESSAGE:New("GroundTarget is found in Sector 2\n Starting Helo Attack", 20, "Debug"):ToAll()
+        local zone = ZONE_GROUP:New("CAS Zone", targetGroup, 500)
+        local mission = AUFTRAG:NewCAS(zone)
+        airwingGecitkale:AddMission(mission)
+    end
+  elseif (contact.attribute == "Ground_EWR") or (contact.attribute == "Ground_SAM") or (contact.attribute == "Ground_AAA")then -- Spawn SEAD
+    local mission = AUFTRAG:NewSEAD(GROUP:FindByName(contact.groupname), 5000)
+    airwingErcan:AddMission(mission)
+    elseif (contact.attribute == "Air_Fighter") or (contact.attribute == "Air_AttackHelo") or (contact.attribute == "Air_TransportHelo") then
+      -- Figher anfordern beim nächsten Airfield
+  end
+end
 
 
 

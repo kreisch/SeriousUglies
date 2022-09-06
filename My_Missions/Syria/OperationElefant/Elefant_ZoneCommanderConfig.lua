@@ -1,16 +1,3 @@
-GlobalSettings.setDifficultyScaling(1.4,1) -- red respawn factor
-
-GlobalSettings.setDifficultyScaling(1.0,2) -- blue respawn factor
---configure zone messages 
-GlobalSettings.messages = {
-    grouplost = false,
-    captured = true,
-    upgraded = true,
-    repaired = true,
-    zonelost = true,
-    disabled = true
-}
-
 function merge(tbls)
 	local res = {}
 	for i,v in ipairs(tbls) do
@@ -31,6 +18,8 @@ function allExcept(tbls, except)
 	end
 	return merge(tomerge)
 end
+
+
 
 upgrades = {
 	ships = {
@@ -132,9 +121,3 @@ bc:loadFromDisk() --will load and overwrite default zone levels, sides, funds an
 bc:init()
 bc:startRewardPlayerContribution(15,{infantry = 10, ground = 20, sam = 40, airplane = 50, ship = 250, helicopter=50, crate=200, rescue = 100})
 bc:addFunds(2, 3)
-GlobalSettings.setDifficultyScaling(1.4,1)
-
-	CombatZone1 = ZoneCommander:new({zone='CombatZone-1', side=1, level=1, upgrades=upgrades.minimal, crates={}, flavorText="CombatZone-1"})
-bc:addZone(CombatZone1)
-
-
