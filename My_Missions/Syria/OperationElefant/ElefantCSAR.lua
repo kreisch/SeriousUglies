@@ -119,3 +119,5 @@ function my_csar:OnAfterRescued(from, event, to, heliunit, heliname, pilotssaved
   end
 end
 
+MessageToAll("Added CSAR Menu")
+

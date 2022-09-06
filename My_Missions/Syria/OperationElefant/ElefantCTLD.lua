@@ -34,13 +34,16 @@ my_ctld:UnitCapabilities("Hercules", true, true, 15, 64, 25)
 
 -- define statics cargo
 --my_ctld:AddCratesCargo("FOB",{"Template_FOB"},CTLD_CARGO.Enum.FOB,2,500,nil)
-my_ctld:AddCratesCargo("FOB",{"Template_Blue_FOB-1"},CTLD_CARGO.Enum.FOB,2,500,nil)
-my_ctld:AddTroopsCargo("Infantry Squad 12",             {"Template_CTLD_Blue_Inf12"},CTLD_CARGO.Enum.TROOPS,12,80)
-my_ctld:AddTroopsCargo("Infantry Squad 8",              {"Template_CTLD_Blue_Inf8"},CTLD_CARGO.Enum.TROOPS,8,80)
-my_ctld:AddTroopsCargo("Infantry Mortar-Team",          {"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6,200)
-my_ctld:AddTroopsCargo("Infantry JTac Widow",           {"Template_CTLD_Blue_JTac"},CTLD_CARGO.Enum.TROOPS,4,80)
+my_ctld:AddCratesCargo("FOB",                   {"Template_Blue_FOB-1"},CTLD_CARGO.Enum.FOB,2,500,nil)
+my_ctld:AddTroopsCargo("Infantry Squad 12",     {"Template_CTLD_Blue_Inf12"},CTLD_CARGO.Enum.TROOPS,12,80)
+my_ctld:AddTroopsCargo("Infantry Squad 8",      {"Template_CTLD_Blue_Inf8"},CTLD_CARGO.Enum.TROOPS,8,80)
+my_ctld:AddTroopsCargo("Infantry Mortar-Team",  {"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6,200)
+my_ctld:AddTroopsCargo("Infantry JTac Widow",   {"Template_CTLD_Blue_JTac"},CTLD_CARGO.Enum.TROOPS,4,80)
+
+my_ctld:AddCratesCargo("JTAC HUMVEE",  {"TEMPLATE_CTLD_BLUE_ATGM_HUMVEE"}, CTLD_CARGO.Enum.VEHICLE, 1, 500)
 
 my_ctld:AddCTLDZone("FOB_Dallas",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true,240,20)
+my_ctld:AddCTLDZone("CTLD_Megiddo",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true,240,20)
 my_ctld:AddCTLDZone("CTLD_Incirlik",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true,240,20)
 
 -- my_ctld.enableHercules = true
@@ -51,7 +54,7 @@ my_ctld:AddCTLDZone("CTLD_Incirlik",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true
 -- my_ctld.enableHercules = false -- avoid dual loading via CTLD F10 and F8 ground crew
 -- local herccargo = CTLD_HERCULES:New("blue", "Hercules Test", my_ctld)
 
-my_ctld.enableHercules = true
+my_ctld.enableHercules = false
 my_ctld.HercMinAngels = 155 -- for troop/cargo drop via chute in meters, ca 470 ft
 my_ctld.HercMaxAngels = 2000 -- for troop/cargo drop via chute in meters, ca 6000 ft
 my_ctld.HercMaxSpeed = 77 -- 77mps or 270kph or 150kn
