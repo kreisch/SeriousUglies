@@ -42,17 +42,23 @@ my_ctld:AddTroopsCargo("Infantry Squad 12",             {"Template_CTLD_Blue_Inf
 my_ctld:AddTroopsCargo("Infantry Squad 8",              {"Template_CTLD_Blue_Inf8"},CTLD_CARGO.Enum.TROOPS,8,80)
 my_ctld:AddTroopsCargo("Infantry Mortar-Team",          {"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6,200)
 my_ctld:AddTroopsCargo("Infantry JTac Widow",           {"Template_CTLD_Blue_JTac"},CTLD_CARGO.Enum.TROOPS,4,80)
-my_ctld:AddTroopsCargo("No Weight:Infantry Squad 12",   {"Template_CTLD_Blue_Inf12"},CTLD_CARGO.Enum.TROOPS,12)
-my_ctld:AddTroopsCargo("No Weight:Infantry Squad 8",    {"Template_CTLD_Blue_Inf8"},CTLD_CARGO.Enum.TROOPS,8)
-my_ctld:AddTroopsCargo("No Weight:Infantry Mortar-Team",{"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6)
-my_ctld:AddTroopsCargo("No Weight:Infantry JTac Widow", {"Template_CTLD_Blue_JTac"},CTLD_CARGO.Enum.TROOPS,4)
+my_ctld:AddTroopsCargo("Infantry Stingerteam",          {"Template_CTLD_Blue_Stingerteam"},CTLD_CARGO.Enum.TROOPS,5,80)--Template_CTLD_Blue_Stingerteam
 
-my_ctld:AddCTLDZone("LHA-1 Tarawa",   CTLD.CargoZoneType.SHIP,SMOKECOLOR.Blue,true,true,240,20)
-my_ctld:AddCTLDZone("FOB Alpha",      CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true)
-my_ctld:AddCTLDZone("Bassel Al-Assad",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true)
+my_ctld:AddCTLDZone("LHA-1 Tarawa",   CTLD.CargoZoneType.SHIP,nil,true,true,240,20)
+my_ctld:AddCTLDZone("FOB Alpha",      CTLD.CargoZoneType.LOAD,nil,true,true)
+my_ctld:AddCTLDZone("Bassel Al-Assad",CTLD.CargoZoneType.LOAD,nil,true,true)
 my_ctld:AddCTLDZone("Incirlik",       CTLD.CargoZoneType.LOAD,nil,true,true)
+my_ctld:AddCTLDZone("Aleppo",       CTLD.CargoZoneType.LOAD,nil,true,true)--Aleppo
+my_ctld:AddCTLDZone("AbuCTLD",       CTLD.CargoZoneType.LOAD,nil,true,true)
+my_ctld:AddCTLDZone("FOB LimaCTLD",       CTLD.CargoZoneType.LOAD,nil,true,true)
+my_ctld:AddCTLDZone("FOB MikeCTLD",       CTLD.CargoZoneType.LOAD,nil,true,true)
+my_ctld:AddCTLDZone("Hama",       CTLD.CargoZoneType.LOAD,nil,true,true)
+my_ctld:AddCTLDZone("Hatay",       CTLD.CargoZoneType.LOAD,nil,true,true)
+my_ctld:AddCTLDZone("Palmyra",       CTLD.CargoZoneType.LOAD,nil,true,true)
+my_ctld:AddCTLDZone("Tabqa",       CTLD.CargoZoneType.LOAD,nil,true,true)
+my_ctld:AddCTLDZone("Taftanaz",       CTLD.CargoZoneType.LOAD,nil,true,true)
 
-my_ctld:enableHercules = true
+my_ctld.enableHercules = false
 local herccargo = CTLD_HERCULES:New("blue", "Hercules Test", my_ctld)
 
 
@@ -69,8 +75,15 @@ function my_ctld:OnAfterCratesBuild(From,Event,To,Group,Unit,Vehicle)
   end
 end
 
+my_ctld.enableLoadSave = true -- allow auto-saving and loading of files
+
+         my_ctld.saveinterval = 600 -- save every 10 minutes
+         my_ctld.filename = "FootHoldCTLD.csv" -- example filename
+         my_ctld.filepath = lfs.writedir().. "Missions\\Saves" -- example path
+         my_ctld.eventoninject = true -- fire OnAfterCratesBuild and OnAfterTroopsDeployed events when loading (uses Inject functions)
 
 
+         my_ctld:__Load(10)
 my_ctld:__Start(5)
 
 MessageToAll("Added CTLD Menu")
