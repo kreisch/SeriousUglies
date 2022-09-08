@@ -57,7 +57,6 @@ local RF_Version = "V0.3"
 -----------------------------------------------------------------------------------
 -- Helper
 -----------------------------------------------------------------------------------
-
 local defaultMsgShowTime = 10
 
 local function UglyPrintDebug(_msg, _duration)
@@ -221,6 +220,27 @@ function SET_STATIC:GetAliveSet()
   return AliveSet.Set or {}
 end
 
+
+function respawnAtCurrentPosition(_group)
+  UglyPrintDebug("Respawning this at it's current position: " .. _group:GetName())
+
+  local currentPos = _group:GetCoordinate():GetVec2()
+  local nextGroupSpawn = SPAWN:New(_group:GetName())
+
+  -- Spawn at the zone center position at the height specified in the ME of the group template!
+  local spawnedGroup = nextGroupSpawn:SpawnFromVec2( currentPos )   
+
+  -- switch respawn data to new group
+  groupSpawnMap[spawnedGroup:GetUnit(1):GetName()] = groupSpawnMap[_group:GetUnit(1):GetName()]
+  groupSpawnMap[_group:GetUnit(1):GetName()] = nil
+
+  -- remove old group (sorry, we'll stay friends!)
+  _group:Destroy()
+
+  return spawnedGroup
+end
+
+
 local function checkRespawnFromFactory()
   UglyPrintDebug("CheckRespawnFromFactory...killedGroupsCount(" .. killedGroupsCount .."), nextRespawn(" .. nextRespawn .. ")")
 
@@ -259,8 +279,10 @@ local function checkRespawnFromFactory()
 
     groupSpawnMap[spawnedGroup:GetUnit(1):GetName()] = startValues
 
+    --function CONTROLLABLE:RouteGroundOnRoad( ToCoordinate, Speed, DelaySeconds, OffRoadFormation, WaypointFunction, WaypointFunctionArguments )
   --        spawnedGroup:RouteGroundTo(COORDINATE:NewFromVec2(_groupCoordinate:GetRandomVec2InRadius(100, 30)), 70)
-    spawnedGroup:RouteGroundOnRoad(COORDINATE:NewFromVec2(curRespawnData["coords"]:GetRandomVec2InRadius(50, 20)), 70)
+
+    spawnedGroup:RouteGroundOnRoad(COORDINATE:NewFromVec2(curRespawnData["coords"]:GetRandomVec2InRadius(50, 20)), 70)--, 1, "Vee", respawnAtLastWP)
   
     UglyPrintDebug("Respawned " .. spawnedGroup:GetName())
     UglyPrintDebug("From template " .. curTemplate:GetName())
@@ -271,51 +293,8 @@ local function checkRespawnFromFactory()
   TIMER:New(checkRespawnFromFactory):Start(30)
 end
 
-local function checkAttackFromFactory(_zoneName)
-  UglyPrintDebug("checkAttackFromFactory...killedGroupsCount(" .. killedGroupsCount .."), nextRespawn(" .. nextRespawn .. ")")
-
-  local _facPrefix = curRespawnData["factory"]
-  local SetFactories = SET_STATIC:New():FilterCoalitions("red"):FilterPrefixes(_facPrefix):FilterOnce()
-
-  if SetFactories:CountAlive() == 0 then
-    UglyPrintDebug("Sorry, all factories from " .. _facPrefix .. " are offline!")
-    return
-  end
-
-  UglyPrintDebug("Good, some factories of: " .. _facPrefix .. " is still online!")
-
-  local curTemplate = curRespawnData["template"]
-
-  local aliveFactories = SetFactories:GetAliveSet()
-  local useThisFac = SetFactories:GetRandom()
-
-  local theZone = ZONE:FindByName(useThisFac:GetName() .. "_Respawn_Zone")
-  local spawnVec2 = theZone:GetRandomVec2()
-  local nextGroupSpawn = SPAWN:New(curTemplate:GetName())
-
-  -- Spawn at the zone center position at the height specified in the ME of the group template!
-  local spawnedGroup = nextGroupSpawn:SpawnFromVec2( spawnVec2 )   
-
-  local startValues = {}
-  startValues["template"] = curTemplate
-  startValues["coords"] = curRespawnData["coords"]
-  startValues["factory"] = _facPrefix
-
-  groupSpawnMap[spawnedGroup:GetUnit(1):GetName()] = startValues
-
---        spawnedGroup:RouteGroundTo(COORDINATE:NewFromVec2(_groupCoordinate:GetRandomVec2InRadius(100, 30)), 70)
-  spawnedGroup:RouteGroundOnRoad(COORDINATE:NewFromVec2(curRespawnData["coords"]:GetRandomVec2InRadius(50, 20)), 70)
-
-  UglyPrintDebug("Respawned " .. spawnedGroup:GetName())
-  UglyPrintDebug("From template " .. curTemplate:GetName())
-
-  TIMER:New(checkAttackFromFactory, _zoneName):Start(30)
-end
-
-
-
 -- Start factory respawn
-TIMER:New(checkRespawnFromFactory):Start(30)
+TIMER:New(checkRespawnFromFactory):Start(10)
 
 registerFactory("RF01")
 registerFactory("RF02")
