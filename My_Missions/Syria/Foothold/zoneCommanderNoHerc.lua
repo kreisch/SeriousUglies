@@ -2828,17 +2828,18 @@ end
 LogisticCommander = {}
 do
 	LogisticCommander.allowedTypes = {}
-	LogisticCommander.allowedTypes['Ka-50'] = true
+	LogisticCommander.allowedTypes['Ka-50'] = false
 	LogisticCommander.allowedTypes['Mi-24P'] = true
-	LogisticCommander.allowedTypes['SA342Mistral'] = true
-	LogisticCommander.allowedTypes['SA342L'] = true
-	LogisticCommander.allowedTypes['SA342M'] = true
-	LogisticCommander.allowedTypes['SA342Minigun'] = true
+	LogisticCommander.allowedTypes['SA342Mistral'] = false
+	LogisticCommander.allowedTypes['SA342L'] = false
+	LogisticCommander.allowedTypes['SA342M'] = false
+	LogisticCommander.allowedTypes['SA342Minigun'] = false
 	LogisticCommander.allowedTypes['UH-60L'] = true
-	LogisticCommander.allowedTypes['AH-64D_BLK_II'] = true
+	LogisticCommander.allowedTypes['AH-64D_BLK_II'] = false
 	LogisticCommander.allowedTypes['UH-1H'] = true
 	LogisticCommander.allowedTypes['Mi-8MT'] = true
-	
+	LogisticCommander.allowedTypes['Hercules'] = true
+
 	LogisticCommander.maxCarriedPilots = 4
 	
 	--{ battleCommander = object, supplyZones = { 'zone1', 'zone2'...}}
@@ -2883,12 +2884,18 @@ do
 				for i,v in ipairs(self.supplyZones) do
 					if v == zn.zone then
 						self.carriedCargo[gr:getID()] = zn.zone
-						trigger.action.setUnitInternalCargo(un:getName(), 800)
 						trigger.action.outTextForGroup(gr:getID(), 'Supplies loaded', 10)
+						local unitType = un:getTypeName()
+						if unitType == "Hercules" then
+							trigger.action.setUnitInternalCargo(un:getName(), 4000)
+							trigger.action.outTextForGroup(gr:getID(), 'Added 4000kg weight', 10)
+						else
+							trigger.action.setUnitInternalCargo(un:getName(), 800)
+							trigger.action.outTextForGroup(gr:getID(), 'Added 800kg weight', 10)
+						end
 						return
 					end
 				end
-				
 				trigger.action.outTextForGroup(gr:getID(), 'Can only load supplies while within a friendly supply zone', 10)
 				return
 			end
@@ -2941,8 +2948,14 @@ do
 								trigger.action.outTextForCoalition(un:getCoalition(),'Resupply +'..reward..' credits (-75% due to no demand)',5)
 							end
 						end
-						
-						zn:upgrade()
+						local unitType = un:getTypeName()
+						if unitType == "Hercules" then
+							zn:upgrade()
+							zn:upgrade()
+							zn:upgrade()
+						else
+							zn:upgrade()				
+						end
 					end
 				end
 				
