@@ -101,9 +101,9 @@ function TargetTaskingCombatZone1(contact)
       local mission = AUFTRAG:NewARMORATTACK(GROUP:FindByName(contact.groupname),UTILS.KmphToKnots(20),"Vee")
       
       local groupForTasking = SetGroupsGround:GetRandom()
-      MESSAGE:New("Attacking group is " .. groupForTasking:GetName(), 20, "Debug"):ToAll()
+      MESSAGE:New("Attacking group is " .. groupForTasking:GetName() .. "available are " .. SetGroupsGround:Count(), 20, "Debug"):ToAll()
 
-      groupForTasking = respawnAtLastWP(groupForTasking, 1, 1)
+      groupForTasking = respawnAtCurrentPosition(groupForTasking)
 
       local armygroup = ARMYGROUP:New(groupForTasking:GetName())
       armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
