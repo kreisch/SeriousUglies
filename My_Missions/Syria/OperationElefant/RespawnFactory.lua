@@ -82,6 +82,7 @@ UglyPrintDebug("Loading RespawnFactory Script - " .. RF_Version)
 local maxRespawn = 1000
 local observeZonePostfix = "_Observe_Zone"
 local respawnZonePostfix = "_Respawn_Zone"
+local redInfantryVehicleTemplate = "TEMPLATE_RED_INF_SCOUT_BRDM"
 
 -----------------------------------------------------------------------------------
 -- Some internal structures
@@ -140,7 +141,14 @@ local function registerFactory(_facName)
       startValues["coords"] = groupCoordinate
       startValues["factory"] = _facName
 
-      groupSpawnMap[groupToStore:GetUnit(1):GetName()] = startValues
+      local storeName = nil
+      if string.find(groupToStore:GetName(), "Infantry_Respawn") ~= nil then
+        storeName = groupToStore:GetName()
+      else
+        storeName = groupToStore:GetUnit(1):GetName()
+      end
+
+      groupSpawnMap[storeName] = startValues
       UglyPrintDebug("Added Unit: " .. groupToStore:GetUnit(1):GetName() .. ", for factory: " .. _facName)
   end)
 end
@@ -159,9 +167,30 @@ function FactoryDeathRecorder:OnEventDead( _eventData )
 --        local coords = COORDINATE:NewFromVec3(SOpos):SmokeOrange()
 
   local deadName = _eventData.IniUnitName
+  local deadGroup = _eventData.IniGroup
+  local deadGroupName = _eventData.IniGroupName
+  local spawnForInf = false
+
+  if deadGroup ~= nil then
+    UglyPrintDebug("Killed members of deadGroup: " .. deadGroup:GetName())
+    UglyPrintDebug("Group has " ..deadGroup:CountAliveUnits() .. " alive units.")
+
+    if string.find(deadGroup:GetName(), "Infantry_Respawn") ~= nil then
+      if deadGroup:CountAliveUnits() == 0 then
+        spawnForInf = true
+        UglyPrintDebug("Group is dead and was infantry.")
+        deadName = deadGroup:GetName()
+      else
+        UglyPrintDebug("Infantry not yet dead.") -- cancel here.
+        return
+      end
+    end
+  else
+    UglyPrintDebug("Killed deadGroup: is nil")
+  end
 
   if groupSpawnMap[deadName] == nil then
-    UglyPrintDebug("No Unit with this name. Maybe a static?" .. deadName)
+    UglyPrintDebug("No Unit with this name. Maybe a static? " .. deadName)
 
     -- workaround to get proper objects. ED changed the way dying object are handled. When killed, they turn
     -- into statics with a new name instead keeping the dead unit. The static name is the same + a new number at the end
@@ -169,7 +198,7 @@ function FactoryDeathRecorder:OnEventDead( _eventData )
     deadName = string.sub (_eventData.IniUnitName, 0, string.len(_eventData.IniUnitName)-3)
 
     if groupSpawnMap[deadName] == nil then
-      UglyPrintDebug("No Static either. Object not tracked" .. deadName)
+      UglyPrintDebug("No Static either. Object not tracked " .. deadName)
       return
     end
   end
@@ -186,7 +215,13 @@ function FactoryDeathRecorder:OnEventDead( _eventData )
 
   UglyPrintDebug("Good, some factories of: " .. _facPrefix .. " is still online!")
 
-  local origTemplate = groupSpawnMap[deadName]["template"]
+  local origTemplate = nil
+
+  if spawnForInf == true then
+    origTemplate = GROUP:FindByName(redInfantryVehicleTemplate)
+  else
+    origTemplate = groupSpawnMap[deadName]["template"]
+  end
 
   if origTemplate == nil then
     UglyPrintDebug("No valid template available for" .. deadName)
@@ -196,7 +231,7 @@ function FactoryDeathRecorder:OnEventDead( _eventData )
   -- store in killed groups list
   killedGroupsCount = killedGroupsCount + 1
   local respawnData = {}
-  respawnData["template"] = origTemplate
+  respawnData["template"] = origTemplate 
   respawnData["coords"] = groupSpawnMap[deadName]["coords"]
   respawnData["factory"] = _facPrefix
   killedGroups[killedGroupsCount] = respawnData
