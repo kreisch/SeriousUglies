@@ -4,7 +4,7 @@
 -- All TARGETS acquired by INTEL will result in an AUFTRAG to kill them
 -- Respawn of destroyed RED Units will be handled by SKYFIRE-FRAMEWORK-TM
 
---[[
+
 --#region define Airwings for RED
 local airwingErcan = AIRWING:New("Warehouse_Ercan", "Arwing Ercan")
 airwingErcan:Start()
@@ -26,7 +26,10 @@ airwingGecitkale:AddSquadron(Gecitkale1st)
 airwingGecitkale:NewPayload(GROUP:FindByName("Mi28_Template_CAS"), 20, {AUFTRAG.Type.CAS}, 80)
 airwingGecitkale:SetTakeoffAir()
 --#endregion
-]]--
+
+--#region OPTIONS
+local useEnemyAir = false
+--#endregion
 
 --#region Zones
 --Zonen definieren:
@@ -98,6 +101,8 @@ function TargetTaskingCombatZone1(contact)
       local mission = AUFTRAG:NewARMORATTACK(GROUP:FindByName(contact.groupname),UTILS.KmphToKnots(20),"Vee")
       
       local groupForTasking = SetGroupsGround:GetRandom()
+      MESSAGE:New("Attacking group is " .. groupForTasking:GetName(), 20, "Debug"):ToAll()
+
       groupForTasking = respawnAtLastWP(groupForTasking, 1, 1)
 
       local armygroup = ARMYGROUP:New(groupForTasking:GetName())
@@ -107,11 +112,13 @@ function TargetTaskingCombatZone1(contact)
 
 
   elseif (contact.attribute == "Ground_EWR") or (contact.attribute == "Ground_SAM") or (contact.attribute == "Ground_AAA")then -- Spawn SEAD
-    -- Regel: Man kann nun schauen, dass man SEAD aus bestimmten Arealen holt, sollten entsprechende Bedingungen da sein.
-    local mission = AUFTRAG:NewSEAD(GROUP:FindByName(contact.groupname), 5000)
-    -- local zone = ZONE_GROUP:New("SEAD Zone", targetGroup, 500)
-    -- local mission = AUFTRAG:NewCAS(zone)
---    airwingErcan:AddMission(mission)
+    if useEnemyAir then
+      -- Regel: Man kann nun schauen, dass man SEAD aus bestimmten Arealen holt, sollten entsprechende Bedingungen da sein.
+      local mission = AUFTRAG:NewSEAD(GROUP:FindByName(contact.groupname), 5000)
+      -- local zone = ZONE_GROUP:New("SEAD Zone", targetGroup, 500)
+      -- local mission = AUFTRAG:NewCAS(zone)
+      airwingErcan:AddMission(mission)
+    end
   elseif (contact.attribute == "Air_Fighter") or (contact.attribute == "Air_AttackHelo") or (contact.attribute == "Air_TransportHelo") then
       -- Figher anfordern beim nächsten Airfield
   end
@@ -144,13 +151,17 @@ function TargetTaskingCombatZone2(contact)
       armygroup:AddMission(mission)
     else
         -- Start choppers
-        MESSAGE:New("GroundTarget is found in Sector 2\n Starting Helo Attack", 20, "Debug"):ToAll()
-        local zone = ZONE_GROUP:New("CAS Zone", targetGroup, 500)
-        local mission = AUFTRAG:NewCAS(zone)
---        airwingGecitkale:AddMission(mission)
+        if useEnemyAir then
+          MESSAGE:New("GroundTarget is found in Sector 2\n Starting Helo Attack", 20, "Debug"):ToAll()
+          local zone = ZONE_GROUP:New("CAS Zone", targetGroup, 500)
+          local mission = AUFTRAG:NewCAS(zone)
+          airwingGecitkale:AddMission(mission)
+        end
     end
   elseif (contact.attribute == "Ground_EWR") or (contact.attribute == "Ground_SAM") or (contact.attribute == "Ground_AAA")then -- Spawn SEAD
-    local mission = AUFTRAG:NewSEAD(GROUP:FindByName(contact.groupname), 5000)
+    if useEnemyAir then
+      local mission = AUFTRAG:NewSEAD(GROUP:FindByName(contact.groupname), 5000)
+    end
     airwingErcan:AddMission(mission)
     elseif (contact.attribute == "Air_Fighter") or (contact.attribute == "Air_AttackHelo") or (contact.attribute == "Air_TransportHelo") then
       -- Figher anfordern beim nächsten Airfield
