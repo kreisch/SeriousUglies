@@ -116,10 +116,12 @@ local function registerFactory(_facName)
     return
   end
 
+  UglyPrintDebug("Found " .. SetFactories:Count() .. " factories for: " .. _facName)
+
   local SetZone = SET_ZONE:New():FilterPrefixes( _facName .. observeZonePostfix ):FilterOnce()
   local SetGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterZones(SetZone):FilterOnce()
 
-  UglyPrintDebug("SetGroups alive: " .. SetGroups:CountAlive())
+  UglyPrintDebug("SetGroups alive: " .. SetGroups:CountAlive() .. ", in zone: " .. _facName .. observeZonePostfix)
 
   --SetGroups:Activate(1)
 
@@ -298,8 +300,9 @@ TIMER:New(checkRespawnFromFactory):Start(10)
 
 registerFactory("RF01")
 registerFactory("RF02")
-registerFactory("RF03")
-registerFactory("RF04")
+
+registerFactory("RF_CZ01")
+registerFactory("RF_CZ02")
 
 UglyPrintDebug("RespawnFactory loaded - " .. RF_Version)
 
