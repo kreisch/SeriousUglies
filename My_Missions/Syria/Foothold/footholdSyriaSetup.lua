@@ -19,6 +19,27 @@ function allExcept(tbls, except)
 	return merge(tomerge)
 end
 
+function doBackupWithTimeData(filepath)
+	env.info("Trying backup of: " .. filepath )
+	trigger.action.outText("Trying backup of: " .. filepath, 30)
+
+	-- do a backup before reading and starting
+	if io then
+		local infile=io.open(filepath,"r")
+		if infile~=nil then 
+			local inStr = infile:read("*a")
+			infile:close()
+
+			local outfile = io.open(filepath .. "_" .. os.date("%Y%m%d%H%M"), "w")
+			outfile:write(inStr)
+			outfile:close()
+
+			env.info("Stored backup to: " .. filepath .. "_" .. os.date("%Y%m%d%H%M"))
+			trigger.action.outText("Stored backup to: " .. filepath .. "_" .. os.date("%Y%m%d%H%M"), 30)
+		end
+	end
+end
+
 upgrades = {
 	ships = {
 		blue = {'blueShip','blueShip','blueShip'},
@@ -164,6 +185,9 @@ if lfs then
 	lfs.mkdir(dir)
 	filepath = dir..filepath
 	env.info('Foothold - Save file path: '..filepath)
+
+	doBackupWithTimeData(filepath)
+
 end
 bc = BattleCommander:new(filepath, 10, 60)
 zones = {
