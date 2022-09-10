@@ -31,7 +31,7 @@ my_ctld:UnitCapabilities("SA342M", false, false, 5, 3, 12)
 my_ctld:UnitCapabilities("Mi-24P", true, true, 5, 8, 18)
 my_ctld:UnitCapabilities("Mi-8MT", true, true, 5, 24, 15)
 my_ctld:UnitCapabilities("UH-60L", true, true, 5, 12, 15)
-my_ctld:UnitCapabilities("Hercules", true, true, 15, 64, 25)
+--my_ctld:UnitCapabilities("Hercules", true, true, 15, 64, 25)
 
 -- define statics cargo
 --my_ctld:AddCratesCargo("FOB",{"Template_FOB"},CTLD_CARGO.Enum.FOB,2,500,nil)
