@@ -90,7 +90,7 @@ function TargetTaskingCombatZone1(contact)
     -- Spawn Groundattack
     MESSAGE:New("GroundTarget is found in Sector 1\n Starting Tankattack", 20, "Debug"):ToAll()
     env.info("GroundTarget is found in Sector 1\n Starting Tankattack")
-    local SetGroupsGround = SET_GROUP:New():FilterCoalitions("red"):FilterZones({CombatZone1}):FilterCategoryGround()
+    local SetGroupsGround = SET_GROUP:New():FilterCoalitions("red"):FilterZones({CombatZone1}):FilterPrefixes("QRF"):FilterCategoryGround()
       :FilterActive():FilterOnce() -- Todo: Nur lebende enthalten? Laut Applevangelist ja; Active notwendig?
 
     local groupForTasking = SetGroupsGround:GetRandom()

@@ -216,7 +216,7 @@ function FactoryDeathRecorder:OnEventDead( _eventData )
   UglyPrintDebug("Good, some factories of: " .. _facPrefix .. " is still online!")
 
   local origTemplate = nil
-
+  
   if spawnForInf == true then
     origTemplate = GROUP:FindByName(redInfantryVehicleTemplate)
   else
@@ -235,6 +235,8 @@ function FactoryDeathRecorder:OnEventDead( _eventData )
   respawnData["coords"] = groupSpawnMap[deadName]["coords"]
   respawnData["factory"] = _facPrefix
   killedGroups[killedGroupsCount] = respawnData
+
+  UglyPrintDebug("FactoryDeathRecorder...killedGroupsCount(" .. killedGroupsCount .."), nextRespawn(" .. nextRespawn .. ")")
 
   UglyPrintDebug("Prepared respawning of Group: " .. origTemplate:GetName())
 end
@@ -308,6 +310,11 @@ local function checkRespawnFromFactory()
 
     -- Spawn at the zone center position at the height specified in the ME of the group template!
     local spawnedGroup = nextGroupSpawn:SpawnFromVec2( spawnVec2 )   
+
+    if curTemplate:GetName() == redInfantryVehicleTemplate then
+--      AddDismounts(spawnedGroup:GetUnit(1):GetName(), "RifleINS", "DismountFlag")
+--      UglyPrintDebug("Adding dismount to: " .. spawnedGroup:GetUnit(1):GetName())
+    end
 
     local startValues = {}
     startValues["template"] = curTemplate
