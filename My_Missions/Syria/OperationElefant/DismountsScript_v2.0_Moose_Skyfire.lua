@@ -20,9 +20,8 @@
 --    UnitName: string, name of group
 --    dm_type: string, "MANPADS", "Mortar", "Rifle", "ZU-23"
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 do
-  --Table that holds all ground units that carry mounted units
+  -- Table that holds all ground units that carry mounted units
   local DismountsCarrier = {}
 
   local function InitDMUnits(dm_type, countryID, carrierUnitID)
@@ -32,10 +31,10 @@ do
 
   end
 
-  --Function to add mounted units to a carrier
+  -- Function to add mounted units to a carrier
   -- _unit (UNIT) - name of the individual vehicle unit in ME (NOT GROUP NAME)
   -- dm_type (String) - type of mounted units to hold ("Rifle", "Mortar", "Manpad")
-  function AddDismounts(_unit, dm_type) --Options for dm_type: "Rifle", "Mortar", "Manpad"
+  function AddDismounts(_unit, dm_type) -- Options for dm_type: "Rifle", "Mortar", "Manpad"
     for n = 1, #DismountsCarrier do
       if DismountsCarrier[n].unit == _unit then
         env.info("AddDismounts: " .. _unit:GetName() .. " is already registered.")
@@ -44,17 +43,18 @@ do
     end
 
     DismountsCarrier[#DismountsCarrier + 1] = {
-      unit = _unit,     -- the unit to observe
-      cargo_type = dm_type,  -- the dismount type to be spawned
-      cargo_group = nil,  -- the spawned group
-      cargo_status = "mounted",  -- the state of the dismount
-      deadUnits = {}   -- the index of dead units of the dismount
+      unit = _unit, -- the unit to observe
+      cargo_type = dm_type, -- the dismount type to be spawned
+      cargo_group = nil, -- the spawned group
+      cargo_status = "mounted", -- the state of the dismount
+      cargo_numUnits = 0, -- the number of units originally in the group
+      cargo_units = {}, -- the names of the original units
+      deadUnitsIndexes = {} -- the index of dead units of the dismount
     }
 
   end
 
-  
-  --Function to return the composition of the spawned group
+  -- Function to return the composition of the spawned group
   local function GetDmGroup(_unit)
     -- local dmVec2 = {                  --Determine the x,y Vec2 position of the dismounts (10m behind of the carrier)
     --   x = carrierPos.p.x + carrierPos.x.x * -10,
@@ -62,50 +62,103 @@ do
     -- }
   end
 
+  local nextGroupSpawn = SPAWN:New("TEMPLATE_BLUE_DISM_RIFLERPG")
 
-  --function to check if the dismounts carriers are moving
+  -- function to check if the dismounts carriers are moving
   local function CheckMovement()
---    env.info("Dismounts CheckMovement...")
+    --    env.info("Dismounts CheckMovement...")
+    local dsmCount = #DismountsCarrier
 
-    for n = 1, #DismountsCarrier do
+    for n = 1, dsmCount do
       local theUnit = DismountsCarrier[n].unit
       env.info("Dismounts Checking: " .. theUnit:GetName())
 
       if theUnit:IsAlive() == true then
         env.info("Unit OK: " .. theUnit:GetName())
 
-        local velVec = theUnit:GetVelocityVec3() --Velocity is a Vec3
+        local velVec = theUnit:GetVelocityVec3() -- Velocity is a Vec3
         env.info("Unit speed: velVec.x: " .. velVec.x .. ",velVec.y: " .. velVec.y .. ",velVec.z: " .. velVec.z)
 
-        if velVec.x < 0.001 and velVec.y < 0.001 and velVec.z < 0.001 and
-           velVec.x > -0.001 and velVec.y > -0.001 and velVec.z > -0.001 then  --Check if speed is zero
+        if velVec.x < 0.01 and velVec.y < 0.01 and velVec.z < 0.01 and velVec.x > -0.01 and velVec.y > -0.01 and
+          velVec.z > -0.01 then -- Check if speed is zero
           env.info("Unit has stopped: " .. theUnit:GetName())
 
           if DismountsCarrier[n].cargo_status == "mounted" then
             env.info("Init dismounting of: " .. theUnit:GetName())
 
---            local carrierPos = theUnit:getPosition()
---            local group = GetDmGroup(theUnit)
+            --Determine the x,y Vec2 position of the dismounts (10m behind of the carrier)
+            local oldPos = theUnit:GetCoordinate():GetVec2()
+            local dmVec2 = { x = oldPos.x - 20, y = oldPos.y - 20 }
+            local spawnedGroup = nextGroupSpawn:SpawnFromVec2(dmVec2)
+
+            --            local carrierPos = theUnit:getPosition()
+            --            local group = GetDmGroup(theUnit)
             DismountsCarrier[n].cargo_status = "dismounted"
+            DismountsCarrier[n].cargo_group = spawnedGroup
+
+            -- initially all are not yet dead
+            DismountsCarrier[n].cargo_numUnits = spawnedGroup:GetSize()
+            DismountsCarrier[n].cargo_units = {}
+
+            for i,currentUnit in pairs(spawnedGroup:GetUnits()) do
+              DismountsCarrier[n].cargo_units[currentUnit:GetName()] = i
+              env.info("Added " .. currentUnit:GetName() .. " with index: " .. i)
+            end
+
+            -- cleanup from dead unit list
+            local allCurrentUnits = spawnedGroup:GetUnits()
+            for unitName,currentUnit in pairs(DismountsCarrier[n].deadUnitsIndexes) do
+              env.info("Killing " .. unitName .. " with index: " .. currentUnit)
+              allCurrentUnits[currentUnit]:Destroy()
+            end
+
+            local groupSize = spawnedGroup:GetSize() or 0
+            env.info("Spawned Group: " .. spawnedGroup:GetName() .. ", with " .. groupSize .. " units.")
           end
-        else  --Else carrier is moving
+        else -- Else carrier is moving
           env.info("Unit is moving: " .. theUnit:GetName())
 
-          --Remount rifle squad only when speed bigger than 5.3 m/s (19 kph). Remount everyone else immediately when moving.
+          -- Remount rifle squad only when speed bigger than 5.3 m/s (19 kph). Remount everyone else immediately when moving.
           if DismountsCarrier[n].cargo_status == "dismounted" then
             env.info("Unit is moving again, init mounting: " .. theUnit:GetName())
 
+            local lastGroup = DismountsCarrier[n].cargo_group
+            local unitCount = DismountsCarrier[n].cargo_numUnits
+            env.info("There have been: " .. unitCount .. " units originally in: " .. theUnit:GetName())
+
+
+            DismountsCarrier[n].deadUnitsIndexes = {}
+            local deadUnitCount = 1
+            local deadUnits = {}
+
+            if lastGroup ~= nil then
+              local groupSize = lastGroup:GetSize() or 0
+              env.info("Mounting Group: " .. lastGroup:GetName() .. ", with " .. groupSize .. " units.")
+
+              if groupSize > 0 then
+                -- list of current alive units
+                for i,currentUnit in pairs(lastGroup:GetUnits()) do
+                  deadUnits[currentUnit:GetName()] = i
+                  env.info("Unit " .. currentUnit:GetName() .. "  with index: " .. i .. ", is alive before mounting!")
+                end
+              end
+            else
+              env.info("Mounting Group is NIL!")
+            end
+
+            -- if not initializing, kill all dead offensive
+            for unitName,testIndex in pairs(DismountsCarrier[n].cargo_units) do
+              if deadUnits[unitName] == nil then
+                env.info("Unit " .. unitName .. " was dead before, kill it!")
+                DismountsCarrier[n].deadUnitsIndexes[deadUnitCount] = testIndex
+                deadUnitCount = deadUnitCount + 1
+              end
+            end
+
             DismountsCarrier[n].cargo_status = "mounted"
-            
-            -- local spawnedGroup = DismountsCarrier[n].cargo_group
-            -- if spawnedGroup ~= nil and spawnedGroup:IsAlive() then  --Check if the group is still alive
-            --   -- store dead units
-            --   local numAlive = spawnedGroup:CountAliveUnits()
-            --   env.info(numAlive .. " units still alive of " .. theUnit:GetName())
-            -- else
-            --   DismountsCarrier[n].cargo_status = "lost"
-            --   DismountsCarrier[n].cargo_group = nil
-            -- end
+            DismountsCarrier[n].cargo_group:Destroy()
+            DismountsCarrier[n].cargo_group = nil
+
           end
         end
       else
@@ -122,7 +175,5 @@ do
   timer.scheduleFunction(CheckMovement, nil, timer.getTime() + 1)
 end
 
-
 local dismountTestUnit = GROUP:FindByName("Dismount_Test")
-
 AddDismounts(dismountTestUnit:GetUnit(1), "DISM_RifleIns")
