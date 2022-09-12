@@ -6,8 +6,6 @@ local baseDir = "H:\\My Drive\\Coding\\KreischGit\\SeriousUglies\\My_Missions\\S
 -- BASE:TraceClass("CTLD")
 
 assert(loadfile(baseDir .. "DismountsScript_v2.0_Moose_Skyfire.lua"))()
---assert(loadfile(baseDir .. "DismountsScript_v1_5.Easy.1.4.lua"))()
---assert(loadfile(baseDir .. "DismountsScript_v1_5.Easy.1.5_FixedInf.lua"))()
 assert(loadfile(baseDir .. "ElefantCSAR.lua"))()
 assert(loadfile(baseDir .. "ElefantCTLD.lua"))()
 assert(loadfile(baseDir .. "Elefant_Airboss.lua"))()

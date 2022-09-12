@@ -62,7 +62,7 @@ do
     -- }
   end
 
-  local nextGroupSpawn = SPAWN:New("TEMPLATE_BLUE_DISM_RIFLERPG")
+  local nextGroupSpawn = SPAWN:New("TEMPLATE_RED_DISM_RIFLERPG")
 
   -- function to check if the dismounts carriers are moving
   local function CheckMovement()
@@ -175,5 +175,15 @@ do
   timer.scheduleFunction(CheckMovement, nil, timer.getTime() + 1)
 end
 
-local dismountTestUnit = GROUP:FindByName("Dismount_Test")
-AddDismounts(dismountTestUnit:GetUnit(1), "DISM_RifleIns")
+
+local DISMGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterPrefixes("DISM_RIFLRPG"):FilterOnce()
+env.info("SetGroups alive: " .. DISMGroups:CountAlive())
+
+DISMGroups:ForEachGroup(function(groupToStore)
+  env.info("Adding Dismounts to Group: " .. groupToStore:GetName())
+
+  AddDismounts(groupToStore:GetUnit(1), "DISM_RifleIns")
+
+  env.info("Added Dismounts to Unit: " .. groupToStore:GetUnit(1):GetName())
+end)
+
