@@ -20,6 +20,9 @@
 --    UnitName: string, name of group
 --    dm_type: string, "MANPADS", "Mortar", "Rifle", "ZU-23"
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local dismPrefix = "DISM_RIFLERPG"
+
 do
   -- Table that holds all ground units that carry mounted units
   local DismountsCarrier = {}
@@ -175,8 +178,7 @@ do
   timer.scheduleFunction(CheckMovement, nil, timer.getTime() + 1)
 end
 
-
-local DISMGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterPrefixes("DISM_RIFLRPG"):FilterOnce()
+local DISMGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterPrefixes(dismPrefix):FilterOnce()
 env.info("SetGroups alive: " .. DISMGroups:CountAlive())
 
 DISMGroups:ForEachGroup(function(groupToStore)
