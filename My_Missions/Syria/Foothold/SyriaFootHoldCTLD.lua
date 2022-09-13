@@ -44,13 +44,15 @@ my_ctld:UnitCapabilities("Hercules", true, true,       15, 64, 25, 19090) -- max
 -- my_ctld:AddCratesCargo("FARP",{"Template_Blue_FARP_Support"},CTLD_CARGO.Enum.VEHICLE,1,100)
 
 -- if you want to add weight to your Heli, crates can have a weight in kg **per crate**. Fly carefully.
-my_ctld:AddCratesCargo("(SAM) M1097 Avenger 2*",      {"Template_Blue_Humvee"},CTLD_CARGO.Enum.VEHICLE,2,2775)
-my_ctld:AddCratesCargo("(SAM) M1097 Avenger 2*",      {"M1097 Avenger"},CTLD_CARGO.Enum.VEHICLE,2,2775)
-my_ctld:AddCratesCargo("(SAM) M6 Linebacker 3*",      {"M6 Linebacker"},CTLD_CARGO.Enum.VEHICLE,3,2775)
-my_ctld:AddCratesCargo("(SAM) Roland ADS 3*",          {"Roland ADS"},CTLD_CARGO.Enum.VEHICLE,3,2775)
-my_ctld:AddCratesCargo("(SAM) Roland ADS With Radar 5*",      {"Roland Radar Site With Launcher"},CTLD_CARGO.Enum.VEHICLE,5,2775)
 
-my_ctld:AddCratesCargo("(SAM) M48 Chaparral 3*",      {"M48 Chaparral"},CTLD_CARGO.Enum.VEHICLE,3,2775)
+my_ctld:AddCratesCargo("(SAM) M1097 Avenger",                 {"M1097 Avenger"},CTLD_CARGO.Enum.VEHICLE,1,9000)
+my_ctld:AddCratesCargo("(SAM) M48 Chaparral",                 {"M48 Chaparral"},CTLD_CARGO.Enum.VEHICLE,1,9000)
+my_ctld:AddCratesCargo("(SAM) M6 Linebacker",                 {"M6 Linebacker"},CTLD_CARGO.Enum.VEHICLE,1,12000)
+my_ctld:AddCratesCargo("(SAM) Roland ADS",                    {"Roland ADS"},   CTLD_CARGO.Enum.VEHICLE,1,10500)
+my_ctld:AddCratesCargo("(SAM) Roland ADS With Radar",         {"Roland Radar Site With Launcher"},CTLD_CARGO.Enum.VEHICLE,1,19000)
+my_ctld:AddCratesCargo("(SAM) NASAMS 4*",                     {"SAM NASAMS"},   CTLD_CARGO.Enum.VEHICLE,4,10000)
+my_ctld:AddCratesCargo("(SAM) PatrioSystem 6*",               {"SAM Patriot"},  CTLD_CARGO.Enum.VEHICLE,6,19000)
+
 my_ctld:AddCratesCargo("Stryker ATGM 5*",             {"M1134 Stryker ATGM"},CTLD_CARGO.Enum.VEHICLE,5,2775)
 my_ctld:AddCratesCargo("Fuchs 5*",                    {"TPZ"},CTLD_CARGO.Enum.VEHICLE,5,2775)
 
@@ -85,6 +87,11 @@ my_ctld.HercMaxAngels = 2000 -- for troop/cargo drop via chute in meters (2000),
 my_ctld.HercMaxSpeed = 77 -- 77mps or 270kph or 150kn
 my_ctld.EngineerSearch = 2000 -- teams will search for crates in this radius.
 
+local JTacsAvailable = {} -- a list of available JTACs
+local JTACcounter    = 0 -- Counter for JTacs
+local JtacTargetList = {}
+local JtacTargetCounter = 0 -- Counter specific for targets
+local JtacMapMarker = {} -- Mapmarker, using JTACcounter as index, since a JTAC can only lase one target at a time.
 
 
 function my_ctld:OnAfterCratesBuild(From,Event,To,Group,Unit,Vehicle)
@@ -112,6 +119,107 @@ function my_ctld:OnAfterCratesBuild(From,Event,To,Group,Unit,Vehicle)
   end
 end
 
+local function CheckThreats(JTAC)
+  local jtac = JTAC
+  -- Get the highst (detected) threat to the group.
+  local threatunit,threatlevel=jtac:GetHighestThreat()
+  
+  -- Set of detected units.
+  local detectedset=jtac:GetDetectedUnits()
+  
+  -- Cound number of alive detected units. 
+  local ndetected=detectedset:CountAlive()
+  
+  -- Info on detected units.
+  local text=string.format("Detected units (%d):", ndetected)
+  if ndetected>0 then  
+    for _,_unit in pairs(detectedset:GetSet()) do
+      local unit=_unit --Wrapper.Unit#UNIT
+      text=text..string.format("\n- %s [threat level=%d]", unit:GetName(), unit:GetThreatLevel())
+    end
+  else
+    text=text.." None"
+  end
+  
+  -- We got a threat to the group.
+  if threatunit then
+
+    text=text..string.format("\nHighest detected threat %s with threat level %d", threatunit:GetName(), threatlevel)
+    
+    -- Current laser target.
+    local target=jtac:GetLaserTarget()
+    
+    local newtarget=nil --Wrapper.Unit#UNIT
+    if target then
+    
+      local currentthreatlevel=target:GetThreatLevel()
+      
+      if threatlevel>currentthreatlevel then
+        env.info("FF higher threat detected!")
+        newtarget=threatunit
+      end
+    
+    else
+      env.info("FF no current target using this one")
+      newtarget=threatunit
+    end
+    
+    if newtarget then
+      if jtac:IsLasing() then
+        jtac:LaserOff()
+      end
+      env.info("FF New target "..newtarget:GetName())
+      jtac:LaserOn(newtarget)
+    end
+  
+  end
+
+  -- Get current laser target.
+  local unit=jtac:GetLaserTarget()
+  if unit then
+    text=text..string.format("\nLasing target %s at code %d", unit:GetName(), jtac:GetLaserCode())
+  else
+    text=text.."\nNot lasing any target"
+  end
+  text=text..string.format(" (ON=%s, LOS=%s)", tostring(jtac:IsLasing()), tostring(jtac.spot.LOS))
+
+  -- Info message.
+  -- MESSAGE:New(text, 25):ToAll()
+  env.info(text)
+end
+
+function my_ctld:OnAfterTroopsDeployed(From, Event, To, Group, Unit, Troops)
+    local jtac = nil
+    local deployedGroup  = Troops
+    local deployedGroupName = deployedGroup:GetName()
+    if (string.match(deployedGroupName, "JTac")) then
+      local JTACcounter = JTACcounter + 1
+      jtac = ARMYGROUP:New(deployedGroup)
+      jtac:SetDetection(true)
+
+      trigger.action.outText("A JTac is deployed #", 15)
+      function jtac:OnAfterLaserOn(From, Event, To, Target)
+        local text=string.format("Switching LASER On (code %d) at target %s", jtac:GetLaserCode(), Target:GetName())
+        MESSAGE:New(text, 60):ToAll()
+        env.info(text)
+        -- Create a Mapmarker
+        local targetName = Target:GetName()
+        if (Target:IsAlive()) then
+          JtacMapMarker[JTACcounter] = MARKER:New(Target:GetCoordinate(), "New Target, " .. targetName .. " LaserCode 1688."):ReadOnly():ToAll()
+        end
+      end
+      function jtac:OnAfterLaserOff(From, Event, To)
+        local text=string.format("Switching LASER Off")
+        MESSAGE:New(text, 60):ToAll()
+        env.info(text)
+        -- Remove Mapmarker
+        JtacMapMarker[JTACcounter]:Remove()
+      end
+
+      TIMER:New(CheckThreats, jtac):Start(10, 10)
+    end
+end
+
 my_ctld.enableLoadSave = true -- allow auto-saving and loading of files
 
 my_ctld.saveinterval = 300 -- save every 5 minutes
@@ -124,4 +232,11 @@ my_ctld:__Load(10)
 trigger.action.outText("CTLD loaded", 15)
 
 
-
+-- ---- JTac Section
+-- local laserCounter = 0 -- identifier for lasing sessions
+-- local markerList = {}
+-- local JtacSet = SET_GROUP:New():FilterPrefixes("JTac"):FilterCoalitions("blue"):FilterStart() -- JTac Set
+-- local Pilotset = SET_CLIENT:New():FilterCoalitions("blue"):FilterActive(true):FilterStart()   -- PlayerSet
+-- local autolaser = AUTOLASE:New(FoxSet,coalition.side.BLUE,"Widow",Pilotset)
+-- autolaser:SetNotifyPilots(true)
+-- autolaser:AddBlackListAttributes({"Infantry",})
