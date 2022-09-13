@@ -1731,20 +1731,15 @@ do
 					end
 					
 					if (event.id==28) then --killed unit
-						trigger.action.outText("Eine Einheit wurde gekillt.", 30)
 						if event.target.getCoalition and side ~= event.target:getCoalition() then
-							trigger.action.outText("Eine Einheit wurde gekillt. Ebene 2", 30)
 							if self.context.playerContributions[side][pname] ~= nil then
 								local earning,message,stat = self.context:objectToRewardPoints2(event.target)
-								trigger.action.outText("Eine Einheit wurde gekillt. Ebene 3", 30)
 								if earning and message then
 									trigger.action.outTextForGroup(groupid,'['..pname..'] '..message, 5)
 									self.context.playerContributions[side][pname] = self.context.playerContributions[side][pname] + earning
-									trigger.action.outText("Eine Einheit wurde gekillt. Ebene 4", 30)
 								end
 								
 								if stat then
-									trigger.action.outText("Eine Einheit wurde gekillt. Ebene 5", 30)
 									self.context:addTempStat(pname,stat,1)
 								end
 							end
