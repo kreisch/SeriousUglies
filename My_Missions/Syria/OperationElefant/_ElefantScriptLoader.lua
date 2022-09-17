@@ -1,6 +1,6 @@
 -- Load all needed scripts from here
 
-local baseDir = "H:\\My Drive\\Coding\\KreischGit\\SeriousUglies\\My_Missions\\Syria\\OperationElefant\\"
+local baseDir = "D:\\Coding\\KreischGit\\SeriousUglies\\My_Missions\\Syria\\OperationElefant\\"
 
 -- BASE:TraceOn()
 -- BASE:TraceClass("CTLD")

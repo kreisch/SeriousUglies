@@ -4,6 +4,7 @@
 -- All TARGETS acquired by INTEL will result in an AUFTRAG to kill them
 -- Respawn of destroyed RED Units will be handled by SKYFIRE-FRAMEWORK-TM
 -- #region define Airwings for RED
+
 local airwingErcan = AIRWING:New("Warehouse_Ercan", "Arwing Ercan")
 airwingErcan:Start()
 local Ercan1st = SQUADRON:New("RU_Su25_Template", 8, "Ercan 1st")
@@ -24,6 +25,20 @@ airwingGecitkale:AddSquadron(Gecitkale1st)
 airwingGecitkale:NewPayload(GROUP:FindByName("Mi28_Template_CAS"), 20, {AUFTRAG.Type.CAS}, 80)
 airwingGecitkale:SetTakeoffAir()
 -- #endregion
+
+
+local Scoring = SCORING:New( "ScoringTest" )
+Scoring:SetScaleDestroyScore( 100 )
+Scoring:SetScaleDestroyPenalty( 400 )
+Scoring:SetMessagesToAll()
+Scoring:SetMessagesScore(true)
+Scoring:SetMessagesHit(true)
+Scoring:SetMessagesDestroy(true)
+
+Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ01_01" ), 100 )
+Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ01_02" ), 100 )
+Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ01_03" ), 100 )
+
 
 -- #region OPTIONS
 local useEnemyAir = false

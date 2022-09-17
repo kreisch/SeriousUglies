@@ -311,13 +311,8 @@ local function checkRespawnFromFactory()
     -- Spawn at the zone center position at the height specified in the ME of the group template!
     local spawnedGroup = nextGroupSpawn:SpawnFromVec2( spawnVec2 )   
 
-    if string.find(curTemplate:GetName(), "DISM_RIFLERPG") ~= nil then
-      AddDismounts(spawnedGroup:GetUnit(1), "RifleINS", "DismountFlag")
-      UglyPrintDebug("Adding dismount to: " .. spawnedGroup:GetUnit(1):GetName())
-    end
-
-    if curTemplate:GetName() == redInfantryVehicleTemplate then
-      AddDismounts(spawnedGroup:GetUnit(1), "RifleINS", "DismountFlag")
+    if string.find(curTemplate:GetName(), "DISM_") ~= nil then
+      AddDismounts(spawnedGroup:GetUnit(1))
       UglyPrintDebug("Adding dismount to: " .. spawnedGroup:GetUnit(1):GetName())
     end
 
