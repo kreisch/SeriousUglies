@@ -32,12 +32,15 @@ Scoring:SetScaleDestroyScore( 100 )
 Scoring:SetScaleDestroyPenalty( 400 )
 Scoring:SetMessagesToAll()
 Scoring:SetMessagesScore(true)
-Scoring:SetMessagesHit(true)
+--Scoring:SetMessagesHit(true)
 Scoring:SetMessagesDestroy(true)
+Scoring:SwitchFratricide(false) -- has to be turned off, as the loading of troups counts as blue on blue (blue groups are destroyed)
+Scoring:SwitchTreason(false) -- switching from blue to red is allowed. 
 
 Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ01_01" ), 100 )
 Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ01_02" ), 100 )
 Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ01_03" ), 100 )
+Scoring:AddStaticScore( STATIC:FindByName( "Ru_Zone1_HQ" ), 100 )
 
 
 -- #region OPTIONS
