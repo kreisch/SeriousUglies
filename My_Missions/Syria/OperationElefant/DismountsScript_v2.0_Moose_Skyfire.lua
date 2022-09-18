@@ -27,7 +27,7 @@
 
 local dismPrefix = "DISM_"
 local templatePrefix = "TEMPLATE_"        -- TEMPLATE_RED_, TEMPLATE_BLUE_
-local dismTypes = {"RIFLE", "RFLRPG", "AAA"}
+local dismTypes = {"RIFLE", "RFLRPG", "AAA", "IGLA"}
 
 -- Is automatically filled with all spawn types used. Contains the SPAWN object for each type.
 local spawnTypes = {}
