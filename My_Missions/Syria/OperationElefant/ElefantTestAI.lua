@@ -42,6 +42,10 @@ Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ01_02" ), 100 )
 Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ01_03" ), 100 )
 Scoring:AddStaticScore( STATIC:FindByName( "Ru_Zone1_HQ" ), 100 )
 
+Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ02_01" ), 100 )
+Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ02_02" ), 100 )
+
+
 
 -- #region OPTIONS
 local useEnemyAir = false
