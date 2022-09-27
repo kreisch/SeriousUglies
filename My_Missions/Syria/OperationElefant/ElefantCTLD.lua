@@ -1,5 +1,5 @@
 -- Instantiate and start a CTLD for the blue side, using helicopter groups named "Helicargo" and alias "Lufttransportbrigade I"
-my_ctld = CTLD:New(coalition.side.BLUE,{"helicargo"},"CTLD_Blue")
+my_ctld = CTLD:New(coalition.side.BLUE,{"HeliCargo"},"CTLD_Blue")
 
 my_ctld.useprefix = true -- (DO NOT SWITCH THIS OFF UNLESS YOU KNOW WHAT YOU ARE DOING!) Adjust **before** starting CTLD. If set to false, *all* choppers of the coalition side will be enabled for CTLD.
 my_ctld.CrateDistance = 35 -- List and Load crates in this radius only.
@@ -40,11 +40,11 @@ my_ctld:AddTroopsCargo("Infantry Squad 8",      {"Template_CTLD_Blue_Inf8"},CTLD
 my_ctld:AddTroopsCargo("Infantry Mortar-Team",  {"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6,200)
 my_ctld:AddTroopsCargo("Infantry JTac Widow",   {"Template_CTLD_Blue_JTac"},CTLD_CARGO.Enum.TROOPS,4,80)
 
-my_ctld:AddCratesCargo("JTAC HUMVEE",  {"TEMPLATE_CTLD_BLUE_ATGM_HUMVEE"}, CTLD_CARGO.Enum.VEHICLE, 1, 500)
+my_ctld:AddCratesCargo("JTAC HUMVEE",  {"TEMPLATE_CTLD_Blue_ATGM_HUMVEE"}, CTLD_CARGO.Enum.VEHICLE, 1, 500)
 
-my_ctld:AddCTLDZone("FOB_Dallas",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true,240,20)
-my_ctld:AddCTLDZone("CTLD_Megiddo",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true,240,20)
-my_ctld:AddCTLDZone("CTLD_Incirlik",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true,240,20)
+my_ctld:AddCTLDZone("FOB_Dallas",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true)
+--my_ctld:AddCTLDZone("CTLD_Megiddo",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true,240,20)
+my_ctld:AddCTLDZone("CTLD_Incirlik",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true)
 
 -- my_ctld.enableHercules = true
 -- my_ctld.HercMinAngels = 155 -- for troop/cargo drop via chute in meters, ca 470 ft

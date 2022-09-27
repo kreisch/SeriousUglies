@@ -18,10 +18,19 @@
 --
 --  AddDismounts(UnitName, dm_type)
 --    UnitName: string, name of group
---    dm_type: string, "MANPADS", "Mortar", "Rifle", "ZU-23"
+--    dm_type: string, must be of a type defined in the table dismTypes below.
+--                     each type must have a corresponding late spawn object named:
+--                     dismPrefix+templatePrefix+coalition+dismTypes e.g. "TEMPLATE_RED_DISM_RFLRPG" (all uppercase!)
+--                     The type of template is automatically deduced from the unit name.
+--                     A blue "DISM_"+dismType -> "DISM_RFLRPG" will create an automatic dismount which requires "TEMPLATE_BLUE_DISM_RFLRPG" in the mission
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local dismPrefix = "DISM_RIFLERPG"
+local dismPrefix = "DISM_"
+local templatePrefix = "TEMPLATE_"        -- TEMPLATE_RED_, TEMPLATE_BLUE_
+local dismTypes = {"RIFLE", "RFLRPG", "AAA", "IGLA"}
+
+-- Is automatically filled with all spawn types used. Contains the SPAWN object for each type.
+local spawnTypes = {}
 
 do
   -- Table that holds all ground units that carry mounted units
@@ -45,11 +54,37 @@ do
       end
     end
 
+    -- if no dm type registered, try to check by name
+    if dm_type == nil then
+      env.info("No dm_type defined")
+      for dsmCount = 1, #dismTypes do
+        env.info("AddDismounts - Checking type: " .. dismTypes[dsmCount])
+        if string.find(_unit:GetName(), dismTypes[dsmCount]) then
+          dm_type = dismTypes[dsmCount]
+        end
+      end
+    end
+
+    -- if dm type still not found - stop here
+    if dm_type == nil then
+      env.info("No dm_type type found for: " .. _unit:GetName())
+      return
+    end
+    
+
+    -- Register new spawn per type if not yet done
+    local spawnName = templatePrefix .. string.upper(_unit:GetCoalitionName()) .. "_" .. dismPrefix .. dm_type
+    if spawnTypes[spawnName] == nil then
+      spawnTypes[spawnName] = SPAWN:New(spawnName)
+    end
+
     DismountsCarrier[#DismountsCarrier + 1] = {
       unit = _unit, -- the unit to observe
       cargo_type = dm_type, -- the dismount type to be spawned
       cargo_group = nil, -- the spawned group
       cargo_status = "mounted", -- the state of the dismount
+      cargo_coalition = string.upper(_unit:GetCoalitionName()) .. "_", -- the units coalition
+      cargo_spawn = spawnTypes[spawnName], -- the spawn object
       cargo_numUnits = 0, -- the number of units originally in the group
       cargo_units = {}, -- the names of the original units
       deadUnitsIndexes = {} -- the index of dead units of the dismount
@@ -64,8 +99,6 @@ do
     --   y = carrierPos.p.z + carrierPos.x.z * -10,
     -- }
   end
-
-  local nextGroupSpawn = SPAWN:New("TEMPLATE_RED_DISM_RIFLERPG")
 
   -- function to check if the dismounts carriers are moving
   local function CheckMovement()
@@ -92,7 +125,8 @@ do
             --Determine the x,y Vec2 position of the dismounts (10m behind of the carrier)
             local oldPos = theUnit:GetCoordinate():GetVec2()
             local dmVec2 = { x = oldPos.x - 20, y = oldPos.y - 20 }
-            local spawnedGroup = nextGroupSpawn:SpawnFromVec2(dmVec2)
+
+            local spawnedGroup = DismountsCarrier[n].cargo_spawn:SpawnFromVec2(dmVec2)
 
             --            local carrierPos = theUnit:getPosition()
             --            local group = GetDmGroup(theUnit)
@@ -178,14 +212,19 @@ do
   timer.scheduleFunction(CheckMovement, nil, timer.getTime() + 1)
 end
 
-local DISMGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterPrefixes(dismPrefix):FilterOnce()
-env.info("SetGroups alive: " .. DISMGroups:CountAlive())
 
-DISMGroups:ForEachGroup(function(groupToStore)
-  env.info("Adding Dismounts to Group: " .. groupToStore:GetName())
+for dsmCount = 1, #dismTypes do
+  env.info("AddDismounts - Checking type: " .. dismTypes[dsmCount])
 
-  AddDismounts(groupToStore:GetUnit(1), "DISM_RifleIns")
+  local DISMGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterPrefixes(dismPrefix .. dismTypes[dsmCount]):FilterActive():FilterOnce()
+  env.info("DISMGroups alive: " .. DISMGroups:CountAlive())
 
-  env.info("Added Dismounts to Unit: " .. groupToStore:GetUnit(1):GetName())
-end)
+  DISMGroups:ForEachGroup(function(groupToStore)
+    env.info("Adding Dismounts to Group: " .. groupToStore:GetName())
 
+    AddDismounts(groupToStore:GetUnit(1), dismTypes[dsmCount])
+
+    env.info("Added Dismounts to Unit: " .. groupToStore:GetUnit(1):GetName())
+  end)
+
+end

@@ -159,7 +159,7 @@ function FactoryDeathRecorder:OnEventDead( _eventData )
   UglyPrintDebug("Got Dead Event from Unit " .. _eventData.IniUnitName .. ", type: " .. _eventData.IniObjectCategory)
 
   if _eventData.IniObjectCategory ~= Object.Category.UNIT then
-    UglyPrintDebug("Sorry, will be ignored. Only recording Unit deaths.")
+    UglyPrintDebug("Sorry, will be ignored. Only recording Unit deaths")
   end
 
 --  Event.IniObjectCategory = Object.Category.UNIT
@@ -175,7 +175,10 @@ function FactoryDeathRecorder:OnEventDead( _eventData )
     UglyPrintDebug("Killed members of deadGroup: " .. deadGroup:GetName())
     UglyPrintDebug("Group has " ..deadGroup:CountAliveUnits() .. " alive units.")
 
-    if string.find(deadGroup:GetName(), "Infantry_Respawn") ~= nil then
+    if string.find(deadGroup:GetName(), "Static") ~= nil then
+      UglyPrintDebug("Group is declared as static and will not respawn.")
+      return
+    elseif string.find(deadGroup:GetName(), "Infantry_Respawn") ~= nil then
       if deadGroup:CountAliveUnits() == 0 then
         spawnForInf = true
         UglyPrintDebug("Group is dead and was infantry.")
@@ -311,13 +314,8 @@ local function checkRespawnFromFactory()
     -- Spawn at the zone center position at the height specified in the ME of the group template!
     local spawnedGroup = nextGroupSpawn:SpawnFromVec2( spawnVec2 )   
 
-    if string.find(curTemplate:GetName(), "DISM_RIFLERPG") ~= nil then
-      AddDismounts(spawnedGroup:GetUnit(1), "RifleINS", "DismountFlag")
-      UglyPrintDebug("Adding dismount to: " .. spawnedGroup:GetUnit(1):GetName())
-    end
-
-    if curTemplate:GetName() == redInfantryVehicleTemplate then
-      AddDismounts(spawnedGroup:GetUnit(1), "RifleINS", "DismountFlag")
+    if string.find(curTemplate:GetName(), "DISM_") ~= nil then
+      AddDismounts(spawnedGroup:GetUnit(1))
       UglyPrintDebug("Adding dismount to: " .. spawnedGroup:GetUnit(1):GetName())
     end
 
