@@ -1,3 +1,29 @@
+
+
+-- Initialize Scoring
+Scoring = SCORING:New( "ScoringTest" )
+Scoring:SetScaleDestroyScore( 100 )
+Scoring:SetScaleDestroyPenalty( 400 )
+Scoring:SetMessagesToAll()
+Scoring:SetMessagesScore(true)
+--Scoring:SetMessagesHit(true)
+Scoring:SetMessagesDestroy(true)
+Scoring:SwitchFratricide(false) -- has to be turned off, as the loading of troups counts as blue on blue (blue groups are destroyed)
+Scoring:SwitchTreason(false) -- switching from blue to red is allowed. 
+
+
+-- Register all factories in the zones (todo: switch to work automatically when initializing a zone)
+registerFactory("RF01")
+registerFactory("RF02")
+
+registerFactory("RF_CZ01")
+registerFactory("RF_CZ02")
+
+
+Scoring:AddStaticScore( STATIC:FindByName( "Ru_Zone1_HQ" ), 100 )
+
+
+
 -- Concept:
 -- AI is using recce troops to gain INTEL (Moose)
 -- All placed units of a ZONE will be read into a GROUPSET (Moose)
@@ -27,24 +53,6 @@ airwingGecitkale:SetTakeoffAir()
 -- #endregion
 
 
-local Scoring = SCORING:New( "ScoringTest" )
-Scoring:SetScaleDestroyScore( 100 )
-Scoring:SetScaleDestroyPenalty( 400 )
-Scoring:SetMessagesToAll()
-Scoring:SetMessagesScore(true)
---Scoring:SetMessagesHit(true)
-Scoring:SetMessagesDestroy(true)
-Scoring:SwitchFratricide(false) -- has to be turned off, as the loading of troups counts as blue on blue (blue groups are destroyed)
-Scoring:SwitchTreason(false) -- switching from blue to red is allowed. 
-
-Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ01_01" ), 100 )
-Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ01_02" ), 100 )
-Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ01_03" ), 100 )
-Scoring:AddStaticScore( STATIC:FindByName( "Ru_Zone1_HQ" ), 100 )
-
-Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ02_01" ), 100 )
-Scoring:AddStaticScore( STATIC:FindByName( "RF_CZ02_02" ), 100 )
-
 
 
 -- #region OPTIONS
@@ -53,19 +61,23 @@ local useEnemyAir = false
 
 -- #region Zones
 -- Zonen definieren:
+local BridgeHeadZone = ZONE:New("BridgeHead") -- easy
 local CombatZone1 = ZONE:New("CombatZone-1") -- easy
 local CombatZone2 = ZONE:New("CombatZone-2") -- easy
 local CombatZone3 = ZONE:New("CombatZone-3") -- medium
 -- Opszonen definieren - warum? Jede Zone bekommt eigene Ops....weil darum.
+local BridgeHeadOpsZone = OPSZONE:New(BridgeHeadZone, coalition.side.NEUTRAL)
+BridgeHeadOpsZone:SetDrawZone(true)
+BridgeHeadOpsZone:__Start(2)
 local BlueOpsZoneOne = OPSZONE:New(CombatZone1, coalition.side.NEUTRAL)
 BlueOpsZoneOne:SetDrawZone(true)
 BlueOpsZoneOne:__Start(2)
 local BlueOpsZoneTwo = OPSZONE:New(CombatZone2, coalition.side.NEUTRAL)
-BlueOpsZoneOne:SetDrawZone(true)
-BlueOpsZoneOne:__Start(2)
+BlueOpsZoneTwo:SetDrawZone(true)
+BlueOpsZoneTwo:__Start(2)
 local BlueOpsZoneThree = OPSZONE:New(CombatZone3, coalition.side.NEUTRAL)
-BlueOpsZoneOne:SetDrawZone(true)
-BlueOpsZoneOne:__Start(2)
+BlueOpsZoneThree:SetDrawZone(true)
+BlueOpsZoneThree:__Start(2)
 -- #endregion
 
 -- Define the INTEL
