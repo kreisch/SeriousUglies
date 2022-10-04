@@ -107,20 +107,20 @@ do
 
     for n = 1, dsmCount do
       local theUnit = DismountsCarrier[n].unit
-      env.info("Dismounts Checking: " .. theUnit:GetName())
+--      env.info("Dismounts Checking: " .. theUnit:GetName())
 
       if theUnit:IsAlive() == true then
-        env.info("Unit OK: " .. theUnit:GetName())
+--        env.info("Unit OK: " .. theUnit:GetName())
 
         local velVec = theUnit:GetVelocityVec3() -- Velocity is a Vec3
-        env.info("Unit speed: velVec.x: " .. velVec.x .. ",velVec.y: " .. velVec.y .. ",velVec.z: " .. velVec.z)
+--        env.info("Unit speed: velVec.x: " .. velVec.x .. ",velVec.y: " .. velVec.y .. ",velVec.z: " .. velVec.z)
 
         if velVec.x < 0.01 and velVec.y < 0.01 and velVec.z < 0.01 and velVec.x > -0.01 and velVec.y > -0.01 and
           velVec.z > -0.01 then -- Check if speed is zero
-          env.info("Unit has stopped: " .. theUnit:GetName())
+--          env.info("Unit has stopped: " .. theUnit:GetName())
 
           if DismountsCarrier[n].cargo_status == "mounted" then
-            env.info("Init dismounting of: " .. theUnit:GetName())
+--            env.info("Init dismounting of: " .. theUnit:GetName())
 
             --Determine the x,y Vec2 position of the dismounts (10m behind of the carrier)
             local oldPos = theUnit:GetCoordinate():GetVec2()
@@ -139,29 +139,29 @@ do
 
             for i,currentUnit in pairs(spawnedGroup:GetUnits()) do
               DismountsCarrier[n].cargo_units[currentUnit:GetName()] = i
-              env.info("Added " .. currentUnit:GetName() .. " with index: " .. i)
+--              env.info("Added " .. currentUnit:GetName() .. " with index: " .. i)
             end
 
             -- cleanup from dead unit list
             local allCurrentUnits = spawnedGroup:GetUnits()
             for unitName,currentUnit in pairs(DismountsCarrier[n].deadUnitsIndexes) do
-              env.info("Killing " .. unitName .. " with index: " .. currentUnit)
+--              env.info("Killing " .. unitName .. " with index: " .. currentUnit)
               allCurrentUnits[currentUnit]:Destroy()
             end
 
             local groupSize = spawnedGroup:GetSize() or 0
-            env.info("Spawned Group: " .. spawnedGroup:GetName() .. ", with " .. groupSize .. " units.")
+--            env.info("Spawned Group: " .. spawnedGroup:GetName() .. ", with " .. groupSize .. " units.")
           end
         else -- Else carrier is moving
-          env.info("Unit is moving: " .. theUnit:GetName())
+--          env.info("Unit is moving: " .. theUnit:GetName())
 
           -- Remount rifle squad only when speed bigger than 5.3 m/s (19 kph). Remount everyone else immediately when moving.
           if DismountsCarrier[n].cargo_status == "dismounted" then
-            env.info("Unit is moving again, init mounting: " .. theUnit:GetName())
+--            env.info("Unit is moving again, init mounting: " .. theUnit:GetName())
 
             local lastGroup = DismountsCarrier[n].cargo_group
             local unitCount = DismountsCarrier[n].cargo_numUnits
-            env.info("There have been: " .. unitCount .. " units originally in: " .. theUnit:GetName())
+--            env.info("There have been: " .. unitCount .. " units originally in: " .. theUnit:GetName())
 
 
             DismountsCarrier[n].deadUnitsIndexes = {}
@@ -170,13 +170,13 @@ do
 
             if lastGroup ~= nil then
               local groupSize = lastGroup:GetSize() or 0
-              env.info("Mounting Group: " .. lastGroup:GetName() .. ", with " .. groupSize .. " units.")
+--              env.info("Mounting Group: " .. lastGroup:GetName() .. ", with " .. groupSize .. " units.")
 
               if groupSize > 0 then
                 -- list of current alive units
                 for i,currentUnit in pairs(lastGroup:GetUnits()) do
                   deadUnits[currentUnit:GetName()] = i
-                  env.info("Unit " .. currentUnit:GetName() .. "  with index: " .. i .. ", is alive before mounting!")
+--                  env.info("Unit " .. currentUnit:GetName() .. "  with index: " .. i .. ", is alive before mounting!")
                 end
               end
             else
@@ -186,7 +186,7 @@ do
             -- if not initializing, kill all dead offensive
             for unitName,testIndex in pairs(DismountsCarrier[n].cargo_units) do
               if deadUnits[unitName] == nil then
-                env.info("Unit " .. unitName .. " was dead before, kill it!")
+--                env.info("Unit " .. unitName .. " was dead before, kill it!")
                 DismountsCarrier[n].deadUnitsIndexes[deadUnitCount] = testIndex
                 deadUnitCount = deadUnitCount + 1
               end
