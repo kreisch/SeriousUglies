@@ -56,109 +56,29 @@ airwingGecitkale:SetTakeoffAir()
 
 
 -- #region OPTIONS
-local useEnemyAir = true
+local useEnemyAir = false
 -- #endregion
 
-local zoneConfigs = {
-  ["BridgeHead"] = {airwing = nil}, -- start
-  ["CombatZone-1"] = {airwing = airwingGecitkale}, -- easy
-  ["CombatZone-2"] = {airwing = airwingErcan}, -- easy
-  ["CombatZone-3"] = {airwing = airwingErcan}, -- medium
-}
-
-local theOpsZone = nil
-local theZone = nil
-
-local function initZone(_name)
-  env.info("initZone - " .. _name)
-  theZone = ZONE:New(_name)
-  zoneConfigs[_name]["Zone"] = theZone
-
-  zoneConfigs[_name]["OpsZone"] = OPSZONE:New(theZone, coalition.side.NEUTRAL)
-
-  zoneConfigs[_name]["OpsZone"]:SetDrawZone(true)
-  zoneConfigs[_name]["OpsZone"]:__Start(2)
---  zoneConfigs[_name]["OpsZone"]:SetObjectCategories({Object.Category.UNIT}) -- Ensure, that no leftover statics will count as part of eg. red coalition 
-
-  theOpsZone = zoneConfigs[_name]["OpsZone"]
-
-  ---Zone Capturing:
-  theOpsZone.onafterCaptured = function (From, Event, To, Coalition)
-    BASE:I(self:GetName() .. " captured!")
-    if Coalition == coalition.side.BLUE then
-      local m = MESSAGE:New("We captured " .. self:GetName() .. "! Well done! ", 15, "Blue Chief"):ToAll()
-    else
-      local m = MESSAGE:New("We lost " .. self:GetName() .. "! Capture it back! ", 15, "Blue Chief"):ToAll()
-    end
-  end
-
-  function theOpsZone:onenterAttacked(From, Event, To)
-    local m = MESSAGE:New(self:GetName() .. " onenterAttacked! ", 15, "Blue Chief"):ToAll()
-    BASE:I(self:GetName() .. " onenterAttacked!")
-  end
-
-  function theOpsZone:onafterAttacked(From, Event, To, AttackerCoalition)
-    local m = MESSAGE:New(self:GetName() .. " afterAttacked! ", 15, "Blue Chief"):ToAll()
-    BASE:I(self:GetName() .. " afterAttacked")
-  end
-
-  function theOpsZone:onenterGuarded(From, Event, To)
-    local m = MESSAGE:New(self:GetName() .. " Guarded ", 15, "Blue Chief"):ToAll()
-    BASE:I(self:GetName() .. " Guarded")
-  end
-end
-
-
-local function doActionForZone(_inZone, _contact)
-  MESSAGE:New("TargetTaskingCombatZone " .. _inZone:GetName(), 20, "Debug"):ToAll()
-  MESSAGE:New("TargetTaskingCombatZone Type " .. _inZone.ClassName, 20, "Debug"):ToAll()
-  local targetGroup = GROUP:FindByName(_contact.groupname)
-
-  if (_contact.attribute == "Ground_APC") or (_contact.attribute == "Ground_Artillery") or
-    (_contact.attribute == "Ground_Truck") or (_contact.attribute == "Ground_Tank") or
-    (_contact.attribute == "Ground_IFV") then
-    -- Spawn Groundattack
-    MESSAGE:New("GroundTarget is found in " .. _inZone:GetName() .. "\n Starting Tankattack", 20, "Debug"):ToAll()
-    env.info("GroundTarget is found in " .. _inZone:GetName() .. "\n Starting Tankattack")
-
-    local actionZone = zoneConfigs[_inZone:GetName()]["Zone"]
-
-    local SetGroupsGround = SET_GROUP:New():FilterCoalitions("red"):FilterZones({_inZone}):FilterPrefixes("QRF")
-      :FilterCategoryGround():FilterActive():FilterOnce() -- Todo: Nur lebende enthalten? Laut Applevangelist ja; Active notwendig?
-
-    MESSAGE:New("We have " .. SetGroupsGround:Count(), 20, " groups available as QRF."):ToAll()
-    local groupForTasking = SetGroupsGround:GetRandom()
-
-    if groupForTasking ~= nil then
-      --    MESSAGE:New("Attacking group is: " .. groupForTasking:GetName(), 20, "Debug"):ToAll()
-      env.info("Attacking group is: " .. groupForTasking:GetName() .. ", available are " .. SetGroupsGround:Count())
-      groupForTasking = respawnAtCurrentPosition(groupForTasking)
-      --    MESSAGE:New("Attacking group changed to: " .. groupForTasking:GetName(), 20, "Debug"):ToAll()
-      env.info("Attacking group changed to: " .. groupForTasking:GetName())
-
-      local mission = AUFTRAG:NewARMORATTACK(GROUP:FindByName(_contact.groupname), UTILS.KmphToKnots(20), "Vee")
-      local armygroup = ARMYGROUP:New(groupForTasking:GetName())
-      armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
-      armygroup:AddWeaponRange(0, UTILS.KiloMetersToNM(2))
-      armygroup:AddMission(mission)
-    end
-
-  elseif (_contact.attribute == "Ground_EWR") or (_contact.attribute == "Ground_SAM") or
-    (_contact.attribute == "Ground_AAA") then -- Spawn SEAD
-    if useEnemyAir and zoneConfigs[_inZone:GetName()][airwing] ~= nil then
-      -- Regel: Man kann nun schauen, dass man SEAD aus bestimmten Arealen holt, sollten entsprechende Bedingungen da sein.
-      local mission = AUFTRAG:NewSEAD(GROUP:FindByName(_contact.groupname), 5000)
-      -- local zone = ZONE_GROUP:New("SEAD Zone", targetGroup, 500)
-      -- local mission = AUFTRAG:NewCAS(zone)
-      zoneConfigs[_inZone:GetName()][airwing]:AddMission(mission)
-    end
-  elseif (_contact.attribute == "Air_Fighter") or (_contact.attribute == "Air_AttackHelo") or
-    (_contact.attribute == "Air_TransportHelo") then
-    -- Figher anfordern beim nächsten Airfield
-  end
-end
-
-
+-- #region Zones
+-- Zonen definieren:
+local BridgeHeadZone = ZONE:New("BridgeHead") -- easy
+local CombatZone1 = ZONE:New("CombatZone-1") -- easy
+local CombatZone2 = ZONE:New("CombatZone-2") -- easy
+local CombatZone3 = ZONE:New("CombatZone-3") -- medium
+-- Opszonen definieren - warum? Jede Zone bekommt eigene Ops....weil darum.
+local BridgeHeadOpsZone = OPSZONE:New(BridgeHeadZone, coalition.side.NEUTRAL)
+BridgeHeadOpsZone:SetDrawZone(true)
+BridgeHeadOpsZone:__Start(2)
+local BlueOpsZoneOne = OPSZONE:New(CombatZone1, coalition.side.NEUTRAL)
+BlueOpsZoneOne:SetDrawZone(true)
+BlueOpsZoneOne:__Start(2)
+local BlueOpsZoneTwo = OPSZONE:New(CombatZone2, coalition.side.NEUTRAL)
+BlueOpsZoneTwo:SetDrawZone(true)
+BlueOpsZoneTwo:__Start(2)
+local BlueOpsZoneThree = OPSZONE:New(CombatZone3, coalition.side.NEUTRAL)
+BlueOpsZoneThree:SetDrawZone(true)
+BlueOpsZoneThree:__Start(2)
+-- #endregion
 
 -- Define the INTEL
 -- Set up a detection group set. "FilterStart" to include respawns.
@@ -186,19 +106,147 @@ RedIntel:SetAcceptZones(SetCombatZones)
 -- Air_TransportHelo
 -- Ground_OtherGround
 function RedIntel:OnAfterNewContact(From, Event, To, contact)
-  local trgtGrp = contact.group
+  local trgtGrp = GROUP:FindByName(contact.groupname)
   trigger.action.outText("KGB: I found a " .. contact.attribute .. " called " .. contact.groupname, 30)
-
-  local cpos = contact.position or contact.group:GetCoordinate() 
-  local inZone = SetCombatZones:IsCoordinateInZone(cpos)
-
-  if inZone ~= nil then
-    doActionForZone(inZone, contact)  
+  if trgtGrp:IsCompletelyInZone(CombatZone1) then
+    TargetTaskingCombatZone1(contact)
+  elseif trgtGrp:IsCompletelyInZone(CombatZone2) then
+    TargetTaskingCombatZone2(contact)
   end
 end
 
--- Initialize combat zones from config
-for zoneItName, zoneItConfig in pairs( zoneConfigs ) do
-  initZone(zoneItName)
+function TargetTaskingCombatZone1(contact)
+  MESSAGE:New("TargetTaskingCombatZone1", 20, "Debug"):ToAll()
+  local targetGroup = GROUP:FindByName(contact.groupname)
+
+  if (contact.attribute == "Ground_APC") or (contact.attribute == "Ground_Artillery") or
+    (contact.attribute == "Ground_Truck") or (contact.attribute == "Ground_Tank") or (contact.attribute == "Ground_IFV") then
+    -- Spawn Groundattack
+    MESSAGE:New("GroundTarget is found in Sector 1\n Starting Tankattack", 20, "Debug"):ToAll()
+    env.info("GroundTarget is found in Sector 1\n Starting Tankattack")
+    local SetGroupsGround = SET_GROUP:New():FilterCoalitions("red"):FilterZones({CombatZone1}):FilterPrefixes("QRF"):FilterCategoryGround()
+      :FilterActive():FilterOnce() -- Todo: Nur lebende enthalten? Laut Applevangelist ja; Active notwendig?
+
+    local groupForTasking = SetGroupsGround:GetRandom()
+--    MESSAGE:New("Attacking group is: " .. groupForTasking:GetName() .. ", available are " .. SetGroupsGround:Count(), 20, "Debug"):ToAll()
+    env.info("Attacking group is: " .. groupForTasking:GetName() .. ", available are " .. SetGroupsGround:Count())
+    groupForTasking = respawnAtCurrentPosition(groupForTasking)
+--    MESSAGE:New("Attacking group changed to: " .. groupForTasking:GetName(), 20, "Debug"):ToAll()
+    env.info("Attacking group changed to: " .. groupForTasking:GetName())
+
+    local mission = AUFTRAG:NewARMORATTACK(GROUP:FindByName(contact.groupname), UTILS.KmphToKnots(20), "Vee")
+    local armygroup = ARMYGROUP:New(groupForTasking:GetName())
+    armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
+    armygroup:AddWeaponRange(0, UTILS.KiloMetersToNM(2))
+    armygroup:AddMission(mission)
+
+  elseif (contact.attribute == "Ground_EWR") or (contact.attribute == "Ground_SAM") or
+    (contact.attribute == "Ground_AAA") then -- Spawn SEAD
+    if useEnemyAir then
+      -- Regel: Man kann nun schauen, dass man SEAD aus bestimmten Arealen holt, sollten entsprechende Bedingungen da sein.
+      local mission = AUFTRAG:NewSEAD(GROUP:FindByName(contact.groupname), 5000)
+      -- local zone = ZONE_GROUP:New("SEAD Zone", targetGroup, 500)
+      -- local mission = AUFTRAG:NewCAS(zone)
+      airwingErcan:AddMission(mission)
+    end
+  elseif (contact.attribute == "Air_Fighter") or (contact.attribute == "Air_AttackHelo") or
+    (contact.attribute == "Air_TransportHelo") then
+    -- Figher anfordern beim nächsten Airfield
+  end
 end
+
+function TargetTaskingCombatZone2(contact)
+  MESSAGE:New("TargetTaskingCombatZone2", 20, "Debug"):ToAll()
+  local targetGroup = GROUP:FindByName(contact.groupname)
+
+  MESSAGE:New("GroundTarget is found in Sector 2\n Type: " .. contact.attribute, 20, "Debug"):ToAll()
+
+  if (contact.attribute == "Ground_APC") or (contact.attribute == "Ground_Artillery") or
+    (contact.attribute == "Ground_Truck") or (contact.attribute == "Ground_Tank") or (contact.attribute == "Ground_IFV") or
+    true then
+    local SetGroupsGround = SET_GROUP:New():FilterCoalitions("red"):FilterZones({CombatZone2}):FilterCategoryGround():FilterActive():FilterOnce() -- Todo: Nur lebende enthalten? Laut Applevangelist ja; Active notwendig?
+    local n = math.random(1, 4)
+    if SetGroupsGround:Count() == 0 then
+      n = 4
+    end
+    if n <= 3 then
+      -- Spawn Groundattack
+
+      MESSAGE:New("GroundTarget is found in Sector 2\n Starting Tankattack", 20, "Debug"):ToAll()
+      local mission = AUFTRAG:NewARMORATTACK(GROUP:FindByName(contact.groupname), UTILS.KmphToKnots(20), "Vee")
+      local groupForTasking = SetGroupsGround:GetRandom()
+      groupForTasking = respawnAtCurrentPosition(groupForTasking)
+
+      local armygroup = ARMYGROUP:New(groupForTasking:GetName())
+      armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
+      armygroup:AddWeaponRange(0, UTILS.KiloMetersToNM(2))
+      armygroup:AddMission(mission)
+    else
+      -- Start choppers
+      if useEnemyAir then
+        MESSAGE:New("GroundTarget is found in Sector 2\n Starting Helo Attack", 20, "Debug"):ToAll()
+        local zone = ZONE_GROUP:New("CAS Zone", targetGroup, 500)
+        local mission = AUFTRAG:NewCAS(zone)
+        airwingGecitkale:AddMission(mission)
+      end
+    end
+  elseif (contact.attribute == "Ground_EWR") or (contact.attribute == "Ground_SAM") or
+    (contact.attribute == "Ground_AAA") then -- Spawn SEAD
+    if useEnemyAir then
+      local mission = AUFTRAG:NewSEAD(GROUP:FindByName(contact.groupname), 5000)
+    end
+    airwingErcan:AddMission(mission)
+  elseif (contact.attribute == "Air_Fighter") or (contact.attribute == "Air_AttackHelo") or
+    (contact.attribute == "Air_TransportHelo") then
+    -- Figher anfordern beim nächsten Airfield
+  end
+end
+
+---Zone Capturing:
+function BlueOpsZoneOne:onafterCaptured(From, Event, To, Coalition)
+  BASE:I("Blue Zone One Captured")
+  if Coalition == coalition.side.BLUE then
+    local m = MESSAGE:New("We captured CombatZone-1! Well done! ", 15, "Blue Chief"):ToAll()
+  else
+    local m = MESSAGE:New("We lost CombatZone-1! Capture it back! ", 15, "Blue Chief"):ToAll()
+  end
+end
+
+function BlueOpsZoneOne:onenterAttacked(From, Event, To)
+  local m = MESSAGE:New("CombatZone1 onenterAttacked! ", 15, "Blue Chief"):ToAll()
+  BASE:I("CombatZone1 onenterAttacked!")
+end
+
+function BlueOpsZoneOne:onafterAttacked(From, Event, To, AttackerCoalition)
+  local m = MESSAGE:New("CombatZone1 afterAttacked! ", 15, "Blue Chief"):ToAll()
+  BASE:I("CombatZone1 afterAttacked")
+end
+
+function BlueOpsZoneOne:onenterGuarded(From, Event, To)
+  local m = MESSAGE:New("CombatZone1 Guarded ", 15, "Blue Chief"):ToAll()
+  BASE:I("CombatZone1 Guarded")
+end
+
+-- local TankSpawn = SPAWN:New("Red_Killer-1"):InitLimit( 10, 99 ):SpawnScheduled(30,0.1):SpawnScheduleStart()
+
+--   --RED ZONES SETUP
+-- for i=1,#RedZones do
+--     local fun2 = nil
+--     ZoneCaptureCoalitionRed[i]=ZONE_CAPTURE_COALITION:New(RedZones[i],coalition.side.RED)
+--     ZoneCaptureCoalitionRed[i]:Start(i,#RedZones*2)
+--     fun2 = ZoneCaptureCoalitionRed[i]
+--     --fun.MarkOn=false
+
+--     function fun2:onenterEmpty(From, Event, To)
+--       local ZoneObj=fun2:GetZone()
+--       ATO(ZoneObj, "redzones", "red", "Empty") --Original blue zone empty - blue commander defensive reaction
+--     --  ATO(ZoneObj, "redzones", "red", "Empty") --original blue zone empty - red commander offensive reaction
+--     end
+--   --SNIPPED SHORT!
+
+-- -- Events to create AUFTRAG
+--   function RedIntel:OnAfterNewCluster(From, Event, To, Cluster)
+--     local text = string.format("NEW cluster #%d of size %d", Cluster.index, Cluster.size)
+--     MESSAGE:New(text,15,"KGB"):ToAll()
+--   end
 
