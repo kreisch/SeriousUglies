@@ -60,10 +60,10 @@ local useEnemyAir = true
 -- #endregion
 
 local zoneConfigs = {
-  ["BridgeHead"] = {airwing = nil}, -- start
-  ["CombatZone-1"] = {airwing = airwingGecitkale}, -- easy
-  ["CombatZone-2"] = {airwing = airwingErcan}, -- easy
-  ["CombatZone-3"] = {airwing = airwingErcan}, -- medium
+  ["BridgeHead"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- start
+  ["CombatZone-1"] = {airwing = airwingGecitkale, Zone = nil, OpsZone = nil}, -- easy
+  ["CombatZone-2"] = {airwing = airwingErcan, Zone = nil, OpsZone = nil}, -- easy
+  ["CombatZone-3"] = {airwing = airwingErcan, Zone = nil, OpsZone = nil}, -- medium
 }
 
 local function initZone(_name)
@@ -94,13 +94,13 @@ local function initZone(_name)
   end
 
   function theOpsZone:OnAfterAttacked(From, Event, To, AttackerCoalition)
-    local m = MESSAGE:New(_theOpsZone:GetName() .. " OnAfterAttacked! ", 15, "Blue Chief"):ToAll()
-    BASE:I(_theOpsZone:GetName() .. " OnAfterAttacked")
+    local m = MESSAGE:New(theOpsZone:GetName() .. " OnAfterAttacked! ", 15, "Blue Chief"):ToAll()
+    BASE:I(theOpsZone:GetName() .. " OnAfterAttacked")
   end
 
   function theOpsZone:OnEnterGuarded(From, Event, To)
-    local m = MESSAGE:New(_theOpsZone:GetName() .. " Guarded ", 15, "Blue Chief"):ToAll()
-    BASE:I(_theOpsZone:GetName() .. " Guarded")
+    local m = MESSAGE:New(theOpsZone:GetName() .. " Guarded ", 15, "Blue Chief"):ToAll()
+    BASE:I(theOpsZone:GetName() .. " Guarded")
   end
 end
 
@@ -122,7 +122,7 @@ local function doActionForZone(_inZone, _contact)
     local SetGroupsGround = SET_GROUP:New():FilterCoalitions("red"):FilterZones({_inZone}):FilterPrefixes("QRF")
       :FilterCategoryGround():FilterActive():FilterOnce() -- Todo: Nur lebende enthalten? Laut Applevangelist ja; Active notwendig?
 
-    MESSAGE:New("We have " .. SetGroupsGround:Count(), 20, " groups available as QRF."):ToAll()
+    MESSAGE:New("We have " .. SetGroupsGround:Count() .. " groups available as QRF."):ToAll()
     local groupForTasking = SetGroupsGround:GetRandom()
 
     if groupForTasking ~= nil then
@@ -141,12 +141,14 @@ local function doActionForZone(_inZone, _contact)
 
   elseif (_contact.attribute == "Ground_EWR") or (_contact.attribute == "Ground_SAM") or
     (_contact.attribute == "Ground_AAA") then -- Spawn SEAD
-    if useEnemyAir and zoneConfigs[_inZone:GetName()][airwing] ~= nil then
+    if useEnemyAir and zoneConfigs[_inZone:GetName()]["airwing"] ~= nil then
       -- Regel: Man kann nun schauen, dass man SEAD aus bestimmten Arealen holt, sollten entsprechende Bedingungen da sein.
       local mission = AUFTRAG:NewSEAD(GROUP:FindByName(_contact.groupname), 5000)
       -- local zone = ZONE_GROUP:New("SEAD Zone", targetGroup, 500)
       -- local mission = AUFTRAG:NewCAS(zone)
-      zoneConfigs[_inZone:GetName()][airwing]:AddMission(mission)
+      zoneConfigs[_inZone:GetName()]["airwing"]:AddMission(mission)
+      MESSAGE:New("Added mission to airwing"):ToAll()
+
     end
   elseif (_contact.attribute == "Air_Fighter") or (_contact.attribute == "Air_AttackHelo") or
     (_contact.attribute == "Air_TransportHelo") then
@@ -185,6 +187,7 @@ function RedIntel:OnAfterNewContact(From, Event, To, contact)
   local trgtGrp = contact.group
   trigger.action.outText("KGB: I found a " .. contact.attribute .. " called " .. contact.groupname, 30)
 
+  -- Find zone where contact happened and react
   local cpos = contact.position or contact.group:GetCoordinate() 
   local inZone = SetCombatZones:IsCoordinateInZone(cpos)
 
