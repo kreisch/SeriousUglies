@@ -302,7 +302,7 @@ zones.shayrat:addGroups({
 zones.incirlik:addGroups({
 	GroupCommander:new({name='incirlik-supply-1', mission='supply', targetzone='Hatay'}),
 	GroupCommander:new({name='incirlik-supply-2', mission='supply', targetzone='FOB Alpha'}),
-	GroupCommander:new({name='incirlik-aleppo-tanker', mission='patrol', targetzone='Aleppo'})
+	--GroupCommander:new({name='incirlik-aleppo-tanker', mission='patrol', targetzone='Aleppo'})
 })
 
 zones.hatay:addGroups({
