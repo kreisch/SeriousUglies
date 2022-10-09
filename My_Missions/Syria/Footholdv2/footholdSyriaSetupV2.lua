@@ -54,51 +54,75 @@ upgrades = {
 		red = {'redShipS'}
 	},
 	airfield = {
-		blue = {'blueInfantry','blueSHORAD', 'bluePD'},
-		red = {'redInfantry','redSHORAD', 'redPD', 'redMERAD'}
+		blue = {'blueInfantry','blueSHORAD_Roland', 'blueSHORAD_NASAMS'},
+		red = {'redInfantry','redSHORAD', 'redPD', 'redSAM_SA-6'}
 	},
 	airfield2 = {
-		blue = {'blueInfantry','blueSHORAD', 'bluePD'},
-		red = {'redInfantry','redSHORAD', 'redPD2','redMERAD'}
+		blue = {'blueInfantry','blueSHORAD_Roland', 'blueSHORAD_NASAMS'},
+		red = {'redInfantry','redSHORAD', 'redPD2','redSAM_SA-6'}
 	},
 	generic = {
-		blue = {'blueInfantry', 'blueArmor', 'blueSHORAD'},
-		red = {'redInfantry','redArmor', 'redSHORAD'}
+		blue = {'blueInfantry', 'blueArmor', 'blueSHORAD_Roland'},
+		red = {'redEWR','redInfantry','redArmor', 'redSHORAD'}
+	},
+	refinery = {
+		blue = {'blueInfantry', 'blueArmor', 'blueSHORAD_Roland'},
+		red = {'redEWR','redInfantry','redArmor', 'redSHORAD','redSAM_SA-2','redPD'}
 	},
 	merad = {
-		blue = {'blueSHORAD', 'blueMERAD'},
-		red = {'redSHORAD', 'redMERAD'}
+		blue = {'blueSHORAD_Roland', 'blueMERAD_Hawk'},
+		red = {'redSHORAD', 'redSAM_SA-3','redPD'}
 	},
 	lorad = {
-		blue = {'blueSHORAD', 'blueMERAD', 'bluePD'},
-		red = {'redSHORAD', 'redLORAD', 'redPD'}
+		blue = {'blueSHORAD_Roland', 'blueMERAD_Hawk', 'blueSHORAD_NASAMS'},
+		red = {'redSHORAD', 'redSAM_SA-2', 'redPD'}
+	},
+	sa2 = {
+		blue = {'blueSHORAD_Roland', 'blueLORAD_Patriot'},
+		red = {'redSHORAD','redSAM_SA-2','redPD2'}
+	},
+	sa3 = {
+		blue = {'blueSHORAD_Roland', 'blueLORAD_Patriot'},
+		red = {'redSHORAD','redSAM_SA-3','redPD'}
 	},
 	sa5 = {
-		blue = {'blueSHORAD', 'blueLORAD'},
-		red = {'redSHORAD','redSA5'}
+		blue = {'blueSHORAD_Roland', 'blueLORAD_Patriot'},
+		red = {'redSHORAD','redSAM_SA-5','redPD2'}
+	},
+	sa6 = {
+		blue = {'blueSHORAD_Roland', 'blueSHORAD_Roland'},
+		red = {'redSHORAD','redSAM_SA-6'}
 	},
 	sa10 = {
-		blue = {'blueSHORAD', 'blueLORAD'},
-		red = {'redSHORAD', 'redSA10'}
+		blue = {'blueSHORAD_Roland', 'blueLORAD_Patriot'},
+		red = {'redSHORAD', 'redSAM_SA-10','redPD'}
+	},
+	sa11 = {
+		blue = {'blueSHORAD_Roland', 'blueLORAD_Patriot'},
+		red = {'redSHORAD', 'redSAM_SA-11','redPD'}
 	},
 	insAirfield = {
-		blue = {'blueInfantry','blueSHORAD', 'bluePD'},
-		red = {'insInfantry','insArmor', 'insSHORAD'}
+		blue = {'blueInfantry','blueSHORAD_Roland', 'blueSHORAD_NASAMS'},
+		red = {'insInfantry','insArmor', 'insSHORAD','redPD2'}
 	},
 	insGeneric = {
-		blue = {'blueInfantry','blueSHORAD'},
+		blue = {'blueInfantry','blueSHORAD_Roland'},
 		red = {'insInfantry','insArmor','insInfantry','insArmor', 'insSHORAD'}
+	},
+	foxtrot = {
+		blue = {'blueInfantry','blueSHORAD_Roland'},
+		red = {'insInfantry','insArmor','insInfantry','insArmor', 'insSHORAD','redSAM_SA-2','redPD'}
 	},
 	insMaximum = {
 		blue = {'blueInfantry'},
 		red = {'insInfantry','insArmor','insInfantry','insArmor', 'insSHORAD','insInfantry','insArmor', 'insSHORAD'}
 	},
 	insMinimum = {
-		blue = {'blueInfantry','blueSHORAD'},
-		red = {'insInfantry', 'insSHORAD'}
+		blue = {'blueInfantry','blueSHORAD_Roland'},
+		red = {'redEWR','insInfantry', 'insSHORAD'}
 	},
 	insSAM = {
-		blue = {'blueSHORAD', 'blueMERAD', 'bluePD'},
+		blue = {'blueSHORAD_Roland', 'blueMERAD_Hawk', 'blueSHORAD_NASAMS'},
 		red = {'insSHORAD', 'insSHORAD', 'insSHORAD'}
 	},
 	ewr = {
@@ -107,15 +131,15 @@ upgrades = {
 	},
 	milbase = {
 		blue = {'blueInfantry', 'blueArmor'},
-		red = {'redInfantry','redArmor', 'redSHORAD','redArmor','redArmor'}
+		red = {'redInfantry','redArmor', 'redSHORAD','redArmor','redArmor','redSAM_SA-6','redPD'}
 	},
 	bigSAM = {
-		blue = {'blueAmmo', 'blueAmmo', 'blueAmmo', 'blueAmmo', 'blueAmmo', 'blueAmmo', 'blueLORAD'},
-		red = {'redAmmo','redAmmo', 'redSA11'}
+		blue = {'blueAmmo', 'blueAmmo', 'blueAmmo', 'blueAmmo', 'blueAmmo', 'blueAmmo', 'blueLORAD_Patriot'},
+		red = {'redAmmo','redAmmo', 'redSAM_SA-11', 'redSAM_SA-6','redPD','redPD2'}
 	},
 	radarstrike = {
 		blue = {'blueInfantry'},
-		red = {'redRadar'}
+		red = {'redRadar','redEWR', 'redSHORAD','redPD2'}
 	},
 	insOutpost = {
 		blue = {'blueInfantry'},
@@ -130,9 +154,9 @@ upgrades = {
 		red = {'redInfantry'}
 	}
 }
--- redInfantry, redArmor, redSHORAD, redMERAD, redLORAD, redPD, redSA5, redEWR
+-- redInfantry, redArmor, redSHORAD, redSAM_SA-3, redSAM_SA-2, redPD, redSAM_SA-5, redEWR
 -- insInfantry, insArmor, insSHORAD
--- blueInfantry, blueArmor, blueSHORAD, blueMERAD, blueLORAD, bluePD
+-- blueInfantry, blueArmor, blueSHORAD_Roland, blueMERAD_Hawk, blueLORAD_Patriot, blueSHORAD_NASAMS
 -- blueShip
 -- redShipS, redShipM, redShipL
 
@@ -186,11 +210,13 @@ flavor = {
 	shayrat = 'WPT XX',
 	tiyas = 'WPT XX',
 	sa10 = 'WPT XX',
-	sa5_2 = 'WPT 42\n',
-	sa5_3_= 'WPT 42\n',
+	sa5_2 = 'WPT xx\n',
+	sa5_3_= 'WPT xx\n',
+	homsIEDFactory = 'WPT xx\n',
+	sa2_2 = 'WPT xx\n',
 	annasiriyah = 'WPT XX' -- END new zones by kreisch
 }
-local filepath = 'footholdSyria_1.0.lua'
+local filepath = 'footholdSyria_2.0.lua'
 if lfs then 
 	local dir = lfs.writedir()..'Missions/Saves/'
 	lfs.mkdir(dir)
@@ -203,23 +229,23 @@ end
 bc = BattleCommander:new(filepath, 10, 60)
 zones = {
 	incirlik = ZoneCommander:new({zone='Incirlik', side=2, level=1, upgrades=upgrades.minimal, crates={}, flavorText=flavor.incirlik}),
-	hatay = ZoneCommander:new({zone='Hatay', side=1, level=3, upgrades=upgrades.airfield, crates={}, flavorText=flavor.hatay}),
-	minakh = ZoneCommander:new({zone='Minakh', side=1, level=3, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.minakh}),
+	hatay = ZoneCommander:new({zone='Hatay', side=1, level=4, upgrades=upgrades.airfield, crates={}, flavorText=flavor.hatay}),
+	minakh = ZoneCommander:new({zone='Minakh', side=1, level=4, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.minakh}),
 	aleppo = ZoneCommander:new({zone='Aleppo', side=1, level=4, upgrades=upgrades.airfield, crates={}, flavorText=flavor.aleppo}),
-	taftanaz = ZoneCommander:new({zone='Taftanaz', side=1, level=3, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.taftanaz}),
+	taftanaz = ZoneCommander:new({zone='Taftanaz', side=1, level=4, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.taftanaz}),
 	jirah = ZoneCommander:new({zone='Jirah', side=1, level=3, upgrades=upgrades.insAirfield, crates={}, flavorText=flavor.jirah}),
 	tabqa = ZoneCommander:new({zone='Tabqa', side=1, level=3, upgrades=upgrades.insAirfield, crates={}, flavorText=flavor.tabqa}),
-	alduhur = ZoneCommander:new({zone='Abu al-Duhur', side=1, level=3, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.alduhur}),
-	alassad = ZoneCommander:new({zone='Bassel Al-Assad', side=1, level=3, upgrades=upgrades.airfield, crates={}, flavorText=flavor.alassad}),
-	hama = ZoneCommander:new({zone='Hama', side=1, level=3, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.hama}),
-	palmyra = ZoneCommander:new({zone='Palmyra', side=1, level=3, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.palmyra}),
-	powerplant = ZoneCommander:new({zone='Power Plant', side=1, level=3, upgrades=upgrades.generic, crates={}, flavorText=flavor.powerplant, income=0.5}),
+	alduhur = ZoneCommander:new({zone='Abu al-Duhur', side=1, level=4, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.alduhur}),
+	alassad = ZoneCommander:new({zone='Bassel Al-Assad', side=1, level=4, upgrades=upgrades.airfield, crates={}, flavorText=flavor.alassad}),
+	hama = ZoneCommander:new({zone='Hama', side=1, level=4, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.hama}),
+	palmyra = ZoneCommander:new({zone='Palmyra', side=1, level=4, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.palmyra}),
+	powerplant = ZoneCommander:new({zone='Power Plant', side=1, level=4, upgrades=upgrades.generic, crates={}, flavorText=flavor.powerplant, income=0.5}),
 	alpha = ZoneCommander:new({zone='FOB Alpha', side=2, level=1, upgrades=upgrades.minimal, crates={}, flavorText=flavor.alpha}),
 	bravo = ZoneCommander:new({zone='Bravo', side=1, level=2, upgrades=upgrades.merad, crates={}, flavorText=flavor.bravo}),
 	charlie = ZoneCommander:new({zone='Charlie', side=1, level=2, upgrades=upgrades.ewr, crates={}, flavorText=flavor.charlie}),
 	delta = ZoneCommander:new({zone='Delta', side=1, level=2, upgrades=upgrades.merad, crates={}, flavorText=flavor.delta}),
 	echo = ZoneCommander:new({zone='Echo', side=1, level=6, upgrades=upgrades.ships, crates={}, flavorText=flavor.echo}),
-	foxtrot = ZoneCommander:new({zone='Foxtrot', side=1, level=5, upgrades=upgrades.insGeneric, crates={}, flavorText=flavor.foxtrot}),
+	foxtrot = ZoneCommander:new({zone='Foxtrot', side=1, level=6, upgrades=upgrades.foxtrot, crates={}, flavorText=flavor.foxtrot}),
 	golf = ZoneCommander:new({zone='Golf', side=1, level=3, upgrades=upgrades.insSAM, crates={}, flavorText=flavor.golf}),
 	hotel = ZoneCommander:new({zone='Hotel', side=1, level=3, upgrades=upgrades.lorad, crates={}, flavorText=flavor.hotel}),
 	india = ZoneCommander:new({zone='India', side=1, level=3, upgrades=upgrades.lorad, crates={}, flavorText=flavor.india}),
@@ -227,39 +253,50 @@ zones = {
 	kilo = ZoneCommander:new({zone='Kilo', side=1, level=2, upgrades=upgrades.ewr, crates={}, flavorText=flavor.kilo}),
 	foblima = ZoneCommander:new({zone='FOB Lima', side=0, level=0, upgrades=upgrades.minimal, crates={}, flavorText=flavor.foblima}),
 	fobmike = ZoneCommander:new({zone='FOB Mike', side=0, level=0, upgrades=upgrades.minimal, crates={}, flavorText=flavor.fobmike}),
-	november = ZoneCommander:new({zone='November', side=1, level=3, upgrades=upgrades.generic, crates={}, flavorText=flavor.november}),
-	oscar = ZoneCommander:new({zone='Oscar', side=1, level=2, upgrades=upgrades.insMinimum, crates={}, flavorText=flavor.oscar}),
+	november = ZoneCommander:new({zone='November', side=1, level=4, upgrades=upgrades.generic, crates={}, flavorText=flavor.november}),
+	oscar = ZoneCommander:new({zone='Oscar', side=1, level=3, upgrades=upgrades.insMinimum, crates={}, flavorText=flavor.oscar}),
 	papa = ZoneCommander:new({zone='Papa', side=1, level=3, upgrades=upgrades.bigSAM, crates={}, flavorText=flavor.papa}),
-	romeo = ZoneCommander:new({zone='Romeo', side=1, level=3, upgrades=upgrades.generic, crates={}, flavorText=flavor.romeo}),
-	sierra = ZoneCommander:new({zone='Sierra', side=1, level=1, upgrades=upgrades.radarstrike, crates={}, flavorText=flavor.sierra}),
+	romeo = ZoneCommander:new({zone='Romeo', side=1, level=4, upgrades=upgrades.generic, crates={}, flavorText=flavor.romeo}),
+	sierra = ZoneCommander:new({zone='Sierra', side=1, level=3, upgrades=upgrades.radarstrike, crates={}, flavorText=flavor.sierra}),
 	tango = ZoneCommander:new({zone='Tango', side=1, level=1, upgrades=upgrades.insOutpost, crates={}, flavorText=flavor.tango}),
 	uniform = ZoneCommander:new({zone='Uniform', side=1, level=1, upgrades=upgrades.insOutpost, crates={}, flavorText=flavor.uniform}),
 	victor = ZoneCommander:new({zone='Victor', side=1, level=2, upgrades=upgrades.insAmbush, crates={}, flavorText=flavor.victor}),
-	substationnorth = ZoneCommander:new({zone='Substation North', side=1, level=2, upgrades=upgrades.insMinimum, crates={}, flavorText=flavor.substationnorth}),
+	substationnorth = ZoneCommander:new({zone='Substation North', side=1, level=3, upgrades=upgrades.insMinimum, crates={}, flavorText=flavor.substationnorth}),
 	durayhim = ZoneCommander:new({zone='Durayhim', side=1, level=5, upgrades=upgrades.insGeneric, crates={}, flavorText=flavor.durayhim}),
 	raqqa = ZoneCommander:new({zone='Raqqa', side=1, level=8, upgrades=upgrades.insMaximum, crates={}, flavorText=flavor.raqqa}),
 	dam = ZoneCommander:new({zone='Dam', side=1, level=5, upgrades=upgrades.insGeneric, crates={}, flavorText=flavor.dam, income=0.5}),
-	tv = ZoneCommander:new({zone='TV Tower', side=1, level=2, upgrades=upgrades.insMinimum, crates={}, flavorText=flavor.tv}),
+	tv = ZoneCommander:new({zone='TV Tower', side=1, level=3, upgrades=upgrades.insMinimum, crates={}, flavorText=flavor.tv}),
 	sa5 = ZoneCommander:new({zone='SA-5', side=1, level=3, upgrades=upgrades.sa5, crates={}, flavorText=flavor.sa5}),
 	milbase = ZoneCommander:new({zone='Military Base', side=1, level=5, upgrades=upgrades.milbase, crates={}, flavorText=flavor.milbase}),
 	carrier = ZoneCommander:new({zone='Carrier Group', side=2, level=1, upgrades=upgrades.carrier, crates={}, flavorText=flavor.carrier}),
-	refinery = ZoneCommander:new({zone='Refinery', side=1, level=3, upgrades=upgrades.generic, crates={}, flavorText=flavor.refinery, income=0.5}),
-	factory = ZoneCommander:new({zone='Factory', side=1, level=3, upgrades=upgrades.generic, crates={}, flavorText=flavor.factory, income=0.5}),
-	substationwest = ZoneCommander:new({zone='Substation West', side=1, level=3, upgrades=upgrades.generic, crates={}, flavorText=flavor.substationwest}),
-	radio = ZoneCommander:new({zone='Radio Tower', side=1, level=3, upgrades=upgrades.generic, crates={}, flavorText=flavor.radio}),
+	refinery = ZoneCommander:new({zone='Refinery', side=1, level=5, upgrades=upgrades.refinery, crates={}, flavorText=flavor.refinery, income=0.5}),
+	factory = ZoneCommander:new({zone='Factory', side=1, level=4, upgrades=upgrades.generic, crates={}, flavorText=flavor.factory, income=0.5}),
+	substationwest = ZoneCommander:new({zone='Substation West', side=1, level=4, upgrades=upgrades.generic, crates={}, flavorText=flavor.substationwest}),
+	radio = ZoneCommander:new({zone='Radio Tower', side=1, level=4, upgrades=upgrades.generic, crates={}, flavorText=flavor.radio}),
 	alqusayr = ZoneCommander:new({zone='Al Qusayr', side=1, level=5, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.alqusayr}), -- START new Zones by kreisch
 	sa5_2 = ZoneCommander:new({zone='SA-5_2', side=1, level=3, upgrades=upgrades.sa5, crates={}, flavorText=flavor.sa5_2}),
 	sa5_3 = ZoneCommander:new({zone='SA-5_3', side=1, level=3, upgrades=upgrades.sa5, crates={}, flavorText=flavor.sa5_3}),
 	sa10 = ZoneCommander:new({zone='SA10', side=1, level=3, upgrades=upgrades.sa10, crates={}, flavorText=flavor.sa10}),
 	tiyas = ZoneCommander:new({zone='Tiyas', side=1, level=5, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.tiyas}),
-	shayrat = ZoneCommander:new({zone='Shayrat', side=1, level=5, upgrades=upgrades.airfield2, crates={}, flavorText=flavor.shayrat}),
+	shayrat = ZoneCommander:new({zone='Shayrat', side=1, level=4, upgrades=upgrades.airfield, crates={}, flavorText=flavor.shayrat}),
+	homsIEDFactory = ZoneCommander:new({zone='Homs IED Factory', side=1, level=4, upgrades=upgrades.generic, crates={}, flavorText=flavor.homsIEDFactory}),
+	sa2_2 = ZoneCommander:new({zone='SA2_2', side=1, level=3, upgrades=upgrades.sa2, crates={}, flavorText=flavor.sa2_2}),
+	sa2_3 = ZoneCommander:new({zone='SA2_3', side=1, level=3, upgrades=upgrades.sa2, crates={}, flavorText=flavor.sa2_2})
+
 }
 
 
 zones.alqusayr:addGroups({
 	GroupCommander:new({name='alqusayr-supply-1', mission='supply', targetzone='Shayrat'}),
-	-- GroupCommander:new({name='palmyra-supply-2', mission='supply', targetzone='Hama'}),
+	GroupCommander:new({name='alqusayr-supply-2', mission='supply', targetzone='Hama'}),
+	GroupCommander:new({name='alqusayr-attack-1', mission='attack', targetzone='Taftanaz'}),
 	-- GroupCommander:new({name='palmyra-attack-5', mission='attack', targetzone='Hama', type='surface'})
+})
+
+zones.shayrat:addGroups({
+	GroupCommander:new({name='shayrat-supply-1', mission='supply', targetzone='Al Qusayr'}),
+	GroupCommander:new({name='shayrat-attack-1', mission='attack', targetzone='Al Qusayr'}),
+	GroupCommander:new({name='shayrat-patrol-1', mission='patrol', targetzone='Shayrat'}), 
 })
 
 zones.incirlik:addGroups({
@@ -449,7 +486,8 @@ zones.hama:addGroups({
 	GroupCommander:new({name='hama-attack-1', mission='attack', targetzone='Factory'}),
 	GroupCommander:new({name='hama-attack-2', mission='attack', targetzone='Romeo'}),
 	GroupCommander:new({name='hama-attack-3', mission='attack', targetzone='Abu al-Duhur'}),
-	GroupCommander:new({name='hama-attack-4', mission='attack', targetzone='Abu al-Duhur'})
+	GroupCommander:new({name='hama-attack-4', mission='attack', targetzone='Abu al-Duhur'}),
+	GroupCommander:new({name='hama-attack-5', mission='attack', targetzone='Abu al-Duhur'}),
 })
 
 zones.november:addGroups({
@@ -474,8 +512,20 @@ zones.palmyra:addGroups({
 	GroupCommander:new({name='palmyra-attack-3', mission='attack', targetzone='Refinery', type='surface'}),
 	GroupCommander:new({name='palmyra-attack-4', mission='attack', targetzone='Abu al-Duhur'}),
 	GroupCommander:new({name='palmyra-patrol-3', mission='patrol', targetzone='Palmyra'}),
-	GroupCommander:new({name='palmyra-attack-5', mission='attack', targetzone='Hama', type='surface'}),
-	GroupCommander:new({name='palmyra-attack-6', mission='attack', targetzone='Tiyas'})
+	GroupCommander:new({name='palmyra-patrol-4', mission='patrol', targetzone='Palmyra'}),
+	GroupCommander:new({name='palmyra-attack-5', mission='attack', targetzone='Tiyas'}),
+	GroupCommander:new({name='palmyra-attack-6', mission='attack', targetzone='Tiyas'}),
+	GroupCommander:new({name='palmyra-attack-7', mission='attack', targetzone='Tiyas'}),
+	GroupCommander:new({name='palmyra-supply-9', mission='supply', targetzone='Tiyas'}),
+	GroupCommander:new({name='palmyra-supply-10', mission='supply', targetzone='Tiyas'})
+})
+
+zones.tiyas:addGroups({
+	GroupCommander:new({name='tiyas-attack-1', mission='attack', targetzone='Shayrat'}),
+	GroupCommander:new({name='tiyas-attack-2', mission='attack', targetzone='Aleppo'}),
+	GroupCommander:new({name='tiyas-attack-3', mission='attack', targetzone='Shayrat'}),
+	GroupCommander:new({name='tiyas-attack-4', mission='attack', targetzone='Hama'}),
+	GroupCommander:new({name='tiyas-supply-1', mission='supply', targetzone='Shayrat'}),
 })
 
 zones.refinery:addGroups({
@@ -517,6 +567,8 @@ zones.dam:addGroups({
 	GroupCommander:new({name='dam-attack-1', mission='attack', targetzone='Jirah', type='surface'}),
 	GroupCommander:new({name='dam-attack-2', mission='attack', targetzone='Foxtrot', type='surface'})
 })
+
+zones.homsIEDFactory:addCriticalObject('homsIEDFactory1')
 
 zones.powerplant:addCriticalObject('PowerPlant1')
 zones.powerplant:addCriticalObject('PowerPlant2')
@@ -785,7 +837,13 @@ bc:registerShopItem('capnorth', 'CAP North (F-15C)', 150, function(sender)
 	if Utils.isGroupActive(gr) then 
 		return 'CAP mission still in progress'
 	end
-	mist.respawnGroup(grname, true)
+	mist.respawnGroup(grname, true) -- Here spawns the CAP
+	-- Now give the group to Moose and use "OnEventDead" to display a message, that the CAP is destroyed.
+	local CapGroup = GROUP:FindByName(grname)
+	CapGroup:HandleEvent( EVENTS.Dead )
+	function CapGroup:OnEventDead( EventData )
+		trigger.action.outText('HQ for all units, we lost contact to the CAP-North flight!\nYou are on your own now!', 30)
+	  end
 end,
 function (sender, params)
 	local grname = 'cap-north'
@@ -798,6 +856,11 @@ function (sender, params)
 		return 'CAP mission still in progress'
 	end
 	mist.respawnGroup(grname, true)
+	local CapGroup = GROUP:FindByName(grname)
+	CapGroup:HandleEvent( EVENTS.Dead )
+	function CapGroup:OnEventDead( EventData )
+		trigger.action.outText('HQ for all units, we lost contact to the CAP-North flight!\nYou are on your own now!', 30)
+	  end
 end)
 
 local spawnAwacs2 = function(sender) 
@@ -807,6 +870,11 @@ local spawnAwacs2 = function(sender)
 	end
 	mist.respawnGroup('awacs2', true)
 	trigger.action.outTextForCoalition(2,'Overlord active on 253.00 MHz AM',15)
+	local AwacsGroup = GROUP:FindByName('awacs2')
+	AwacsGroup:HandleEvent( EVENTS.Dead )
+	function AwacsGroup:OnEventDead( EventData )
+		trigger.action.outText('HQ for all units, we lost contact to Overlord!', 30)
+	  end
 end
 Group.getByName('awacs2'):destroy()
 bc:registerShopItem('awacsnorth', 'AWACS North (E-3A)', 100, spawnAwacs2, spawnAwacs2)
@@ -998,6 +1066,11 @@ bc:registerShopItem('capsouth', 'CAP South (F-14B)', 150, function(sender)
 		return 'CAP mission still in progress'
 	end
 	mist.respawnGroup(grname, true)
+	local CapGroup = GROUP:FindByName(grname)
+	CapGroup:HandleEvent( EVENTS.Dead )
+	function CapGroup:OnEventDead( EventData )
+		trigger.action.outText('HQ for all units, we lost contact to the CAP-South flight!\nYou are on your own now!', 30)
+	  end
 end,
 function (sender, params)
 	local grname = 'cap-south'
@@ -1010,6 +1083,11 @@ function (sender, params)
 		return 'CAP mission still in progress'
 	end
 	mist.respawnGroup(grname, true)
+	local CapGroup = GROUP:FindByName(grname)
+	CapGroup:HandleEvent( EVENTS.Dead )
+	function CapGroup:OnEventDead( EventData )
+		trigger.action.outText('HQ for all units, we lost contact to the CAP-South flight!\nYou are on your own now!', 30)
+	  end
 end)
 
 local spawnAwacs = function(sender) 
@@ -1019,6 +1097,11 @@ local spawnAwacs = function(sender)
 	end
 	mist.respawnGroup('awacs1', true)
 	trigger.action.outTextForCoalition(2,'Darkstar active on 252.00 MHz AM',15)
+	local awacs1Group = GROUP:FindByName('awacs1')
+	awacs1Group:HandleEvent( EVENTS.Dead )
+	function awacs1Group:OnEventDead( EventData )
+		trigger.action.outText('HQ for all units, we lost contact to Darkstar!', 30)
+	  end
 end
 Group.getByName('awacs1'):destroy()
 bc:registerShopItem('awacssouth', 'AWACS South (E-2D)', 100, spawnAwacs, spawnAwacs)
@@ -1255,7 +1338,7 @@ local smoketargets = function(tz)
 end
 
 local smokeTargetMenu = nil
-bc:registerShopItem('smoke', 'Smoke markers', 20, function(sender)
+bc:registerShopItem('smoke', 'Smoke markers', 50, function(sender)
 	if smokeTargetMenu then
 		return 'Choose target zone from F10 menu'
 	end

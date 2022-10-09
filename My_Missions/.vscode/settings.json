@@ -1,0 +1,13 @@
+{
+    "Lua.diagnostics.globals": [
+        "trigger",
+        "Group",
+        "timer",
+        "MANTIS",
+        "lfs"
+    ],
+    "Lua.workspace.library": [
+        "${3rd}/lfs/library"
+    ],
+    "Lua.workspace.checkThirdParty": false
+}

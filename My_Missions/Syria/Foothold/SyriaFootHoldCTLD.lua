@@ -31,8 +31,8 @@ my_ctld:UnitCapabilities("UH-1H", true, true,           1, 12, 15,2800)
 my_ctld:UnitCapabilities("SA342L", false, false,        0, 3, 12,500)
 my_ctld:UnitCapabilities("SA342M", false, false,        0, 3, 12,500)
 my_ctld:UnitCapabilities("Mi-24P", true, true,          3, 8, 18, 3500)
-my_ctld:UnitCapabilities("Mi-8MT", true, true,          5, 24, 15, 9200 )
-my_ctld:UnitCapabilities("UH-60L", true, true,          5, 12, 15,9200)
+my_ctld:UnitCapabilities("Mi-8MT", true, true,          5, 24, 15, 4900 )
+my_ctld:UnitCapabilities("UH-60L", true, true,          5, 12, 15,4900)
 my_ctld:UnitCapabilities("AH-64D BLK.II", false, false, 0, 0, 15, 500)
 my_ctld:UnitCapabilities("Hercules", true, true,       15, 64, 25, 19090) -- maximumLoadWeight 42.000pounds -- Maximum 64 Paratroopers
 
@@ -45,8 +45,8 @@ my_ctld:UnitCapabilities("Hercules", true, true,       15, 64, 25, 19090) -- max
 
 -- if you want to add weight to your Heli, crates can have a weight in kg **per crate**. Fly carefully.
 
-my_ctld:AddCratesCargo("(SAM) M1097 Avenger",                 {"M1097 Avenger"},CTLD_CARGO.Enum.VEHICLE,1,9000)
-my_ctld:AddCratesCargo("(SAM) M48 Chaparral",                 {"M48 Chaparral"},CTLD_CARGO.Enum.VEHICLE,1,9000)
+my_ctld:AddCratesCargo("(SAM) M1097 Avenger",                 {"M1097 Avenger"},CTLD_CARGO.Enum.VEHICLE,1,4900)
+my_ctld:AddCratesCargo("(SAM) M48 Chaparral",                 {"M48 Chaparral"},CTLD_CARGO.Enum.VEHICLE,1,4900)
 my_ctld:AddCratesCargo("(SAM) M6 Linebacker",                 {"M6 Linebacker"},CTLD_CARGO.Enum.VEHICLE,1,12000)
 my_ctld:AddCratesCargo("(SAM) Roland ADS",                    {"Roland ADS"},   CTLD_CARGO.Enum.VEHICLE,1,10500)
 my_ctld:AddCratesCargo("(SAM) Roland ADS With Radar",         {"Roland Radar Site With Launcher"},CTLD_CARGO.Enum.VEHICLE,1,19000)
