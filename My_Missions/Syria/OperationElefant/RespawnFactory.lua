@@ -102,7 +102,7 @@ end
 
 -- The main register function
 
-local function registerFactory(_facName)
+function registerFactory(_facName)
   UglyPrintDebug("Registering Factories from: " .. _facName)
 
   local SetFactories = SET_STATIC:New():FilterCoalitions("red"):FilterPrefixes(_facName):FilterOnce()
@@ -118,6 +118,12 @@ local function registerFactory(_facName)
   end
 
   UglyPrintDebug("Found " .. SetFactories:Count() .. " factories for: " .. _facName)
+
+  SetFactories:ForEachStatic(function(theFactory)
+      UglyPrintDebug("Added scoring for " .. theFactory:GetName())
+      Scoring:AddStaticScore( theFactory, 100 )
+    end
+  )
 
   local SetZone = SET_ZONE:New():FilterPrefixes( _facName .. observeZonePostfix ):FilterOnce()
   local SetGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterZones(SetZone):FilterOnce()
@@ -150,7 +156,8 @@ local function registerFactory(_facName)
 
       groupSpawnMap[storeName] = startValues
       UglyPrintDebug("Added Unit: " .. groupToStore:GetUnit(1):GetName() .. ", for factory: " .. _facName)
-  end)
+    end
+  )
 end
 
 FactoryDeathRecorder = EVENTHANDLER:New()
@@ -342,12 +349,6 @@ end
 
 -- Start factory respawn
 TIMER:New(checkRespawnFromFactory):Start(10)
-
-registerFactory("RF01")
-registerFactory("RF02")
-
-registerFactory("RF_CZ01")
-registerFactory("RF_CZ02")
 
 UglyPrintDebug("RespawnFactory loaded - " .. RF_Version)
 
