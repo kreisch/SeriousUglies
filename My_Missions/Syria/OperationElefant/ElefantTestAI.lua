@@ -13,9 +13,8 @@ Scoring:SwitchTreason(false) -- switching from blue to red is allowed.
 
 
 -- Register all factories in the zones (todo: switch to work automatically when initializing a zone)
-registerFactory("RF01")
-registerFactory("RF02")
 
+--registerFactory(factoryConfigs["CombatZone-1"])
 registerFactory("RF_CZ01")
 registerFactory("RF_CZ02")
 
@@ -51,8 +50,6 @@ airwingGecitkale:AddSquadron(Gecitkale1st)
 airwingGecitkale:NewPayload(GROUP:FindByName("Mi28_Template_CAS"), 20, {AUFTRAG.Type.CAS}, 80)
 airwingGecitkale:SetTakeoffAir()
 -- #endregion
-
-
 
 
 -- #region OPTIONS

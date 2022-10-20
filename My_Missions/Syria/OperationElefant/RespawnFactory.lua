@@ -1,4 +1,4 @@
-local RF_Version = "V0.3"
+local RF_Version = "V0.4"
 
 -----------------------------------------------------------------------------------
 -- What's this?
@@ -42,22 +42,34 @@ local RF_Version = "V0.3"
 -- This needs:
 --   * One Zone named "RF01_Observe_Zone"
 --   * One Static named "RF01"
---   * One Zone named "RF01_Respawn_Zone"
+--   * One Zone named "RF01_RZ"
 
 -- Example 
 -- A simple config for config RF02 with three static factories:
 --   * One Zone named "RF02_Observe_Zone"
 --   * One Static named "RF02_01"  (can be anything after the prefix RF02 - caution: the unit name is essential)
---   * One Zone named "RF02_01_Respawn_Zone"
+--   * One Zone named "RF02_01_RZ"
 --   * One Static named "RF02_02"  (can be anything after the prefix RF02)
---   * One Zone named "RF02_02_Respawn_Zone"
+--   * One Zone named "RF02_02_RZ"
 --   * One Static named "RF02_03"  (can be anything after the prefix RF02)
---   * One Zone named "RF02_03_Respawn_Zone"
+--   * One Zone named "RF02_03_RZ"
+
+-----------------------------------------------------------------------------------
+-- Settings
+-----------------------------------------------------------------------------------
+
+local maxRespawn = 1000
+local observeZonePostfix = "_Observe_Zone"
+local respawnZonePostfix = "_RZ"
+local sceneryIDPostfix = "_ID"
+local redInfantryVehicleTemplate = "TEMPLATE_RED_INF_SCOUT_BRDM"
 
 -----------------------------------------------------------------------------------
 -- Helper
 -----------------------------------------------------------------------------------
 local defaultMsgShowTime = 10
+
+--UglyPrintOnScreen = true
 
 local function UglyPrintDebug(_msg, _duration)
   local printOnScreen = UglyPrintOnScreen or false
@@ -73,17 +85,7 @@ local function UglyPrintDebug(_msg, _duration)
 end
 
 -----------------------------------------------------------------------------------
-
 UglyPrintDebug("Loading RespawnFactory Script - " .. RF_Version)
-
------------------------------------------------------------------------------------
--- Settings
-
-local maxRespawn = 1000
-local observeZonePostfix = "_Observe_Zone"
-local respawnZonePostfix = "_Respawn_Zone"
-local redInfantryVehicleTemplate = "TEMPLATE_RED_INF_SCOUT_BRDM"
-
 -----------------------------------------------------------------------------------
 -- Some internal structures
 
@@ -91,37 +93,113 @@ local groupSpawnMap = {}  -- map of new spawned group name to original template
 local killedGroups = {}
 local killedGroupsCount = 0
 local nextRespawn = 1
+local factoryRegistration = {}
 
 -----------------------------------------------------------------------------------
 -- Actual Code
 
 -- Check for Moose
 if ENUMS == nil then
+  UglyPrintOnScreen = true
   UglyPrintDebug("Moose is missing - cannot live without it! Respawn Factory script is not loaded!", 600)
+  return
 end
 
--- The main register function
+-----------------------------------------------------------------------------------
+-- Get random alive factory for factory prefix
+-----------------------------------------------------------------------------------
 
-function registerFactory(_facName)
-  UglyPrintDebug("Registering Factories from: " .. _facName)
 
-  local SetFactories = SET_STATIC:New():FilterCoalitions("red"):FilterPrefixes(_facName):FilterOnce()
+local function getRandomFactoryZone(_facPref)
+  UglyPrintDebug("getRandomFactoryZone...")
 
-  if SetFactories:Count() == 0 then
-    UglyPrintDebug("Cannot find any factory with name: " .. _facName)
-  return
+--  _facPref = _facPref or "RF_CZ02"
+
+  local facList = factoryRegistration[_facPref]
+
+  local currentFacCount = #facList
+  UglyPrintDebug("currentFacCount... " .. currentFacCount)
+
+  -- Cleanup all dead ones
+  for i = currentFacCount, 1, -1 do
+    UglyPrintDebug("current i ... " .. i)
+    local currentObj = facList[i]["object"]
+    UglyPrintDebug("current ClassName ... " .. facList[i]["object"]:GetClassName())
+
+    if facList[i]["object"]:GetClassName() == "SCENERY" then
+      local oldName = facList[i]["object"]:GetName()
+      currentObj = SCENERY:FindByName(oldName)
+      facList[i]["object"] = currentObj
+    end
+
+    if currentObj:IsAlive() == false then
+      UglyPrintDebug("Dead, so removing: " .. currentObj:GetName())
+      table.remove(facList, i)
+    else
+      UglyPrintDebug("Still Alive: " .. currentObj:GetName())
+      UglyPrintDebug("ClassName: " .. currentObj:GetClassName())
+    end
   end
 
-  if SetFactories:CountAlive() == 0 then
-    UglyPrintDebug("Sorry, all factories from " .. _facName .. " are offline!")
+  currentFacCount = #facList
+  UglyPrintDebug("currentFacCount...after cleanup" .. currentFacCount)
+
+  if currentFacCount == 0 then
+    return nil
+  end
+
+  local theIndex = math.random(1, currentFacCount)
+  return facList[theIndex].zone 
+
+--  TIMER:New(getRandomFactoryZone):Start(2)
+end
+
+-- Start factory respawn test
+--TIMER:New(getRandomFactoryZone):Start(10)
+
+-----------------------------------------------------------------------------------
+-- The main register function
+-----------------------------------------------------------------------------------
+function registerFactory(_facName)
+  UglyPrintDebug("Registering Factories with prefix: " .. _facName)
+
+  local SetFactories = SET_STATIC:New():FilterCoalitions("red"):FilterPrefixes(_facName):FilterOnce()
+  local SetZones = SET_ZONE:New():FilterPrefixes(_facName .. sceneryIDPostfix):FilterOnce()
+
+  local totalFactories = SetFactories:CountAlive() + SetZones:Count()
+
+  if totalFactories == 0 then
+    UglyPrintDebug("Cannot find any factories with name: " .. _facName)
     return
   end
 
-  UglyPrintDebug("Found " .. SetFactories:Count() .. " factories for: " .. _facName)
+  UglyPrintDebug("Found " .. totalFactories .. " factories for: " .. _facName)
+
+  local theCount = 1
+  factoryRegistration[_facName] = {}
 
   SetFactories:ForEachStatic(function(theFactory)
-      UglyPrintDebug("Added scoring for " .. theFactory:GetName())
+      UglyPrintDebug("Registering Factory by Static: " .. theFactory:GetName())
+      local facData = {object = theFactory, zone = ZONE:FindByName(theFactory:GetName() .. respawnZonePostfix)}
+      factoryRegistration[_facName][theCount] = facData
+      theCount = theCount + 1
       Scoring:AddStaticScore( theFactory, 100 )
+    end
+  )
+
+  SetZones:ForEachZone(function(theZone)
+      UglyPrintDebug("Registering Factory by SceneryID: " .. theZone:GetName())
+
+      local theID = string.sub (theZone:GetName(), string.len(_facName) + string.len(sceneryIDPostfix) + 2, string.len(theZone:GetName()))
+      local theScenery = SCENERY:FindByName(tonumber(theID))
+      local zoneName = _facName .. respawnZonePostfix .. "_" .. theID
+      local facData = {object = theScenery, zone = ZONE:FindByName(zoneName)}
+      factoryRegistration[_facName][theCount] = facData
+      theCount = theCount + 1
+
+      UglyPrintDebug("theID: " .. theID .. ", zoneName: " .. zoneName)
+
+      Scoring:AddZoneScore( theZone, 100 )
     end
   )
 
@@ -145,7 +223,7 @@ function registerFactory(_facName)
       local startValues = {}
       startValues["template"] = groupToStore
       startValues["coords"] = groupCoordinate
-      startValues["factory"] = _facName
+      startValues["facPref"] = _facName
 
       local storeName = nil
       if string.find(groupToStore:GetName(), "Infantry_Respawn") ~= nil then
@@ -215,10 +293,11 @@ function FactoryDeathRecorder:OnEventDead( _eventData )
 
   UglyPrintDebug("Target destroyed. Good Job!!")
 
-  local _facPrefix = groupSpawnMap[deadName]["factory"]
-  local SetFactories = SET_STATIC:New():FilterCoalitions("red"):FilterPrefixes(_facPrefix):FilterOnce()
+  local _facPrefix = groupSpawnMap[deadName]["facPref"]
 
-  if SetFactories:CountAlive() == 0 then
+  local rndFacZone = getRandomFactoryZone(_facPrefix)
+
+  if rndFacZone == nil then
     UglyPrintDebug("Sorry, all factories from " .. _facPrefix .. " are offline!")
     return
   end
@@ -243,30 +322,12 @@ function FactoryDeathRecorder:OnEventDead( _eventData )
   local respawnData = {}
   respawnData["template"] = origTemplate 
   respawnData["coords"] = groupSpawnMap[deadName]["coords"]
-  respawnData["factory"] = _facPrefix
+  respawnData["facPref"] = _facPrefix
   killedGroups[killedGroupsCount] = respawnData
 
   UglyPrintDebug("FactoryDeathRecorder...killedGroupsCount(" .. killedGroupsCount .."), nextRespawn(" .. nextRespawn .. ")")
 
   UglyPrintDebug("Prepared respawning of Group: " .. origTemplate:GetName())
-end
-
-function SET_STATIC:GetAliveSet()
-  self:F2()
-
-  local AliveSet = SET_STATIC:New()
-
-  -- Clean the Set before returning with only the alive Groups.
-  for GroupName, GroupObject in pairs( self.Set ) do
-    local GroupObject=GroupObject --Wrapper.Group#GROUP
-    if GroupObject then
-      if GroupObject:IsAlive() then
-        AliveSet:Add( GroupName, GroupObject )
-      end
-    end
-  end
-
-  return AliveSet.Set or {}
 end
 
 
@@ -297,25 +358,20 @@ local function checkRespawnFromFactory()
     local curRespawnData = killedGroups[nextRespawn]
     nextRespawn = nextRespawn + 1
 
-    local _facPrefix = curRespawnData["factory"]
-    local SetFactories = SET_STATIC:New():FilterCoalitions("red"):FilterPrefixes(_facPrefix):FilterOnce()
-  
-    if SetFactories:CountAlive() == 0 then
+    local _facPrefix = curRespawnData["facPref"]
+
+    local rndFacZone = getRandomFactoryZone(_facPrefix)
+    if rndFacZone == nil then
       UglyPrintDebug("Sorry, all factories from " .. _facPrefix .. " are offline!")
+      TIMER:New(checkRespawnFromFactory):Start(30)
       return
     end
   
     UglyPrintDebug("Good, some factories of: " .. _facPrefix .. " is still online!")
+    UglyPrintDebug("Spawning at: " .. rndFacZone:GetName())
 
+    local spawnVec2 = rndFacZone:GetRandomVec2()
     local curTemplate = curRespawnData["template"]
-
-    local aliveFactories = SetFactories:GetAliveSet()
-    local useThisFac = SetFactories:GetRandom()
-
-    UglyPrintDebug("Spawning at: " .. useThisFac:GetName())
-
-    local theZone = ZONE:FindByName(useThisFac:GetName() .. "_Respawn_Zone")
-    local spawnVec2 = theZone:GetRandomVec2()
     local nextGroupSpawn = SPAWN:New(curTemplate:GetName())
 
     -- Spawn at the zone center position at the height specified in the ME of the group template!
@@ -329,7 +385,7 @@ local function checkRespawnFromFactory()
     local startValues = {}
     startValues["template"] = curTemplate
     startValues["coords"] = curRespawnData["coords"]
-    startValues["factory"] = _facPrefix
+    startValues["facPref"] = _facPrefix
 
     groupSpawnMap[spawnedGroup:GetUnit(1):GetName()] = startValues
 
@@ -344,17 +400,87 @@ local function checkRespawnFromFactory()
     UglyPrintDebug("Nothing yet to respawn")
   end
 
+  UglyPrintDebug("Starting checkRespawnFromFactory timer - 30s")
   TIMER:New(checkRespawnFromFactory):Start(30)
 end
 
 -- Start factory respawn
+UglyPrintDebug("Starting checkRespawnFromFactory timer - 10s")
 TIMER:New(checkRespawnFromFactory):Start(10)
 
 UglyPrintDebug("RespawnFactory loaded - " .. RF_Version)
 
 
 
+
 --[[
+local testScenery = {"118718475", "199917568"}
+local sceneTest1 = SCENERY:FindByName("118718475")
+local sceneTest2 = SCENERY:FindByName("199917568")
+
+local function sceneAliveTest()
+  env.info("sceneAliveTest...")
+
+  if sceneTest1:IsAlive() == false then
+    env.info("sceneTest1 Dead!")
+  else
+    env.info("sceneTest1 Alive!")
+  end
+
+  if sceneTest2:IsAlive() == false then
+    env.info("sceneTest2 Dead!")
+  else
+    env.info("sceneTest2 Alive!")
+  end
+
+  for i = 1, #testScenery do
+    local sceneTest = SCENERY:FindByName(testScenery[i])
+
+    if sceneTest:IsAlive() == false then
+      env.info("Scenery Dead: " .. testScenery[i])
+    else
+      env.info("Scenery Alive: " .. testScenery[i])
+    end
+
+  end
+
+  TIMER:New(sceneAliveTest):Start(2)
+end
+
+-- Start factory respawn
+TIMER:New(sceneAliveTest):Start(10)
+]]
+
+
+
+--[[
+
+local function checkFactoryAlive()
+  local myHouse = SCENERY:FindByName("514687769")
+  local myNeighboursHouse = SCENERY:FindByName("514687146")
+
+  local status = "alive!"
+  if myHouse:IsAlive() == false then
+    status = "dead!"
+  end
+  MESSAGE:New( "My House is " .. status, 15, "House Check:", true ):ToAll()
+
+  status = "alive!"
+  if myNeighboursHouse:IsAlive() == false then
+    status = "dead!"
+  end
+  MESSAGE:New( "My Neighbours House is " .. status, 15, "House Check:" ):ToAll()
+
+  TIMER:New(checkFactoryAlive):Start(2)
+end
+
+-- Start factory respawn
+TIMER:New(checkFactoryAlive):Start(10)
+
+
+
+
+
 Vehicle:HandleEvent( EVENTS.Dead )
 function Vehicle:OnEventDead( EventData )
 
@@ -384,4 +510,21 @@ local SpawnVec2 = ZONE:New( "Factory_Respawn-1" ):GetRandomVec2()
   end
 
 
+
+  local numTimTest = 0
+  local function timerTest()
+    UglyPrintDebug("Starting timerTest - " .. numTimTest)
+    numTimTest = numTimTest + 1
+
+    if numTimTest > 10 then
+      return
+    end
+
+    UglyPrintDebug("Restart timerTest - " .. numTimTest)
+    TIMER:New(timerTest):Start(2)
+  end
+
+  UglyPrintDebug("Init timerTest - " .. numTimTest)
+  TIMER:New(timerTest):Start(2)
+  
 ]]--
