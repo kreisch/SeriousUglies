@@ -40,29 +40,19 @@ my_ctld:AddTroopsCargo("Infantry Squad 8",      {"Template_CTLD_Blue_Inf8"},CTLD
 my_ctld:AddTroopsCargo("Infantry Mortar-Team",  {"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6,200)
 my_ctld:AddTroopsCargo("Infantry JTac Widow",   {"Template_CTLD_Blue_JTac"},CTLD_CARGO.Enum.TROOPS,4,80)
 
-my_ctld:AddCratesCargo("JTAC HUMVEE",  {"TEMPLATE_CTLD_Blue_ATGM_HUMVEE"}, CTLD_CARGO.Enum.VEHICLE, 1, 500)
-my_ctld:AddCratesCargo("IFV M2A2",  {"TEMPLATE_CTLD_Blue_ATGM_IFV_M2A2"}, CTLD_CARGO.Enum.VEHICLE, 1, 500)
-my_ctld:AddCratesCargo("AAA Avenger",  {"TEMPLATE_CTLD_Blue_AAA_Avenger"}, CTLD_CARGO.Enum.VEHICLE, 1, 500)
-my_ctld:AddCratesCargo("AAA Gepard",  {"TEMPLATE_CTLD_Blue_AAA_Gepard"}, CTLD_CARGO.Enum.VEHICLE, 1, 500)
-my_ctld:AddCratesCargo("AAA Vulcan",  {"TEMPLATE_CTLD_Blue_AAA_Vulcan"}, CTLD_CARGO.Enum.VEHICLE, 1, 000)
+my_ctld:AddCratesCargo("JTAC HUMVEE",  {"TEMPLATE_CTLD_Blue_ATGM_HUMVEE"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
+my_ctld:AddCratesCargo("IFV M2A2",  {"TEMPLATE_CTLD_Blue_ATGM_IFV_M2A2"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
+my_ctld:AddCratesCargo("AAA Avenger",  {"TEMPLATE_CTLD_Blue_AAA_Avenger"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
+my_ctld:AddCratesCargo("AAA Gepard",  {"TEMPLATE_CTLD_Blue_AAA_Gepard"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
+my_ctld:AddCratesCargo("AAA Vulcan",  {"TEMPLATE_CTLD_Blue_AAA_Vulcan"}, CTLD_CARGO.Enum.VEHICLE, 1, 2000)
+my_ctld:AddCratesCargo("MBT Leopard 1",  {"TEMPLATE_CTLD_Blue_MBT_LEO1"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
+
+
+
 
 --my_ctld:AddCTLDZone("FOB_Dallas",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true)
 --my_ctld:AddCTLDZone("CTLD_Megiddo",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true,240,20)
 my_ctld:AddCTLDZone("CTLD_Kutaisi",CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true)
-
--- my_ctld.enableHercules = true
--- my_ctld.HercMinAngels = 155 -- for troop/cargo drop via chute in meters, ca 470 ft
--- my_ctld.HercMaxAngels = 2000 -- for troop/cargo drop via chute in meters, ca 6000 ft
--- my_ctld.HercMaxSpeed = 77 -- 77mps or 270kph or 150k
-
--- my_ctld.enableHercules = false -- avoid dual loading via CTLD F10 and F8 ground crew
--- local herccargo = CTLD_HERCULES:New("blue", "Hercules Test", my_ctld)
-
-my_ctld.enableHercules = false
-my_ctld.HercMinAngels = 155 -- for troop/cargo drop via chute in meters, ca 470 ft
-my_ctld.HercMaxAngels = 2000 -- for troop/cargo drop via chute in meters, ca 6000 ft
-my_ctld.HercMaxSpeed = 77 -- 77mps or 270kph or 150kn
-
 
 function my_ctld:OnAfterCratesBuild(From,Event,To,Group,Unit,Vehicle)
   local vname = Vehicle:GetName()

@@ -21,6 +21,16 @@ registerFactory("RF_CZ02")
 
 Scoring:AddStaticScore( STATIC:FindByName( "Ru_Zone1_HQ" ), 100 )
 
+-- #region OPTIONS
+local useEnemyAir = true
+-- #endregion
+local zoneConfigs = {
+  ["CombatZone-1"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- easy
+  ["CombatZone-2"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- easy
+  ["CombatZone-3"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- medium
+  ["CombatZone-4"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- medium
+  ["CombatZone-5"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- medium
+}
 
 
 -- Concept:
@@ -52,15 +62,6 @@ airwingGecitkale:SetTakeoffAir()
 -- #endregion
 ]]
 
--- #region OPTIONS
-local useEnemyAir = true
--- #endregion
-
-local zoneConfigs = {
-  ["CombatZone-1"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- easy
-  ["CombatZone-2"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- easy
-  ["CombatZone-3"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- medium
-}
 
 local function initZone(_name)
   env.info("initZone - " .. _name)
