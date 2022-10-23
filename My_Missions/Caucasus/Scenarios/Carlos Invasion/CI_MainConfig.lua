@@ -74,6 +74,8 @@ local function initZone(_name)
   zoneConfigs[_name]["OpsZone"] = theOpsZone
   zoneConfigs[_name]["OpsZone"]:SetObjectCategories({Object.Category.UNIT}) -- Ensure, that no leftover statics will count as part of eg. red coalition 
 
+  DoPatrolsInZone(theZone)
+
   -- wenn diese Methoden drin sind, werden die Zonen nicht richtig gezeichnet.
   function theOpsZone:OnAfterCaptured(From, Event, To, Coalition)
     BASE:I(theOpsZone:GetName() .. " captured!")
