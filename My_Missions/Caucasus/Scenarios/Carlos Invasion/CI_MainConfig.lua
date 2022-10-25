@@ -11,6 +11,11 @@ Scoring:SetMessagesDestroy(true)
 Scoring:SwitchFratricide(false) -- has to be turned off, as the loading of troups counts as blue on blue (blue groups are destroyed)
 Scoring:SwitchTreason(false) -- switching from blue to red is allowed. 
 
+--CIconfig {
+--    useTankersBlue = true,
+--    useTankersRed = true,
+--    useAWACsSRS = true
+--}
 
 -- Register all factories in the zones (todo: switch to work automatically when initializing a zone)
 
@@ -25,11 +30,11 @@ Scoring:AddStaticScore( STATIC:FindByName( "Ru_Zone1_HQ" ), 100 )
 local useEnemyAir = true
 -- #endregion
 local zoneConfigs = {
-  ["CombatZone-1"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- easy
-  ["CombatZone-2"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- easy
-  ["CombatZone-3"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- medium
-  ["CombatZone-4"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- medium
-  ["CombatZone-5"] = {airwing = nil, Zone = nil, OpsZone = nil}, -- medium
+  ["CombatZone-1"] = {airwing = AWNalchik, Zone = nil, OpsZone = nil}, -- easy
+  ["CombatZone-2"] = {airwing = AWFARP_RF_CZ02_02, Zone = nil, OpsZone = nil}, -- easy
+  ["CombatZone-3"] = {airwing = AWNalchik, Zone = nil, OpsZone = nil}, -- medium
+  ["CombatZone-4"] = {airwing = AWNalchik, Zone = nil, OpsZone = nil}, -- medium
+  ["CombatZone-5"] = {airwing = AWNalchik, Zone = nil, OpsZone = nil}, -- medium
 }
 
 
@@ -136,6 +141,12 @@ local function doActionForZone(_inZone, _contact)
       armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
       armygroup:AddWeaponRange(0, UTILS.KiloMetersToNM(2))
       armygroup:AddMission(mission)
+    elseif (true) then -- Hier abfragen ob CAS aktiviert werden soll für rot.
+      local mission = AUFTRAG:NewBAI(targetGroup, nil)
+      mission:SetRepeatOnFailure(6)
+      zoneConfigs[_inZone:GetName()]["airwing"]:AddMission(mission)
+      MESSAGE:New("Added mission to airwing"):ToAll()
+      env.info("GroundTarget is found in " .. _inZone:GetName() .. "\n Starting CAS-ATTACK")
     end
 
   elseif (_contact.attribute == "Ground_EWR") or (_contact.attribute == "Ground_SAM") or
@@ -143,6 +154,7 @@ local function doActionForZone(_inZone, _contact)
     if useEnemyAir and zoneConfigs[_inZone:GetName()]["airwing"] ~= nil then
       -- Regel: Man kann nun schauen, dass man SEAD aus bestimmten Arealen holt, sollten entsprechende Bedingungen da sein.
       local mission = AUFTRAG:NewSEAD(GROUP:FindByName(_contact.groupname), 5000)
+      mission:SetRepeatOnFailure(6)
       -- local zone = ZONE_GROUP:New("SEAD Zone", targetGroup, 500)
       -- local mission = AUFTRAG:NewCAS(zone)
       zoneConfigs[_inZone:GetName()]["airwing"]:AddMission(mission)
@@ -152,6 +164,7 @@ local function doActionForZone(_inZone, _contact)
   elseif (_contact.attribute == "Air_Fighter") or (_contact.attribute == "Air_AttackHelo") or
     (_contact.attribute == "Air_TransportHelo") then
     -- Figher anfordern beim nÃ¤chsten Airfield
+
   end
 end
 
@@ -193,6 +206,22 @@ function RedIntel:OnAfterNewContact(From, Event, To, contact)
   if inZone ~= nil then
     doActionForZone(inZone, contact)  
   end
+end
+
+local Red_DetectionSetGroupAWACS = SET_GROUP:New():FilterCoalitions("red"):FilterActive():FilterPrefixes( { "RU_Recce","RU_EWR" } ):FilterStart()
+local RedIntelAwacs = INTEL:New(Red_DetectionSetGroupAWACS, "red", "KGB AWACS")
+RedIntelAwacs:SetClusterAnalysis(true, true)
+RedIntelAwacs:SetVerbosity(2)
+RedIntelAwacs:__Start(2)
+local SetCombatZonesAWACS = SET_ZONE:New():FilterPrefixes("FEZ"):FilterOnce()
+RedIntelAwacs:SetAcceptZones(SetCombatZonesAWACS)
+
+function RedIntelAwacs:OnAfterNewContact(From, Event, To, contact)
+  local trgtGrp = contact.group
+  trigger.action.outText("KGB AWACS: I found a " .. contact.attribute .. " called " .. contact.groupname, 30)
+  local targetGroup = GROUP:FindByName(_contact.groupname)
+  local mIntercept = AUFTRAG:NewINTERCEPT(targetGroup)
+  AWBeslan:AddMission(mIntercept)
 end
 
 -- Initialize combat zones from config
