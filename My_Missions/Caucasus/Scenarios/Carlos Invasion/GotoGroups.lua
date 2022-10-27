@@ -48,5 +48,3 @@ SetZones:ForEachZone(function(zoneToMoveTo)
   CheckGotosForZone(zoneToMoveTo)
 end
 )
-
-ExecuteAllGotos()

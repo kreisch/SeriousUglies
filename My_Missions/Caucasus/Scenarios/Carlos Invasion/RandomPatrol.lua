@@ -12,6 +12,15 @@ local patrolPrefix = "PATROL_"
 local patrolFrequency = 1800 -- in seconds - 600s equals 10min
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Check for RouteList
+
+if RouteList == nil then
+  env.info("RouteList is missing - cannot live without it! Goto Groups is not loaded!")
+  trigger.action.outText("RouteList is missing - cannot live without it! Goto Groups is not loaded!", 600, false)
+  return
+end
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Call this function for each zone that should be observed
 
@@ -22,9 +31,11 @@ function DoPatrolsInZone(_zone)
 
   SetGroups:ForEachGroup(function(groupToMove)
     env.info("Patrolling group: " .. groupToMove:GetName())
-    local spawnVec2 = _zone:GetRandomVec2()
 
-    groupToMove:RouteGroundOnRoad(COORDINATE:NewFromVec2(spawnVec2), 30)--, 1, "Vee", respawnAtLastWP)
+    local destVec2 = _zone:GetRandomVec2()
+    local gotoData = {group = groupToMove, dest = destVec2}
+    RouteList.pushright(theList, gotoData)
+
   end
   )
 

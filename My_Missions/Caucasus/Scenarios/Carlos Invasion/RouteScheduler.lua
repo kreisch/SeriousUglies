@@ -17,7 +17,7 @@
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local defaultSpeed = 20
+local defaultSpeed = 30
 local routeFrequency = 2 -- in seconds
 local groupsPerStep = 1 -- how many units are moved each iteration
 
@@ -82,7 +82,7 @@ end
 
 theList = RouteList.new()
 
-function ExecuteRerouting()
+local function ExecuteRerouting()
   env.info("Start ExecuteRerouting...")
   --  local gotoData = {group = groupToMove, dest = destVec2, speed}
 
