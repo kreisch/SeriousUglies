@@ -7,6 +7,11 @@
 -- "USD, Tanker Boom, Alt 24000, Speed 350, Heading 030, Leg 15"
 -- "USD, Tanker Boom, Alt 24000, Speed 350, Heading 030, Start 1300, End 1400"
 
+--- Umstellen:
+-- Wenn eine Instanz des USDs erstellt wird, muss ein Airwing angegeben werden, sowie der Typ des Supports (Tanker, Awacs, CAS,...)
+-- Die spezifische USD-Instanz hört dann entsprechend auf die Keywords für diesen Support-Type, oder nicht.
+-- Vorteil: Man muss zur Laufzeit des USDs nicht differenzieren, ob der Airwing Tanker enthält oder nicht, das ist Aufgabe des Missions-Erstellers.
+
 -- @field #Support Dispatcher Table
 uglySupportDispatcher = {
   className = "Ugly Support Dispatcher",
@@ -33,9 +38,7 @@ uglySupportDispatcher = {
 
   debug = true,
 
-  --- Der ganze Bumms hier drunter ist Objektspezifisch, muss also instanziiert werden...wie?
-  airwing = AWIncirlik -- Hier muss der Airwing zugewiesen werden. Im Idealfall Ã¼bergibt man eine 
-  -- Ganze Liste an Airwings.
+  airwing = AWIncirlik
 }
 
 -- Version info.
@@ -145,7 +148,7 @@ function uglySupportDispatcher._OnEventMarkChange(Event)
           missionTanker:SetRadio(141)
           missionTanker:SetRepeat(99)
           missionTanker:SetRequiredEscorts(1, 2)
-          uglySupportDispatcher.airwing:AddMission(missionTanker)
+          uglySupportDispatcher.airwing:AddMission(missionTanker) 
 
           
       end
