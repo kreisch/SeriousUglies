@@ -7,16 +7,12 @@
 -- "USD, Tanker Boom, Alt 24000, Speed 350, Heading 030, Leg 15"
 -- "USD, Tanker Boom, Alt 24000, Speed 350, Heading 030, Start 1300, End 1400"
 
---- Umstellen:
--- Wenn eine Instanz des USDs erstellt wird, muss ein Airwing angegeben werden, sowie der Typ des Supports (Tanker, Awacs, CAS,...)
--- Die spezifische USD-Instanz hört dann entsprechend auf die Keywords für diesen Support-Type, oder nicht.
--- Vorteil: Man muss zur Laufzeit des USDs nicht differenzieren, ob der Airwing Tanker enthält oder nicht, das ist Aufgabe des Missions-Erstellers.
 
 -- @field #Support Dispatcher Table
-uglySupportDispatcher = {
+USD = {
   className = "Ugly Support Dispatcher",
   version ="0.1",
-  id = "UglySupportDispatcher", --- Identifier. All output in DCS.log will start with this.
+  id = "USD", --- Identifier. All output in DCS.log will start with this.
 
   keyphrase ="usd",
   keyphraseAltitude = "alt",
@@ -37,22 +33,21 @@ uglySupportDispatcher = {
   tankerDefaultLeg        = 15,
 
   debug = true,
-
-  airwing = AWIncirlik
+  airwings = {}
 }
 
 -- Version info.
-env.info(uglySupportDispatcher.id..string.format("Loading version %s", uglySupportDispatcher.version))
+env.info(USD.id..string.format("Loading version %s", USD.version))
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Event handler.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 --- Event handler.
-uglySupportDispatcher.eventHandler={}
+USD.eventHandler={}
 
 --- Handle world events.
-function uglySupportDispatcher.eventHandler:onEvent(Event)
+function USD.eventHandler:onEvent(Event)
 
 -- Only interested in S_EVENT_MARK_*
 if Event == nil or Event.idx == nil then
@@ -61,30 +56,30 @@ end
 
 -- Debug output.
 if Event.id     == world.event.S_EVENT_MARK_ADDED then
-  uglySupportDispatcher.info(uglySupportDispatcher.id.."S_EVENT_MARK_ADDED")
+  USD.info(USD.id.."S_EVENT_MARK_ADDED")
 elseif Event.id == world.event.S_EVENT_MARK_CHANGE then
-  uglySupportDispatcher.info(uglySupportDispatcher.id.."S_EVENT_MARK_CHANGE")
+  USD.info(USD.id.."S_EVENT_MARK_CHANGE")
 elseif Event.id == world.event.S_EVENT_MARK_REMOVED then
-  uglySupportDispatcher.info(uglySupportDispatcher.id.."S_EVENT_MARK_REMOVED")    
+  USD.info(USD.id.."S_EVENT_MARK_REMOVED")    
 end
-uglySupportDispatcher.info(string.format("Event id        = %s", tostring(Event.id)))
-uglySupportDispatcher.info(string.format("Event time      = %s", tostring(Event.time)))
-uglySupportDispatcher.info(string.format("Event idx       = %s", tostring(Event.idx)))
-uglySupportDispatcher.info(string.format("Event coalition = %s", tostring(Event.coalition)))
-uglySupportDispatcher.info(string.format("Event group id  = %s", tostring(Event.groupID)))
-uglySupportDispatcher.info(string.format("Event pos X     = %s", tostring(Event.pos.x)))
-uglySupportDispatcher.info(string.format("Event pos Y     = %s", tostring(Event.pos.y)))
-uglySupportDispatcher.info(string.format("Event pos Z     = %s", tostring(Event.pos.z)))
+USD.info(string.format("Event id        = %s", tostring(Event.id)))
+USD.info(string.format("Event time      = %s", tostring(Event.time)))
+USD.info(string.format("Event idx       = %s", tostring(Event.idx)))
+USD.info(string.format("Event coalition = %s", tostring(Event.coalition)))
+USD.info(string.format("Event group id  = %s", tostring(Event.groupID)))
+USD.info(string.format("Event pos X     = %s", tostring(Event.pos.x)))
+USD.info(string.format("Event pos Y     = %s", tostring(Event.pos.y)))
+USD.info(string.format("Event pos Z     = %s", tostring(Event.pos.z)))
 if Event.initiator~=nil then
   local _unitname=Event.initiator:getName()
-  uglySupportDispatcher.info(string.format("Event ini unit  = %s", tostring(_unitname)))
+  USD.info(string.format("Event ini unit  = %s", tostring(_unitname)))
 end
-uglySupportDispatcher.info(string.format("Event text      = \n%s", tostring(Event.text)))
+USD.info(string.format("Event text      = \n%s", tostring(Event.text)))
 
 
 -- Call event function when a marker has changed, i.e. text was entered or changed.
 if Event.id==world.event.S_EVENT_MARK_CHANGE then
-  uglySupportDispatcher._OnEventMarkChange(Event)
+  USD._OnEventMarkChange(Event)
 end
 
 end 
@@ -93,25 +88,25 @@ end
 -- Event handler functions.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
-function uglySupportDispatcher._OnEventMarkChange(Event)
+function USD._OnEventMarkChange(Event)
   -- If the event contains "Tanker Keyphrase", so player requests a tanker (Boom or basket decided later)
-  if Event.text~=nil and Event.text:lower():find(uglySupportDispatcher.keyphrase) then
-      uglySupportDispatcher.info(uglySupportDispatcher.id..string.format("USD Tag found.")) -- debug
+  if Event.text~=nil and Event.text:lower():find(USD.keyphrase) then
+      USD.info(USD.id..string.format("USD Tag found.")) -- debug
 
       -- First step, get position
       vec3    =   {x=Event.pos.x, y=Event.pos.y, z=Event.pos.z}
 
       -- Analyse the mark point text and extract the keywords to define the task related stuff
-      local _options=uglySupportDispatcher._MarkTextAnalysis(Event.text)
+      local _options=USD._MarkTextAnalysis(Event.text)
 
       --#region Tanker
       if _options.tankerType then -- If a tankerType is set, check which tanker we want to spawn
           --AUFTRAG:NewTANKER(Coordinate, Altitude, Speed, Heading, Leg, RefuelSystem)
           local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z)
-          local _altitude = uglySupportDispatcher.tankerDefaultAlt
-          local _speed = uglySupportDispatcher.tankerDefaultSpeed
-          local _heading = uglySupportDispatcher.tankerDefaultHeading
-          local _leg = uglySupportDispatcher.tankerDefaultLeg
+          local _altitude = USD.tankerDefaultAlt
+          local _speed = USD.tankerDefaultSpeed
+          local _heading = USD.tankerDefaultHeading
+          local _leg = USD.tankerDefaultLeg
           local _type = -1
 
           if _options.altitude then
@@ -131,13 +126,13 @@ function uglySupportDispatcher._OnEventMarkChange(Event)
           elseif _options.tankerType:find("basket") then
               _type = 1
           end
-          uglySupportDispatcher.info(uglySupportDispatcher.id..string.format(" Creating tanker task with type:\n%s", _options.tankerType)) -- debug
+          USD.info(USD.id..string.format(" Creating tanker task with type:\n%s", _options.tankerType)) -- debug
  
           local missionTanker = AUFTRAG:NewTANKER(_coordinate, _altitude, _speed, _heading, _leg, _type)
           
           if missionTanker then
               -- Remove Mark to avoid creating multiple missions
-              uglySupportDispatcher.info(uglySupportDispatcher.id..string.format(" Deleting marker with EventID:\n%s", Event.idx)) -- debug
+              USD.info(USD.id..string.format(" Deleting marker with EventID:\n%s", Event.idx)) -- debug
               trigger.action.removeMark(Event.idx)
               
               -- Create new marker here with all the information about the AUFTRAG. ID?
@@ -148,7 +143,7 @@ function uglySupportDispatcher._OnEventMarkChange(Event)
           missionTanker:SetRadio(141)
           missionTanker:SetRepeat(99)
           missionTanker:SetRequiredEscorts(1, 2)
-          uglySupportDispatcher.airwing:AddMission(missionTanker) 
+          USD.airwing:AddMission(missionTanker) 
 
           
       end
@@ -162,63 +157,63 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
 --- Extract keywords from mark text.
-function uglySupportDispatcher._MarkTextAnalysis(text)
+function USD._MarkTextAnalysis(text)
   local switch={} -- Option parameters extracted from the mark text.
   
-  uglySupportDispatcher.info(uglySupportDispatcher.id..string.format("MarkTextAnalysis text:\n%s", text)) -- debug
-  --if text:lower():find(uglySupportDispatcher.keyphrase) then -- check if USD is affected
+  USD.info(USD.id..string.format("MarkTextAnalysis text:\n%s", text)) -- debug
+  --if text:lower():find(USD.keyphrase) then -- check if USD is affected
 
-      local keywords=uglySupportDispatcher._split(text, ",")
+      local keywords=USD._split(text, ",")
 
       for _,keyphrase in pairs(keywords) do
 
         -- Split keyphrase by space. First one is the key and second, ... the parameter(s) until the next comma.
-        local str=uglySupportDispatcher._split(keyphrase, " ")
+        local str=USD._split(keyphrase, " ")
         local key=str[1]
         local val=str[2]
         
-        uglySupportDispatcher.info(uglySupportDispatcher.id..string.format("key:\n%s", key)) -- debug
+        USD.info(USD.id..string.format("key:\n%s", key)) -- debug
 
-        if key:lower():find(uglySupportDispatcher.keyphraseTanker) then
+        if key:lower():find(USD.keyphraseTanker) then
           if (val:lower():find("boom")) then
               switch.tankerType = val:lower()
-              uglySupportDispatcher.info(uglySupportDispatcher.id..string.format(" Value tankerType = %s", switch.tankerType))
+              USD.info(USD.id..string.format(" Value tankerType = %s", switch.tankerType))
           elseif (val:lower():find("basket")) then
               switch.tankerType = val:lower()
-              uglySupportDispatcher.info(uglySupportDispatcher.id..string.format(" Value tankerType = %s", switch.tankerType))
+              USD.info(USD.id..string.format(" Value tankerType = %s", switch.tankerType))
           else
-              uglySupportDispatcher.info(uglySupportDispatcher.id.." Value tankerType is invalid! Use Boom or Basket!")
+              USD.info(USD.id.." Value tankerType is invalid! Use Boom or Basket!")
           end
         end
 
-        if key:lower():find(uglySupportDispatcher.keyphraseAltitude) then
+        if key:lower():find(USD.keyphraseAltitude) then
           switch.altitude = tonumber(val)
-          uglySupportDispatcher.info(uglySupportDispatcher.id..string.format(" Value alt = %s", switch.altitude))
+          USD.info(USD.id..string.format(" Value alt = %s", switch.altitude))
         end
 
-        if key:lower():find(uglySupportDispatcher.keyphraseSpeed) then
+        if key:lower():find(USD.keyphraseSpeed) then
           switch.speed = tonumber(val)
-          uglySupportDispatcher.info(uglySupportDispatcher.id..string.format(" Value speed = %s", switch.speed))
+          USD.info(USD.id..string.format(" Value speed = %s", switch.speed))
         end
 
-        if key:lower():find(uglySupportDispatcher.keyphraseHeading) then
+        if key:lower():find(USD.keyphraseHeading) then
           switch.heading = tonumber(val)
-          uglySupportDispatcher.info(uglySupportDispatcher.id..string.format(" Value heading = %s", switch.heading))
+          USD.info(USD.id..string.format(" Value heading = %s", switch.heading))
         end
 
-        if key:lower():find(uglySupportDispatcher.keyphraseTimeStart) then
+        if key:lower():find(USD.keyphraseTimeStart) then
           switch.timeStart = tonumber(val)
-          uglySupportDispatcher.info(uglySupportDispatcher.id..string.format(" Value timeStart = %s", switch.timeStart))
+          USD.info(USD.id..string.format(" Value timeStart = %s", switch.timeStart))
         end
 
-        if key:lower():find(uglySupportDispatcher.keyphraseTimeEnd) then
+        if key:lower():find(USD.keyphraseTimeEnd) then
           switch.timeEnd = tonumber(val)
-          uglySupportDispatcher.info(uglySupportDispatcher.id..string.format(" Value timeEnd = %s", switch.timeEnd))
+          USD.info(USD.id..string.format(" Value timeEnd = %s", switch.timeEnd))
         end
 
-        if key:lower():find(uglySupportDispatcher.keyphraseLeg) then
+        if key:lower():find(USD.keyphraseLeg) then
           switch.leg = tonumber(val)
-          uglySupportDispatcher.info(uglySupportDispatcher.id..string.format(" Value leg = %s", switch.leg))
+          USD.info(USD.id..string.format(" Value leg = %s", switch.leg))
         end
 
         
@@ -228,14 +223,14 @@ function uglySupportDispatcher._MarkTextAnalysis(text)
 end
 
 --- Debug output to dcs.log file.
-function uglySupportDispatcher.info(text)
-if uglySupportDispatcher.debug then
+function USD.info(text)
+if USD.debug then
   env.info(text)
 end
 end
 
 --- Split string. C.f. http://stackoverflow.com/questions/1426954/split-string-in-lua
-function uglySupportDispatcher._split(str, sep)
+function USD._split(str, sep)
 local result = {}
 local regex = ("([^%s]+)"):format(sep)
 for each in str:gmatch(regex) do
@@ -244,4 +239,12 @@ end
 return result
 end
 
-world.addEventHandler(uglySupportDispatcher.eventHandler)
+world.addEventHandler(USD.eventHandler)
+
+
+USD.airwings[1] = {hasTanker = false, hasCAS = false}
+USD.airwings[2] = {hasTanker = true, hasCAS = false}
+
+env.info("USD.airwings[AWNalchik] hasTanker? " .. USD.airwings[1][hasTanker])
+env.info("USD.airwings[AWIncirlik] hasTanker? " .. USD.airwings[2][hasTanker])
+env.info("Airbase is " .. USD.airwings[1].airbase)
