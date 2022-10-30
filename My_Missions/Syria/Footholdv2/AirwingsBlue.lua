@@ -1,11 +1,11 @@
-local AWNavyBoys = AIRWING:New("GeorgeWashington","NavyBoys")
+AWNavyBoys = AIRWING:New("GeorgeWashington","NavyBoys")
 AWNavyBoys:SetMarker(false)
 AWNavyBoys:SetAirbase(AIRBASE:FindByName("GeorgeWashington"))
 AWNavyBoys:SetRespawnAfterDestroyed(900)
 AWNavyBoys:SetTakeoffCold()
 AWNavyBoys:__Start(2)
 
-local AWIncirlik = AIRWING:New("Incirlik","Airwing Incirlik")
+AWIncirlik = AIRWING:New("Incirlik","Airwing Incirlik")
 AWIncirlik:SetMarker(false)
 AWIncirlik:SetAirbase(AIRBASE:FindByName(AIRBASE.Syria.Incirlik))
 AWIncirlik:SetRespawnAfterDestroyed(900)

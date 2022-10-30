@@ -623,15 +623,15 @@ do
 	GlobalSettings.messages = {
 		grouplost = false,
 		captured = true,
-		upgraded = true,
-		repaired = true,
+		upgraded = false,
+		repaired = false,
 		zonelost = true,
 		disabled = true
 	}
 	
 	GlobalSettings.defaultRespawns = {}
 	GlobalSettings.defaultRespawns[1] = {
-		supply = { dead=35*60, hangar=20*60, preparing=5*60},
+		supply = { dead=1200*60, hangar=1200*60, preparing=10*60}, --supply = { dead=35*60, hangar=20*60, preparing=5*60},
 		patrol = { dead=38*60, hangar=2*60, preparing=2*60},
 		attack = { dead=38*60, hangar=2*60, preparing=2*60}
 	}
@@ -722,7 +722,7 @@ do
 		
 		obj.difficulty = difficulty
 		obj.updateFrequency = updateFrequency
-		obj.saveFrequency = saveFrequency
+		obj.saveFrequency = saveFrequency-
 		
 		
 		setmetatable(obj, self)

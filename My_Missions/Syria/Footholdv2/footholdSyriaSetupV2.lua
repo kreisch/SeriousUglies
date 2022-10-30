@@ -214,6 +214,12 @@ flavor = {
 	sa5_3_= 'WPT xx\n',
 	homsIEDFactory = 'WPT xx\n',
 	sa2_2 = 'WPT xx\n',
+	sa2_3 = 'WPT xx\n',
+	sa2_4 = 'WPT xx\n',
+	sa2_5 = 'WPT xx\n',
+	sa2_6 = 'WPT xx\n',
+	sa2_7 = 'WPT xx\n',
+	ewr = 'WPT xx\n',
 	annasiriyah = 'WPT XX' -- END new zones by kreisch
 }
 local filepath = 'footholdSyria_2.0.lua'
@@ -281,7 +287,26 @@ zones = {
 	shayrat = ZoneCommander:new({zone='Shayrat', side=1, level=4, upgrades=upgrades.airfield, crates={}, flavorText=flavor.shayrat}),
 	homsIEDFactory = ZoneCommander:new({zone='Homs IED Factory', side=1, level=4, upgrades=upgrades.generic, crates={}, flavorText=flavor.homsIEDFactory}),
 	sa2_2 = ZoneCommander:new({zone='SA2_2', side=1, level=3, upgrades=upgrades.sa2, crates={}, flavorText=flavor.sa2_2}),
-	sa2_3 = ZoneCommander:new({zone='SA2_3', side=1, level=3, upgrades=upgrades.sa2, crates={}, flavorText=flavor.sa2_2})
+	sa2_3 = ZoneCommander:new({zone='SA2_3', side=1, level=3, upgrades=upgrades.sa2, crates={}, flavorText=flavor.sa2_3}),
+	sa2_4 = ZoneCommander:new({zone='SA2_4', side=1, level=3, upgrades=upgrades.sa2, crates={}, flavorText=flavor.sa2_4}),
+	sa2_5 = ZoneCommander:new({zone='SA2_5', side=1, level=3, upgrades=upgrades.sa2, crates={}, flavorText=flavor.sa2_5}),
+	sa2_6 = ZoneCommander:new({zone='SA2_6', side=1, level=3, upgrades=upgrades.sa2, crates={}, flavorText=flavor.sa2_6}),
+	sa2_7 = ZoneCommander:new({zone='SA2_7', side=1, level=3, upgrades=upgrades.sa2, crates={}, flavorText=flavor.sa2_7}),
+
+	ewr_1 = ZoneCommander:new({zone='ewr-1', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_2 = ZoneCommander:new({zone='ewr-2', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_3 = ZoneCommander:new({zone='ewr-3', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_4 = ZoneCommander:new({zone='ewr-4', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_5 = ZoneCommander:new({zone='ewr-5', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_6 = ZoneCommander:new({zone='ewr-6', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_7 = ZoneCommander:new({zone='ewr-7', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_8 = ZoneCommander:new({zone='ewr-8', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_9 = ZoneCommander:new({zone='ewr-9', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_10 = ZoneCommander:new({zone='ewr-10', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_11 = ZoneCommander:new({zone='ewr-11', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_12 = ZoneCommander:new({zone='ewr-12', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_13 = ZoneCommander:new({zone='ewr-13', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
+	ewr_14 = ZoneCommander:new({zone='ewr-14', side=1, level=3, upgrades=upgrades.ewr, crates={}, flavorText=flavor.ewr}),
 
 }
 
@@ -312,8 +337,8 @@ zones.hatay:addGroups({
 	GroupCommander:new({name='hatay-supply-4', mission='supply', targetzone='Minakh'}),
 	GroupCommander:new({name='hatay-supply-5', mission='supply', targetzone='Taftanaz'}),
 	GroupCommander:new({name='hatay-supply-6', mission='supply', targetzone='Bassel Al-Assad'}),
-	GroupCommander:new({name='hatay-supply-7', mission='supply', targetzone='Bravo'}),
-	GroupCommander:new({name='hatay-supply-8', mission='supply', targetzone='Bravo'}),
+	--GroupCommander:new({name='hatay-supply-7', mission='supply', targetzone='Bravo'}),
+	--GroupCommander:new({name='hatay-supply-8', mission='supply', targetzone='Bravo'}),
 	GroupCommander:new({name='hatay-patrol-1', mission='patrol', targetzone='Hatay'}),
 	GroupCommander:new({name='hatay-patrol-2', mission='patrol', targetzone='Hatay'}),
 	GroupCommander:new({name='hatay-attack-1', mission='attack', targetzone='Hotel'})
@@ -343,8 +368,8 @@ zones.aleppo:addGroups({
 	GroupCommander:new({name='aleppo-supply-5', mission='supply', targetzone='Minakh'}),
 	GroupCommander:new({name='aleppo-supply-7', mission='supply', targetzone='Jirah'}),
 	GroupCommander:new({name='aleppo-supply-8', mission='supply', targetzone='Abu al-Duhur'}),
-	GroupCommander:new({name='aleppo-supply-9', mission='supply', targetzone='Delta'}),
-	GroupCommander:new({name='aleppo-supply-10', mission='supply', targetzone='Delta'}),
+	--GroupCommander:new({name='aleppo-supply-9', mission='supply', targetzone='Delta'}),
+	--GroupCommander:new({name='aleppo-supply-10', mission='supply', targetzone='Delta'}),
 	GroupCommander:new({name='aleppo-patrol-1', mission='patrol', targetzone='Taftanaz'}),
 	GroupCommander:new({name='aleppo-patrol-2', mission='patrol', targetzone='Charlie'}),
 	GroupCommander:new({name='aleppo-attack-1', mission='attack', targetzone='Bravo'}),
@@ -360,8 +385,8 @@ zones.taftanaz:addGroups({
 	GroupCommander:new({name='taftanaz-supply-3', mission='supply', targetzone='Abu al-Duhur'}),
 	GroupCommander:new({name='taftanaz-supply-4', mission='supply', targetzone='Hatay'}),
 	GroupCommander:new({name='taftanaz-supply-6', mission='supply', targetzone='Abu al-Duhur'}),
-	GroupCommander:new({name='taftanaz-supply-7', mission='supply', targetzone='Delta'}),
-	GroupCommander:new({name='taftanaz-supply-8', mission='supply', targetzone='Delta'}),
+	--GroupCommander:new({name='taftanaz-supply-7', mission='supply', targetzone='Delta'}),
+	--GroupCommander:new({name='taftanaz-supply-8', mission='supply', targetzone='Delta'}),
 	GroupCommander:new({name='taftanaz-supply-9', mission='supply', targetzone='Power Plant'}),
 	GroupCommander:new({name='taftanaz-supply-10', mission='supply', targetzone='Power Plant'}),
 	GroupCommander:new({name='taftanaz-attack-1', mission='attack', targetzone='Hatay'}),
@@ -406,8 +431,8 @@ zones.tabqa:addGroups({
 	GroupCommander:new({name='tabqa-supply-10', mission='supply', targetzone='Dam'}),
 	GroupCommander:new({name='tabqa-supply-11', mission='supply', targetzone='Military Base'}),
 	GroupCommander:new({name='tabqa-supply-12', mission='supply', targetzone='Military Base'}),
-	GroupCommander:new({name='tabqa-supply-13', mission='supply', targetzone='Juliett'}),
-	GroupCommander:new({name='tabqa-supply-14', mission='supply', targetzone='Juliett'}),
+	--GroupCommander:new({name='tabqa-supply-13', mission='supply', targetzone='Juliett'}),
+	--GroupCommander:new({name='tabqa-supply-14', mission='supply', targetzone='Juliett'}),
 	GroupCommander:new({name='tabqa-supply-15', mission='supply', targetzone='Oscar'}),
 	GroupCommander:new({name='tabqa-supply-16', mission='supply', targetzone='Oscar'}),
 	GroupCommander:new({name='tabqa-patrol-1', mission='patrol', targetzone='Tabqa'}),
@@ -438,8 +463,8 @@ zones.alduhur:addGroups({
 	GroupCommander:new({name='alduhur-supply-8', mission='supply', targetzone='Jirah'}),
 	GroupCommander:new({name='alduhur-supply-9', mission='supply', targetzone='Hama'}),
 	GroupCommander:new({name='alduhur-supply-10', mission='supply', targetzone='Bassel Al-Assad'}),
-	GroupCommander:new({name='alduhur-supply-11', mission='supply', targetzone='India'}),
-	GroupCommander:new({name='alduhur-supply-12', mission='supply', targetzone='India'}),
+	--GroupCommander:new({name='alduhur-supply-11', mission='supply', targetzone='India'}),
+	--GroupCommander:new({name='alduhur-supply-12', mission='supply', targetzone='India'}),
 	GroupCommander:new({name='alduhur-supply-13', mission='supply', targetzone='Factory'}),
 	GroupCommander:new({name='alduhur-supply-14', mission='supply', targetzone='Factory'}),
 	GroupCommander:new({name='alduhur-supply-15', mission='supply', targetzone='November'}),
@@ -460,8 +485,8 @@ zones.alassad:addGroups({
 	GroupCommander:new({name='alassad-supply-4', mission='supply', targetzone='Hatay'}),
 	GroupCommander:new({name='alassad-supply-5', mission='supply', targetzone='Hama'}),
 	GroupCommander:new({name='alassad-supply-6', mission='supply', targetzone='Abu al-Duhur'}),
-	GroupCommander:new({name='alassad-supply-7', mission='supply', targetzone='Hotel'}),
-	GroupCommander:new({name='alassad-supply-8', mission='supply', targetzone='Hotel'}),
+	--GroupCommander:new({name='alassad-supply-7', mission='supply', targetzone='Hotel'}),
+	--GroupCommander:new({name='alassad-supply-8', mission='supply', targetzone='Hotel'}),
 	GroupCommander:new({name='alassad-supply-9', mission='supply', targetzone='Romeo'}),
 	GroupCommander:new({name='alassad-supply-10', mission='supply', targetzone='Romeo'}),
 	GroupCommander:new({name='alassad-patrol-1', mission='patrol', targetzone='Echo'}),
@@ -476,8 +501,8 @@ zones.hama:addGroups({
 	GroupCommander:new({name='hama-supply-4', mission='supply', targetzone='Bassel Al-Assad'}),
 	GroupCommander:new({name='hama-supply-5', mission='supply', targetzone='Abu al-Duhur'}),
 	GroupCommander:new({name='hama-supply-6', mission='supply', targetzone='Palmyra'}),
-	GroupCommander:new({name='hama-supply-7', mission='supply', targetzone='India'}),
-	GroupCommander:new({name='hama-supply-8', mission='supply', targetzone='India'}),
+	--GroupCommander:new({name='hama-supply-7', mission='supply', targetzone='India'}),
+	--GroupCommander:new({name='hama-supply-8', mission='supply', targetzone='India'}),
 	GroupCommander:new({name='hama-supply-9', mission='supply', targetzone='November'}),
 	GroupCommander:new({name='hama-supply-10', mission='supply', targetzone='November'}),
 	GroupCommander:new({name='hama-supply-11', mission='supply', targetzone='Romeo'}),
@@ -531,8 +556,8 @@ zones.tiyas:addGroups({
 zones.refinery:addGroups({
 	GroupCommander:new({name='refinery-supply-1', mission='supply', targetzone='Palmyra', type='surface'}),
 	GroupCommander:new({name='refinery-supply-2', mission='supply', targetzone='Palmyra', type='surface'}),
-	GroupCommander:new({name='refinery-supply-3', mission='supply', targetzone='Juliett', type='surface'}),
-	GroupCommander:new({name='refinery-supply-4', mission='supply', targetzone='Juliett', type='surface'})
+	--GroupCommander:new({name='refinery-supply-3', mission='supply', targetzone='Juliett', type='surface'}),
+	--GroupCommander:new({name='refinery-supply-4', mission='supply', targetzone='Juliett', type='surface'})
 })
 
 zones.factory:addGroups({
@@ -1283,7 +1308,7 @@ end)
 Group.getByName('jtacDrone'):destroy()
 local jtacTargetMenu = nil
 drone = JTAC:new({name = 'jtacDrone'})
-bc:registerShopItem('jtac', 'MQ-9 Reaper JTAC mission', 100, function(sender)
+bc:registerShopItem('jtac', 'MQ-9 Reaper JTAC mission', 500, function(sender)
 	
 	if jtacTargetMenu then
 		return 'Choose target zone from F10 menu'
@@ -1338,7 +1363,7 @@ local smoketargets = function(tz)
 end
 
 local smokeTargetMenu = nil
-bc:registerShopItem('smoke', 'Smoke markers', 50, function(sender)
+bc:registerShopItem('smoke', 'Smoke markers', 5000, function(sender)
 	if smokeTargetMenu then
 		return 'Choose target zone from F10 menu'
 	end
@@ -1593,7 +1618,7 @@ bc:init()
 bc:startRewardPlayerContribution(15,{infantry = 10, ground = 20, sam = 40, airplane = 50, ship = 250, helicopter=50, crate=200, rescue = 100})
 --HercCargoDropSupply.init(bc)
 
-GlobalSettings.defaultRespawns[1]['supply'] = { dead=60*60, hangar=30*60, preparing=5*60}
+GlobalSettings.defaultRespawns[1]['supply'] = { dead=60*60*48, hangar=60*60*48, preparing=60*60*48}
 GlobalSettings.setDifficultyScaling(1.4,1)
 
 evc = EventCommander:new({ decissionFrequency=30*60, decissionVariance=30*60, skipChance = 10})
@@ -1651,126 +1676,126 @@ evc:addEvent({
 	end
 })
 
-Group.getByName('escort-me'):destroy()
-Group.getByName('interceptor-1'):destroy()
-Group.getByName('interceptor-2'):destroy()
-evc:addEvent({
-	id='escort',
-	action = function()
-		mist.respawnGroup('escort-me', true)
+-- Group.getByName('escort-me'):destroy()
+-- Group.getByName('interceptor-1'):destroy()
+-- Group.getByName('interceptor-2'):destroy()
+-- evc:addEvent({
+-- 	id='escort',
+-- 	action = function()
+-- 		mist.respawnGroup('escort-me', true)
 		
-		local spawnIntercept = function(groupname)
-			if Group.getByName('escort-me') then
-				local g = Group.getByName(groupname)
-				if not g then
-					if math.random(1,100) > 30 then
-						if math.random(1,100) > 50 then
-							trigger.action.outTextForCoalition(2,'Enemy interceptor spotted heading for our cargo transport.',15)
-						else
-							trigger.action.outTextForCoalition(2,'The enemy has launched an intercept mission against our cargo transport',15)
-						end
-						mist.respawnGroup(groupname, true)
-					end
-				end
-			end
-		end
+-- 		local spawnIntercept = function(groupname)
+-- 			if Group.getByName('escort-me') then
+-- 				local g = Group.getByName(groupname)
+-- 				if not g then
+-- 					if math.random(1,100) > 30 then
+-- 						if math.random(1,100) > 50 then
+-- 							trigger.action.outTextForCoalition(2,'Enemy interceptor spotted heading for our cargo transport.',15)
+-- 						else
+-- 							trigger.action.outTextForCoalition(2,'The enemy has launched an intercept mission against our cargo transport',15)
+-- 						end
+-- 						mist.respawnGroup(groupname, true)
+-- 					end
+-- 				end
+-- 			end
+-- 		end
 		
-		local timers = {math.random(10*60,20*60), math.random(15*60,25*60)}
-		mist.scheduleFunction(spawnIntercept, {'interceptor-1'}, timer.getTime()+timers[1])
-		mist.scheduleFunction(spawnIntercept, {'interceptor-2'}, timer.getTime()+timers[2])
-	end,
-	canExecute = function()
-		local gr = Group.getByName('escort-me')
-		if gr then return false end
+-- 		local timers = {math.random(10*60,20*60), math.random(15*60,25*60)}
+-- 		mist.scheduleFunction(spawnIntercept, {'interceptor-1'}, timer.getTime()+timers[1])
+-- 		mist.scheduleFunction(spawnIntercept, {'interceptor-2'}, timer.getTime()+timers[2])
+-- 	end,
+-- 	canExecute = function()
+-- 		local gr = Group.getByName('escort-me')
+-- 		if gr then return false end
 		
-		local triggers = {'Abu al-Duhur', 'Hatay', 'Incirlik', 'Taftanaz', 'Hama'}
-		for _,v in ipairs(triggers) do
-			if bc:getZoneByName(v).side == 2 then
-				return true
-			end
-		end
+-- 		local triggers = {'Abu al-Duhur', 'Hatay', 'Incirlik', 'Taftanaz', 'Hama'}
+-- 		for _,v in ipairs(triggers) do
+-- 			if bc:getZoneByName(v).side == 2 then
+-- 				return true
+-- 			end
+-- 		end
 		
-		return false
-	end
-})
+-- 		return false
+-- 	end
+-- })
 
-Group.getByName('evt-cas'):destroy()
-evc:addEvent({
-	id='cas',
-	action = function()
-		mist.respawnGroup('evt-cas', true)
+-- Group.getByName('evt-cas'):destroy()
+-- evc:addEvent({
+-- 	id='cas',
+-- 	action = function()
+-- 		mist.respawnGroup('evt-cas', true)
 		
-		timer.scheduleFunction(function(param, time)
-			local tgts = {
-				'Hatay',
-				'Abu al-Duhur',
-				'Hama',
-				'Jirah',
-				'Aleppo',
-				'Taftanaz',
-				'Palmyra',
-				'Bassel Al-Assad',
-				'Hotel',
-				'Juliett',
-				'Factory',
-				'India',
-				'Military Base'
-			}
+-- 		timer.scheduleFunction(function(param, time)
+-- 			local tgts = {
+-- 				'Hatay',
+-- 				'Abu al-Duhur',
+-- 				'Hama',
+-- 				'Jirah',
+-- 				'Aleppo',
+-- 				'Taftanaz',
+-- 				'Palmyra',
+-- 				'Bassel Al-Assad',
+-- 				'Hotel',
+-- 				'Juliett',
+-- 				'Factory',
+-- 				'India',
+-- 				'Military Base'
+-- 			}
 			
-			local validtgts = {}
-			for _,v in ipairs(tgts) do
-				if bc:getZoneByName(v).side == 2 then
-					table.insert(validtgts, v)
-				end
-			end
+-- 			local validtgts = {}
+-- 			for _,v in ipairs(tgts) do
+-- 				if bc:getZoneByName(v).side == 2 then
+-- 					table.insert(validtgts, v)
+-- 				end
+-- 			end
 			
-			if #validtgts ~= 0 then
-				local die = math.random(1,#validtgts)
-				local choice = validtgts[die]
+-- 			if #validtgts ~= 0 then
+-- 				local die = math.random(1,#validtgts)
+-- 				local choice = validtgts[die]
 				
-				if Group.getByName('evt-cas') then
-					bc:engageZone(choice, 'evt-cas')
-				end
-			end
-		end, {}, timer.getTime()+3)
-	end,
-	canExecute = function()
-		local gr = Group.getByName('evt-cas')
-		if gr then return false end
+-- 				if Group.getByName('evt-cas') then
+-- 					bc:engageZone(choice, 'evt-cas')
+-- 				end
+-- 			end
+-- 		end, {}, timer.getTime()+3)
+-- 	end,
+-- 	canExecute = function()
+-- 		local gr = Group.getByName('evt-cas')
+-- 		if gr then return false end
 		
-		if bc:getZoneByName('Palmyra').side ~= 1 then return false end
+-- 		if bc:getZoneByName('Palmyra').side ~= 1 then return false end
 		
-		local triggers = {'Abu al-Duhur', 'Aleppo', 'Hama', 'Tabqa'}
-		for _,v in ipairs(triggers) do
-			if bc:getZoneByName(v).side == 2 then
-				return true
-			end
-		end
+-- 		local triggers = {'Abu al-Duhur', 'Aleppo', 'Hama', 'Tabqa'}
+-- 		for _,v in ipairs(triggers) do
+-- 			if bc:getZoneByName(v).side == 2 then
+-- 				return true
+-- 			end
+-- 		end
 		
-		return false
-	end
-})
+-- 		return false
+-- 	end
+-- })
 
-Group.getByName('evt-bomber'):destroy()
-evc:addEvent({
-	id='bomb',
-	action = function()
-		mist.respawnGroup('evt-bomber', true)
-	end,
-	canExecute = function()
-		local gr = Group.getByName('evt-bomber')
-		if gr then return false end
+-- Group.getByName('evt-bomber'):destroy()
+-- evc:addEvent({
+-- 	id='bomb',
+-- 	action = function()
+-- 		mist.respawnGroup('evt-bomber', true)
+-- 	end,
+-- 	canExecute = function()
+-- 		local gr = Group.getByName('evt-bomber')
+-- 		if gr then return false end
 		
-		local triggers = {'Abu al-Duhur', 'Aleppo', 'Hama', 'Tabqa', 'Palmyra'}
-		for _,v in ipairs(triggers) do
-			if bc:getZoneByName(v).side == 2 then
-				return true
-			end
-		end
+-- 		local triggers = {'Abu al-Duhur', 'Aleppo', 'Hama', 'Tabqa', 'Palmyra'}
+-- 		for _,v in ipairs(triggers) do
+-- 			if bc:getZoneByName(v).side == 2 then
+-- 				return true
+-- 			end
+-- 		end
 		
-		return false
-	end
-})
+-- 		return false
+-- 	end
+-- })
 
 function startBomberAttack() -- called from bomber groups waypoint actions
 	local tgts = {
@@ -1800,9 +1825,9 @@ function startBomberAttack() -- called from bomber groups waypoint actions
 		local die = math.random(1,#validtgts)
 		local choice = validtgts[die]
 		
-		if Group.getByName('evt-bomber') then
-			bc:engageZone(choice, 'evt-bomber',  AI.Task.WeaponExpend.HALF)
-		end
+		-- if Group.getByName('evt-bomber') then
+		-- 	bc:engageZone(choice, 'evt-bomber',  AI.Task.WeaponExpend.HALF)
+		-- end
 	end
 end
 
@@ -1945,18 +1970,18 @@ mc:trackMission({
 	end
 })
 
-mc:trackMission({
-	title = "Escort cargo plane",
-	description = "Friendly cargo plane is taking off from Incirlik. Protect it until it leaves the airspace.",
-	messageStart = "New mission: Escort cargo plane",
-	messageEnd = "Mission ended: Escort cargo plane",
-	startAction = function() trigger.action.outSoundForCoalition(2,"ding.ogg") end,
-	endAction = function() trigger.action.outSoundForCoalition(2,"cancel.ogg") end,
-	isActive = function()
-		if Group.getByName('escort-me') then return true end
-		return false
-	end
-})
+-- mc:trackMission({
+-- 	title = "Escort cargo plane",
+-- 	description = "Friendly cargo plane is taking off from Incirlik. Protect it until it leaves the airspace.",
+-- 	messageStart = "New mission: Escort cargo plane",
+-- 	messageEnd = "Mission ended: Escort cargo plane",
+-- 	startAction = function() trigger.action.outSoundForCoalition(2,"ding.ogg") end,
+-- 	endAction = function() trigger.action.outSoundForCoalition(2,"cancel.ogg") end,
+-- 	isActive = function()
+-- 		if Group.getByName('escort-me') then return true end
+-- 		return false
+-- 	end
+-- })
 
 mc:trackMission({
 	title = "Defend Abu al-Duhur",
@@ -2075,31 +2100,31 @@ mc:trackMission({
 	end
 })
 
-mc:trackMission({
-	title = "Intercept Bombers",
-	description = "Enemy bombers spotted to the north-east\nDestroy them before they get in range.",
-	messageStart = "New mission: Intercept Bombers",
-	messageEnd = "Mission ended: Intercept Bombers",
-	startAction = function() trigger.action.outSoundForCoalition(2,"ding.ogg") end,
-	endAction = function() trigger.action.outSoundForCoalition(2,"cancel.ogg") end,
-	isActive = function()
-		local gr = Group.getByName('evt-bomber')
-		if gr then return true else return false end
-	end
-})
+-- mc:trackMission({
+-- 	title = "Intercept Bombers",
+-- 	description = "Enemy bombers spotted to the north-east\nDestroy them before they get in range.",
+-- 	messageStart = "New mission: Intercept Bombers",
+-- 	messageEnd = "Mission ended: Intercept Bombers",
+-- 	startAction = function() trigger.action.outSoundForCoalition(2,"ding.ogg") end,
+-- 	endAction = function() trigger.action.outSoundForCoalition(2,"cancel.ogg") end,
+-- 	isActive = function()
+-- 		local gr = Group.getByName('evt-bomber')
+-- 		if gr then return true else return false end
+-- 	end
+-- })
 
-mc:trackMission({
-	title = "Intercept enemy airstrike",
-	description = "Enemy aircraft conducting an airstrike from the south-east\nDestroy them before they get in range.",
-	messageStart = "New mission: Intercept enemy airstrike",
-	messageEnd = "Mission ended: Intercept enemy airstrike",
-	startAction = function() trigger.action.outSoundForCoalition(2,"ding.ogg") end,
-	endAction = function() trigger.action.outSoundForCoalition(2,"cancel.ogg") end,
-	isActive = function()
-		local gr = Group.getByName('evt-cas')
-		if gr then return true else return false end
-	end
-})
+-- mc:trackMission({
+-- 	title = "Intercept enemy airstrike",
+-- 	description = "Enemy aircraft conducting an airstrike from the south-east\nDestroy them before they get in range.",
+-- 	messageStart = "New mission: Intercept enemy airstrike",
+-- 	messageEnd = "Mission ended: Intercept enemy airstrike",
+-- 	startAction = function() trigger.action.outSoundForCoalition(2,"ding.ogg") end,
+-- 	endAction = function() trigger.action.outSoundForCoalition(2,"cancel.ogg") end,
+-- 	isActive = function()
+-- 		local gr = Group.getByName('evt-cas')
+-- 		if gr then return true else return false end
+-- 	end
+-- })
 
 resupplyTarget = nil
 mc:trackMission({
