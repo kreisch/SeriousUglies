@@ -29,8 +29,30 @@ Scoring:AddStaticScore( STATIC:FindByName( "Ru_Zone1_HQ" ), 100 )
 -- #region OPTIONS
 local useEnemyAir = true
 -- #endregion
+
+local function OnAfterCapturedCZ1()
+  trigger.action.outText("On After Captured CombatZone-1", 30)
+end
+
+local function OnEnterAttackedDoCZ1()
+  trigger.action.outText("On Enter Attack CombatZone-1", 30)
+end
+
+local function OnAfterAttackedDoCZ1()
+  trigger.action.outText("On After Attack CombatZone-1", 30)
+end
+
+local function OnEnterGuardedDoCZ1()
+  trigger.action.outText("On Enter Guarded CombatZone-1", 30)
+end
+
+
 local zoneConfigs = {
-  ["CombatZone-1"] = {airwing = AWNalchik, Zone = nil, OpsZone = nil}, -- easy
+  ["CombatZone-1"] = { airwing = AWNalchik, Zone = nil, OpsZone = nil, 
+                       OnAfterCapturedDo =  OnAfterCapturedCZ1,
+                       OnEnterAttackedDo = OnEnterAttackedDoCZ1, 
+                       OnAfterAttackedDo = OnAfterAttackedDoCZ1, 
+                       OnEnterGuardedDo = OnEnterGuardedDoCZ1 }, -- easy
   ["CombatZone-2"] = {airwing = AWFARP_RF_CZ02_02, Zone = nil, OpsZone = nil}, -- easy
   ["CombatZone-3"] = {airwing = AWNalchik, Zone = nil, OpsZone = nil}, -- medium
   ["CombatZone-4"] = {airwing = AWNalchik, Zone = nil, OpsZone = nil}, -- medium
@@ -84,27 +106,43 @@ local function initZone(_name)
 
   -- wenn diese Methoden drin sind, werden die Zonen nicht richtig gezeichnet.
   function theOpsZone:OnAfterCaptured(From, Event, To, Coalition)
-    BASE:I(theOpsZone:GetName() .. " captured!")
     if Coalition == coalition.side.BLUE then
       local m = MESSAGE:New("We captured " .. theOpsZone:GetName() .. "! Well done! ", 15, "Blue Chief"):ToAll()
     else
       local m = MESSAGE:New("We lost " .. theOpsZone:GetName() .. "! Capture it back! ", 15, "Blue Chief"):ToAll()
     end
+
+    if zoneConfigs[_name]["OnAfterCapturedDo"] then
+      zoneConfigs[_name]["OnAfterCapturedDo"]()
+    end
+
   end
 
   function theOpsZone:OnEnterAttacked(From, Event, To)
     local m = MESSAGE:New(theOpsZone:GetName() .. " OnEnterAttacked! ", 15, "Blue Chief"):ToAll()
-    BASE:I(theOpsZone:GetName() .. " OnEnterAttacked!")
+
+    if zoneConfigs[_name]["OnEnterAttackedDo"] then
+      zoneConfigs[_name]["OnEnterAttackedDo"]()
+    end
+
   end
 
   function theOpsZone:OnAfterAttacked(From, Event, To, AttackerCoalition)
     local m = MESSAGE:New(theOpsZone:GetName() .. " OnAfterAttacked! ", 15, "Blue Chief"):ToAll()
-    BASE:I(theOpsZone:GetName() .. " OnAfterAttacked")
+
+    if zoneConfigs[_name]["OnAfterAttackedDo"] then
+      zoneConfigs[_name]["OnAfterAttackedDo"]()
+    end
+
   end
 
   function theOpsZone:OnEnterGuarded(From, Event, To)
     local m = MESSAGE:New(theOpsZone:GetName() .. " Guarded ", 15, "Blue Chief"):ToAll()
-    BASE:I(theOpsZone:GetName() .. " Guarded")
+
+    if zoneConfigs[_name]["OnEnterGuardedDo"] then
+      zoneConfigs[_name]["OnEnterGuardedDo"]()
+    end
+
   end
 end
 
@@ -141,7 +179,7 @@ local function doActionForZone(_inZone, _contact)
       armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
       armygroup:AddWeaponRange(0, UTILS.KiloMetersToNM(2))
       armygroup:AddMission(mission)
-    elseif (true) then -- Hier abfragen ob CAS aktiviert werden soll für rot.
+    elseif (true) then -- Hier abfragen ob CAS aktiviert werden soll fï¿½r rot.
       local mission = AUFTRAG:NewBAI(targetGroup, nil)
       mission:SetRepeatOnFailure(6)
       zoneConfigs[_inZone:GetName()]["airwing"]:AddMission(mission)
