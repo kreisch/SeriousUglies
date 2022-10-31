@@ -124,20 +124,26 @@ local function getRandomFactoryZone(_facPref)
   for i = currentFacCount, 1, -1 do
     UglyPrintDebug("current i ... " .. i)
     local currentObj = facList[i]["object"]
-    UglyPrintDebug("current ClassName ... " .. facList[i]["object"]:GetClassName())
 
-    if facList[i]["object"]:GetClassName() == "SCENERY" then
-      local oldName = facList[i]["object"]:GetName()
-      currentObj = SCENERY:FindByName(oldName)
-      facList[i]["object"] = currentObj
-    end
-
-    if currentObj:IsAlive() == false then
-      UglyPrintDebug("Dead, so removing: " .. currentObj:GetName())
+    if currentObj == nil then
+      UglyPrintDebug("current i is NULL, removing! .. " .. i)
       table.remove(facList, i)
     else
-      UglyPrintDebug("Still Alive: " .. currentObj:GetName())
-      UglyPrintDebug("ClassName: " .. currentObj:GetClassName())
+      UglyPrintDebug("current ClassName ... " .. facList[i]["object"]:GetClassName())
+
+      if facList[i]["object"]:GetClassName() == "SCENERY" then
+        local oldName = facList[i]["object"]:GetName()
+        currentObj = SCENERY:FindByName(oldName)
+        facList[i]["object"] = currentObj
+      end
+
+      if currentObj:IsAlive() == false then
+        UglyPrintDebug("Dead, so removing: " .. currentObj:GetName())
+        table.remove(facList, i)
+      else
+        UglyPrintDebug("Still Alive: " .. currentObj:GetName())
+        UglyPrintDebug("ClassName: " .. currentObj:GetClassName())
+      end
     end
   end
 
@@ -191,15 +197,20 @@ function registerFactory(_facName)
       UglyPrintDebug("Registering Factory by SceneryID: " .. theZone:GetName())
 
       local theID = string.sub (theZone:GetName(), string.len(_facName) + string.len(sceneryIDPostfix) + 2, string.len(theZone:GetName()))
-      local theScenery = SCENERY:FindByName(tonumber(theID))
-      local zoneName = _facName .. respawnZonePostfix .. "_" .. theID
-      local facData = {object = theScenery, zone = ZONE:FindByName(zoneName)}
-      factoryRegistration[_facName][theCount] = facData
-      theCount = theCount + 1
+      local theScenery = SCENERY:FindByName(theID, theZone:GetCoordinate(), 500)
 
-      UglyPrintDebug("theID: " .. theID .. ", zoneName: " .. zoneName)
+      if theScenery == nil then
+        UglyPrintDebug("ERROR Registering Factory by SceneryID: " .. theID)
+      else
+        local zoneName = _facName .. respawnZonePostfix .. "_" .. theID
+        local facData = {object = theScenery, zone = ZONE:FindByName(zoneName)}
+        factoryRegistration[_facName][theCount] = facData
+        theCount = theCount + 1
 
-      Scoring:AddZoneScore( theZone, 100 )
+        UglyPrintDebug("theID: " .. theID .. ", zoneName: " .. zoneName)
+
+        Scoring:AddZoneScore( theZone, 100 )
+      end
     end
   )
 
