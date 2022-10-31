@@ -62,6 +62,8 @@ local maxRespawn = 1000
 local observeZonePostfix = "_Observe_Zone"
 local respawnZonePostfix = "_RZ"
 local sceneryIDPostfix = "_ID"
+local respawnInterval = 60
+local respawnPropability = 80  -- probability in which a vehicle is rebuild
 local redInfantryVehicleTemplate = "TEMPLATE_RED_INF_SCOUT_BRDM"
 
 -----------------------------------------------------------------------------------
@@ -118,7 +120,7 @@ local function getRandomFactoryZone(_facPref)
   local facList = factoryRegistration[_facPref]
 
   local currentFacCount = #facList
-  UglyPrintDebug("currentFacCount... " .. currentFacCount)
+  UglyPrintDebug("currentFacCount...: " .. currentFacCount)
 
   -- Cleanup all dead ones
   for i = currentFacCount, 1, -1 do
@@ -133,7 +135,8 @@ local function getRandomFactoryZone(_facPref)
 
       if facList[i]["object"]:GetClassName() == "SCENERY" then
         local oldName = facList[i]["object"]:GetName()
-        currentObj = SCENERY:FindByName(oldName)
+        local theZone = facList[i]["zone"]
+        currentObj = SCENERY:FindByName(oldName, theZone:GetCoordinate(), 500)
         facList[i]["object"] = currentObj
       end
 
@@ -148,7 +151,7 @@ local function getRandomFactoryZone(_facPref)
   end
 
   currentFacCount = #facList
-  UglyPrintDebug("currentFacCount...after cleanup" .. currentFacCount)
+  UglyPrintDebug("currentFacCount...after cleanup: " .. currentFacCount)
 
   if currentFacCount == 0 then
     return nil
@@ -369,12 +372,19 @@ local function checkRespawnFromFactory()
     local curRespawnData = killedGroups[nextRespawn]
     nextRespawn = nextRespawn + 1
 
-    local _facPrefix = curRespawnData["facPref"]
+    local willRespawn = math.random(1, 100)
+    if willRespawn > respawnPropability then
+      UglyPrintDebug("Sorry, unlucky group - will not be respawned (willRespawn): " .. willRespawn)
+      TIMER:New(checkRespawnFromFactory):Start(respawnInterval)
+      return
+    end
 
+    local _facPrefix = curRespawnData["facPref"]
     local rndFacZone = getRandomFactoryZone(_facPrefix)
+
     if rndFacZone == nil then
       UglyPrintDebug("Sorry, all factories from " .. _facPrefix .. " are offline!")
-      TIMER:New(checkRespawnFromFactory):Start(30)
+      TIMER:New(checkRespawnFromFactory):Start(respawnInterval)
       return
     end
   
@@ -411,8 +421,8 @@ local function checkRespawnFromFactory()
     UglyPrintDebug("Nothing yet to respawn")
   end
 
-  UglyPrintDebug("Starting checkRespawnFromFactory timer - 30s")
-  TIMER:New(checkRespawnFromFactory):Start(30)
+  UglyPrintDebug("Starting checkRespawnFromFactory timer - " .. respawnInterval .. "s")
+  TIMER:New(checkRespawnFromFactory):Start(respawnInterval)
 end
 
 -- Start factory respawn
