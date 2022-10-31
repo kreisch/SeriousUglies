@@ -2,7 +2,7 @@
 my_ctld = CTLD:New(coalition.side.BLUE,{"HeliCargo"},"CTLD_Blue")
 
 my_ctld.useprefix = false -- (DO NOT SWITCH THIS OFF UNLESS YOU KNOW WHAT YOU ARE DOING!) Adjust **before** starting CTLD. If set to false, *all* choppers of the coalition side will be enabled for CTLD.
-my_ctld.CrateDistance = 35 -- List and Load crates in this radius only.
+my_ctld.CrateDistance = 50 -- List and Load crates in this radius only.
 my_ctld.dropcratesanywhere = true -- Option to allow crates to be dropped anywhere.
 my_ctld.maximumHoverHeight = 15 -- Hover max this high to load.
 my_ctld.minimumHoverHeight = 4 -- Hover min this low to load.
@@ -34,24 +34,23 @@ my_ctld:UnitCapabilities("UH-60L", true, true, 5, 12, 15)
 my_ctld:UnitCapabilities("Hercules", true, true, 15, 64, 25)
 ]]
 
-
 -- MOOSE Default
 --[[
-    ["SA342Mistral"] = {type="SA342Mistral", crates=false, troops=true, cratelimit = 0, trooplimit = 4, length = 12, cargoweightlimit = 400},
-    ["SA342L"] = {type="SA342L", crates=false, troops=true, cratelimit = 0, trooplimit = 2, length = 12, cargoweightlimit = 400},
-    ["SA342M"] = {type="SA342M", crates=false, troops=true, cratelimit = 0, trooplimit = 4, length = 12, cargoweightlimit = 400},
-    ["SA342Minigun"] = {type="SA342Minigun", crates=false, troops=true, cratelimit = 0, trooplimit = 2, length = 12, cargoweightlimit = 400},
-    ["UH-1H"] = {type="UH-1H", crates=true, troops=true, cratelimit = 1, trooplimit = 8, length = 15, cargoweightlimit = 700},
-    ["Mi-8MTV2"] = {type="Mi-8MTV2", crates=true, troops=true, cratelimit = 2, trooplimit = 12, length = 15, cargoweightlimit = 3000},
-    ["Mi-8MT"] = {type="Mi-8MTV2", crates=true, troops=true, cratelimit = 2, trooplimit = 12, length = 15, cargoweightlimit = 3000},
-    ["Ka-50"] = {type="Ka-50", crates=false, troops=false, cratelimit = 0, trooplimit = 0, length = 15, cargoweightlimit = 0},
-    ["Mi-24P"] = {type="Mi-24P", crates=true, troops=true, cratelimit = 2, trooplimit = 8, length = 18, cargoweightlimit = 700},
-    ["Mi-24V"] = {type="Mi-24V", crates=true, troops=true, cratelimit = 2, trooplimit = 8, length = 18, cargoweightlimit = 700},
-    ["Hercules"] = {type="Hercules", crates=true, troops=true, cratelimit = 7, trooplimit = 64, length = 25, cargoweightlimit = 19000}, -- 19t cargo, 64 paratroopers. 
-    --Actually it's longer, but the center coord is off-center of the model.
-    ["UH-60L"] = {type="UH-60L", crates=true, troops=true, cratelimit = 2, trooplimit = 20, length = 16, cargoweightlimit = 3500}, -- 4t cargo, 20 (unsec) seats
-    ["AH-64D_BLK_II"] = {type="AH-64D_BLK_II", crates=false, troops=true, cratelimit = 0, trooplimit = 2, length = 17, cargoweightlimit = 200}, -- 2 ppl **outside** the helo
-]]
+   ["UH-60L"] = {type="UH-60L", crates=true, troops=true, cratelimit = 2, trooplimit = 20, length = 16, cargoweightlimit = 3500},
+
+    ["SA342Mistral"] = {cratelimit = 0, trooplimit = 4,  cargoweightlimit = 400},
+    ["SA342L"] =       {cratelimit = 0, trooplimit = 2,  cargoweightlimit = 400},
+    ["SA342M"] =       {cratelimit = 0, trooplimit = 4,  cargoweightlimit = 400},
+    ["SA342Minigun"] = {cratelimit = 0, trooplimit = 2,  cargoweightlimit = 400},
+    ["UH-1H"] =        {cratelimit = 1, trooplimit = 8,  cargoweightlimit = 700},
+    ["Mi-8MTV2"] =     {cratelimit = 2, trooplimit = 12, cargoweightlimit = 3000},
+    ["Mi-8MT"] =       {cratelimit = 2, trooplimit = 12, cargoweightlimit = 3000},
+    ["Ka-50"] =        {cratelimit = 0, trooplimit = 0,  cargoweightlimit = 0},
+    ["Mi-24P"] =       {cratelimit = 2, trooplimit = 8,  cargoweightlimit = 700},
+    ["Mi-24V"] =       {cratelimit = 2, trooplimit = 8,  cargoweightlimit = 700},
+    ["Hercules"] =     {cratelimit = 7, trooplimit = 64, cargoweightlimit = 19000}, -- 19t cargo, 64 paratroopers. 
+    ["UH-60L"] =       {cratelimit = 2, trooplimit = 20, cargoweightlimit = 3500}, -- 4t cargo, 20 (unsec) seats
+    ["AH-64D_BLK_II"]= {cratelimit = 0, trooplimit = 2,  cargoweightlimit = 200}, -- 2 ppl **outside** the helo]]
 
 
 -- define statics cargo
@@ -59,24 +58,24 @@ my_ctld:UnitCapabilities("Hercules", true, true, 15, 64, 25)
 my_ctld:AddCratesCargo("FOB",                   {"Template_Blue_FOB-1"},CTLD_CARGO.Enum.FOB, 5, 2000)
 my_ctld:AddTroopsCargo("Infantry Squad 12",     {"Template_CTLD_Blue_Inf12"},CTLD_CARGO.Enum.TROOPS,12,80)
 my_ctld:AddTroopsCargo("Infantry Squad 8",      {"Template_CTLD_Blue_Inf8"},CTLD_CARGO.Enum.TROOPS,8,80)
-my_ctld:AddTroopsCargo("Infantry Mortar-Team",  {"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6,200)
+my_ctld:AddTroopsCargo("Infantry Mortar-Team",  {"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6,110)
 my_ctld:AddTroopsCargo("Infantry JTac Widow",   {"Template_CTLD_Blue_JTac"},CTLD_CARGO.Enum.TROOPS,2,80)
 my_ctld:AddTroopsCargo("Infantry Stinger Pair",   {"Template_CTLD_Blue_Stinger"},CTLD_CARGO.Enum.TROOPS,2,80)
 
 my_ctld:AddCratesCargo("JTAC HUMVEE",  {"TEMPLATE_CTLD_Blue_ATGM_HUMVEE"}, CTLD_CARGO.Enum.VEHICLE, 1, 2000)
-my_ctld:AddCratesCargo("IFV M2A2",  {"TEMPLATE_CTLD_Blue_ATGM_IFV_M2A2"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
+my_ctld:AddCratesCargo("IFV M2A2",  {"TEMPLATE_CTLD_Blue_ATGM_IFV_M2A2"}, CTLD_CARGO.Enum.VEHICLE, 1, 2000)
+my_ctld:AddCratesCargo("ATGM STRYKER",  {"TEMPLATE_CTLD_Blue_ATGM_Stryker"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
 
-my_ctld:AddCratesCargo("SUP M939",  {"TEMPLATE_CTLD_Blue_LOG_M939"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
+my_ctld:AddCratesCargo("SUP M939",  {"TEMPLATE_CTLD_Blue_LOG_M939"}, CTLD_CARGO.Enum.VEHICLE, 1, 1500)
 
 my_ctld:AddCratesCargo("AAA Avenger",  {"TEMPLATE_CTLD_Blue_AAA_Avenger"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
-my_ctld:AddCratesCargo("AAA Gepard",  {"TEMPLATE_CTLD_Blue_AAA_Gepard"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
-my_ctld:AddCratesCargo("AAA Vulcan",  {"TEMPLATE_CTLD_Blue_AAA_Vulcan"}, CTLD_CARGO.Enum.VEHICLE, 1, 2000)
+my_ctld:AddCratesCargo("AAA Gepard",  {"TEMPLATE_CTLD_Blue_AAA_Gepard"}, CTLD_CARGO.Enum.VEHICLE, 1, 3000)
+my_ctld:AddCratesCargo("AAA Vulcan",  {"TEMPLATE_CTLD_Blue_AAA_Vulcan"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
 
-my_ctld:AddCratesCargo("SAM NASM",  {"TEMPLATE_CTLD_Blue_SAM_NASM"}, CTLD_CARGO.Enum.VEHICLE, 4, 2000)
-my_ctld:AddCratesCargo("SAM HAWK",  {"TEMPLATE_CTLD_Blue_SAM_Hawk"}, CTLD_CARGO.Enum.VEHICLE, 6, 2000)
+my_ctld:AddCratesCargo("SAM NASM",  {"TEMPLATE_CTLD_Blue_SAM_NASM"}, CTLD_CARGO.Enum.VEHICLE, 4, 2500)
+my_ctld:AddCratesCargo("SAM HAWK",  {"TEMPLATE_CTLD_Blue_SAM_Hawk"}, CTLD_CARGO.Enum.VEHICLE, 6, 2500)
 
-my_ctld:AddCratesCargo("MBT Leopard 1",  {"TEMPLATE_CTLD_Blue_MBT_LEO1"}, CTLD_CARGO.Enum.VEHICLE, 1, 5000)
-
+my_ctld:AddCratesCargo("MBT Leopard 1",  {"TEMPLATE_CTLD_Blue_MBT_LEO1"}, CTLD_CARGO.Enum.VEHICLE, 2, 3000)
 
 
 
