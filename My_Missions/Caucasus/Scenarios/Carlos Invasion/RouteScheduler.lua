@@ -17,7 +17,7 @@
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local defaultSpeed = 30
+local defaultSpeed = 50
 local routeFrequency = 2 -- in seconds
 local groupsPerStep = 1 -- how many units are moved each iteration
 
