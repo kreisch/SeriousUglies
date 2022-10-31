@@ -267,3 +267,12 @@ for zoneItName, zoneItConfig in pairs( zoneConfigs ) do
   initZone(zoneItName)
 end
 
+-- Make all red units ALARMSTATE RED
+
+local SetGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterOnce()
+
+SetGroups:ForEachGroup(function(groupMakeAngry)
+    env.info("Setting Group to RED: " .. groupMakeAngry:GetName())
+    groupMakeAngry:OptionAlarmStateRed()
+  end
+)
