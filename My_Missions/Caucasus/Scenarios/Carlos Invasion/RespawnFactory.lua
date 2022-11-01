@@ -255,11 +255,13 @@ end
 FactoryDeathRecorder = EVENTHANDLER:New()
 FactoryDeathRecorder:HandleEvent( EVENTS.Dead ) 
 function FactoryDeathRecorder:OnEventDead( _eventData )
-  UglyPrintDebug("Got Dead Event from Unit " .. _eventData.IniUnitName .. ", type: " .. _eventData.IniObjectCategory)
-
+  UglyPrintDebug("Got Dead Event from type: " .. _eventData.IniObjectCategory)
   if _eventData.IniObjectCategory ~= Object.Category.UNIT then
     UglyPrintDebug("Sorry, will be ignored. Only recording Unit deaths")
+    return
   end
+
+  UglyPrintDebug("Got Dead Event from Unit: " .. _eventData.IniUnitName)
 
 --  Event.IniObjectCategory = Object.Category.UNIT
 --  			local SOpos 		= _eventData.initiator:getPosition().p
