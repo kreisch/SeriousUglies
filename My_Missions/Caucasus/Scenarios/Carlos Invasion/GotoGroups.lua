@@ -28,13 +28,18 @@ end
 function CheckGotosForZone(_zone)
   env.info("CheckGotosForZone: " .. _zone:GetName())
 
-  local SetGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterPrefixes(_zone:GetName()): FilterOnce()
-
+  local SetGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterPrefixes(_zone:GetName()):FilterOnce()
+  
   SetGroups:ForEachGroupNotInZone(_zone, function(groupToMove)
     env.info("Rerouting group: " .. groupToMove:GetName())
-    local destVec2 = _zone:GetRandomVec2()
-    local gotoData = {group = groupToMove, dest = destVec2}
-    RouteList.pushright(theList, gotoData)
+
+    if groupToMove:IsAlive() then
+      local destVec2 = _zone:GetRandomVec2()
+      local gotoData = {group = groupToMove, dest = destVec2}
+      RouteList.pushright(theList, gotoData)
+    else
+      env.info("It's dead Jim: " .. groupToMove:GetName())
+    end
   end
   )
 
