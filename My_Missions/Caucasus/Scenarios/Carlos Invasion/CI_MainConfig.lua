@@ -179,7 +179,7 @@ local function doActionForZone(_inZone, _contact)
       armygroup:SetDefaultFormation(ENUMS.Formation.Vehicle.OnRoad)
       armygroup:AddWeaponRange(0, UTILS.KiloMetersToNM(2))
       armygroup:AddMission(mission)
-    elseif (true) then -- Hier abfragen ob CAS aktiviert werden soll f�r rot.
+    elseif (true) then -- Hier abfragen ob CAS aktiviert werden soll fuer rot.
       local mission = AUFTRAG:NewBAI(targetGroup, nil)
       mission:SetRepeatOnFailure(6)
       zoneConfigs[_inZone:GetName()]["airwing"]:AddMission(mission)
