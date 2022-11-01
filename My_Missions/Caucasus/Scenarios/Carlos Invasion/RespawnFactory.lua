@@ -256,7 +256,7 @@ FactoryDeathRecorder = EVENTHANDLER:New()
 FactoryDeathRecorder:HandleEvent( EVENTS.Dead ) 
 function FactoryDeathRecorder:OnEventDead( _eventData )
   UglyPrintDebug("Got Dead Event from type: " .. _eventData.IniObjectCategory)
-  if _eventData.IniObjectCategory ~= Object.Category.UNIT then
+  if _eventData.IniObjectCategory ~= Object.Category.UNIT and _eventData.IniObjectCategory ~= Object.Category.STATIC then
     UglyPrintDebug("Sorry, will be ignored. Only recording Unit deaths")
     return
   end
