@@ -25,14 +25,14 @@
   
   local keyphraseBoom       = "boom"
   local keyphraseBasket     = "basket"
-  local keyphraseBasketBig  = "basketbig"
+  local keyphraseBasketBig  = "heavybasket"
   local keyphraseTimeStart  = "start"
   local keyphraseTimeEnd    = "end"
   local keyphraseLeg        = "leg"
   local keyphraseEscort     = "escort"
   local keyphraseTacan      = "tacan"
   local keyphraseRadio      = "radio"
-  local keyphraseEndmission = "endmission"
+  local keyphraseEndmission = "stopmission"
 
   local tankerDefaultSpeed      = 240
   local tankerDefaultAlt        = 18000
@@ -49,7 +49,11 @@
 
   local debug = true
   
-  local activeTaskings = {} -- Add the Mapmarker and the mission to this tasking.
+  local activeTaskingsUSD = {
+    --["Mission"] = { mission = nil, marker = nil} 
+  }
+  
+  --local activeTaskings = {} -- Add the Mapmarker and the mission to this tasking.
   
 -- Dann ist nix anderes in der Tabelle. Wenn Du die nach und nach füllen willst, machst Du das so:
 --airwings[AWNalchik] = {airbase = nil, hasTanker = false, hasCAS = false}
@@ -196,7 +200,7 @@ local function _MarkTextAnalysis(text)
         end
         
         if key:lower():find(keyphraseEndmission) then
-        switch.delete = tonumber(val)
+        switch.delete = val:lower()
         info(id..string.format(" Value delete = %s", tostring(switch.delete)))
         end
 
@@ -283,7 +287,7 @@ local function errorMarkerNoValidSupportRequested(Event)
      MARKER:New(_coordinate, "No valid support type was requested. Please check."):ToAll()
 end
 
-local function createTextForMarkerTanker(options)
+local function _createTextForMarkerTanker(options)
   local stringForMarker =""
   local _options = options
   
@@ -293,7 +297,6 @@ local function createTextForMarkerTanker(options)
 end
 
 local function _CreateTankerMission(_options, Event, _selectedAirwing)
-
             local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z) -- Coordinate of F10Marker
             local _altitude = tankerDefaultAlt    -- Default values for a tanker, used when nothing specified in marker
             local _speed = tankerDefaultSpeed
@@ -343,15 +346,17 @@ local function _CreateTankerMission(_options, Event, _selectedAirwing)
                 info(id..string.format(" Deleting marker with EventID:\n%s", Event.idx)) -- debug
                 trigger.action.removeMark(Event.idx)
                 
-                local stringForMarker = createTextForMarkerTanker(_options)
-                markOfTasking = MARKER:New(_coordinate, "Tanker tasking started.\n" .. "Mission:".. nameOfMission .."\n" .. stringForMarker):ToAll() -- Diesen Marker muss man nun mit dem Auftrag mappen.
+                local stringForMarker = _createTextForMarkerTanker(_options)
+                markOfTasking = MARKER:New(_coordinate, "Tanker tasking started.\n" .. "Mission:".. nameOfMission .."\n" .. stringForMarker):ReadOnly():ToAll() -- Diesen Marker muss man nun mit dem Auftrag mappen.
             end
             missionTanker:SetTACAN(_tacan, "REF")
             missionTanker:SetRadio(_radio)
             missionTanker:SetRepeat(99)
             missionTanker:SetRequiredEscorts(1, 1, AUFTRAG.Type.ESCORT, {"AIR"}, 60)
-            activeTaskings[nameOfMission]["mission"] = missionTanker  -- Here the AUFTRAG is grouped to the mission name.
-            activeTaskings[nameOfMission]["marker"] = markOfTasking   -- Here the MARKER is grouped to the mission name.
+--            activeTaskingsUSD[nameOfMission]["mission"] = missionTanker  -- Here the AUFTRAG is grouped to the mission name.
+--            activeTaskingsUSD[nameOfMission]["marker"] = markOfTasking   -- Here the MARKER is grouped to the mission name.
+            local missionData = {mission = missionTanker, marker = markOfTasking}
+            activeTaskingsUSD[nameOfMission:lower()] = missionData
             _selectedAirwing:AddMission(missionTanker)
 end
 
@@ -380,11 +385,18 @@ local function _determineSupportType(options, Event)
   return _supportType
 end
 
-local function _endMission(options)
+local function _endMission(options, Event)
   local _options = options
-  local _missionName = _options.delete
-  if (activeTaskings[_missionName]) then
-    activeTaskings[_missionName]:Done()
+  local _missionName = _options.delete:lower()
+  if (activeTaskingsUSD[_missionName]) then
+    activeTaskingsUSD[_missionName]["mission"]:Cancel()
+    activeTaskingsUSD[_missionName]["marker"]:Remove()
+    trigger.action.removeMark(Event.idx)
+  else
+    info(_missionName .. " is not included in the active mission list.")
+    trigger.action.removeMark(Event.idx)
+     local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z) -- Coordinate of F10Marker
+     MARKER:New(_coordinate, _missionName .. " is not included in the active mission list."):ToAll()
   end
 
 end
@@ -400,7 +412,7 @@ local function _OnEventMarkChange(Event)
       local _options=_MarkTextAnalysis(Event.text)      -- Extracts the options from the marker Text
       
       if _options.delete then -- A mission shall be ended
-      
+        _endMission(_options, Event)
       
       else  -- No mission to be ended, so check which support is requested.
           local _requestedSupportType = _determineSupportType(_options, Event)  -- Returns the support Type
@@ -433,11 +445,11 @@ function eventHandlerUSD:onEvent(Event)
   
   -- Debug output.
   if Event.id     == world.event.S_EVENT_MARK_ADDED then
-    info(id.."S_EVENT_MARK_ADDED")
+    --info(id.."S_EVENT_MARK_ADDED")
   elseif Event.id == world.event.S_EVENT_MARK_CHANGE then
-    info(id.."S_EVENT_MARK_CHANGE")
+    --info(id.."S_EVENT_MARK_CHANGE")
   elseif Event.id == world.event.S_EVENT_MARK_REMOVED then
-    info(id.."S_EVENT_MARK_REMOVED")    
+    --info(id.."S_EVENT_MARK_REMOVED")    
   end
   info(string.format("Event id        = %s", tostring(Event.id)))
   info(string.format("Event time      = %s", tostring(Event.time)))
