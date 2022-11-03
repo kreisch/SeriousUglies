@@ -7,11 +7,7 @@
 -- "USD, Tanker Boom, Alt 24000, Speed 350, Heading 030, Leg 15"
 -- "USD, Tanker Boom, Alt 24000, Speed 350, Heading 030, Start 1300, End 1400"
 
-
-
-  local className = "Ugly Support Dispatcher"
-  local version ="0.2"
-  local id = "USD" --- Identifier. All output in DCS.log will start with this.
+  local debug = true
 
   local keyphrase ="usd"
   local keyphraseAltitude = "alt"
@@ -26,13 +22,14 @@
   local keyphraseBoom       = "boom"
   local keyphraseBasket     = "basket"
   local keyphraseBasketBig  = "heavybasket"
-  local keyphraseTimeStart  = "start"
-  local keyphraseTimeEnd    = "end"
   local keyphraseLeg        = "leg"
   local keyphraseEscort     = "escort"
   local keyphraseTacan      = "tacan"
   local keyphraseRadio      = "radio"
   local keyphraseEndmission = "stopmission"
+--  Time is not being used currently
+--  local keyphraseTimeStart  = "start"
+--  local keyphraseTimeEnd    = "end"
 
   local tankerDefaultSpeed      = 240
   local tankerDefaultAlt        = 18000
@@ -44,32 +41,7 @@
   
   local defaultEscort           = 1
   
-  local missionNames = {"Neptun" ,"Poseidon", "Nimrod", "Fedex"}
-  local missionCounter = 1
-
-  local debug = true
-  
-  local activeTaskingsUSD = {
-    --["Mission"] = { mission = nil, marker = nil} 
-  }
-  
-  --local activeTaskings = {} -- Add the Mapmarker and the mission to this tasking.
-  
--- Dann ist nix anderes in der Tabelle. Wenn Du die nach und nach füllen willst, machst Du das so:
---airwings[AWNalchik] = {airbase = nil, hasTanker = false, hasCAS = false}
---Du kannst das auch so füllen:
---airwings[AWNalchik][airbase] = nil
-
---Sehr gut. Genau so. Die Werte bekommst Du mit:
---local withBoom = airwings[airwing].hasTankerBoom
---local withBasket = airwings[airwing].hasTankerBasket
---
---Oder 
---
---local theData =  airwings[airwing]
---local withBoom = theData.hasTankerBoom
---local withBasket = theData.hasTankerBasket
---Value ist ja die Tabelle pro Airwing die Du reingesteckt hast
+  local missionNames = {"Neptun" ,"Poseidon", "Nimrod", "Fedex", "Brewmaster"}
   local airwings = {
                       [AWNavyBoys] = {boom = false, basket = true, basketbig = false,
                           awacs = true,
@@ -85,10 +57,37 @@
                           hasSEAD = true, 
                       },
   }
+  
+  -----------------------------------------------------------------------------------------------------------------------------------------------------
+  -- Do not change values below, black magic happens
+  --
+  -------------------------------------------------------------------------------------
+-- What's this?
+-- The "Ugly Supply Dispatcher", short "USD", is a script to request supplies "on demand" via an F10 marker during runtime.
+-- To do so, it relies completely on the usage of AIRWINGS provided by Moose.
+-- Each Airwing participating in the USD must be declared within @table airwings including its possibilities.
+-- As soon as a mapmarker is placed and "keyphrase" is used (default "usd") the script will start to read the given keyphrases and create a supply via
+-- Moose:AUFGABE if possible.
+-- The USD does not interfere with the units directly, it only creates TASK elements provided by Moose. 
+--
+-- Examples for request
+-- "USD, Tanker Boom, Alt 24000, Speed 350, Heading 030, Leg 15"
+-- "USD, Tanker Boom, Alt 24000, Speed 350, Heading 030, Start 1300, End 1400"
+-----------------------------------------------------------------------------------
+-- The USD script was created 2022 by kreisch and Skyfire
+-- It depends on Moose being available.
+-- Thanks to funkyfranky, since I reused some code of Moose ;)
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
+  local className = "Ugly Support Dispatcher"
+  local version ="0.2"
+  local id = "USD" --- Identifier. All output in DCS.log will start with this.
+  local activeTaskingsUSD = {}
+  local missionCounter = 1
 
 -- Version info.
-env.info(id..string.format("Loading version %s", version))
+env.info(id..string.format(" Loading version %s", version))
 
 
 --- Debug output to dcs.log file.
@@ -108,25 +107,18 @@ end
 return result
 end
 
-
-
-
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Event handler.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
-
---- Event handler.
 local eventHandlerUSD={}
 
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Analyse the mark text and extract keywords.
-------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-
---- Extract keywords from mark text.
+-- Analyse the mark text and extract keywords. 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 local function _MarkTextAnalysis(text)
-  local switch={} -- Option parameters extracted from the mark text.
+  local switch={} --- Option parameters extracted from the mark text, later on called options
   
   info(id..string.format("MarkTextAnalysis text:\n%s", text)) -- debug
   --if text:lower():find(keyphrase) then -- check if USD is affected
@@ -169,15 +161,17 @@ local function _MarkTextAnalysis(text)
           info(id..string.format(" Value heading = %s", switch.heading))
         end
 
-        if key:lower():find(keyphraseTimeStart) then
-          switch.timeStart = tonumber(val)
-          info(id..string.format(" Value timeStart = %s", switch.timeStart))
-        end
-
-        if key:lower():find(keyphraseTimeEnd) then
-          switch.timeEnd = tonumber(val)
-          info(id..string.format(" Value timeEnd = %s", switch.timeEnd))
-        end
+--      Time is not being used currently
+--
+--        if key:lower():find(keyphraseTimeStart) then
+--          switch.timeStart = tonumber(val)
+--          info(id..string.format(" Value timeStart = %s", switch.timeStart))
+--        end
+--
+--        if key:lower():find(keyphraseTimeEnd) then
+--          switch.timeEnd = tonumber(val)
+--          info(id..string.format(" Value timeEnd = %s", switch.timeEnd))
+--        end
 
         if key:lower():find(keyphraseLeg) then
           switch.leg = tonumber(val)
@@ -210,6 +204,10 @@ local function _MarkTextAnalysis(text)
   return switch
 end
 
+-----------------------------------------------------------------------------------
+-- Get random mission name of @table missionNames.
+-- This identifier is used later on to Cancel running missions.
+-----------------------------------------------------------------------------------
 local function _createMissionName()
   local _missionName =""
   _missionName = missionNames[math.random(#missionNames)] .. missionCounter
@@ -218,6 +216,9 @@ local function _createMissionName()
   return _missionName
 end
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Iterates over all known Airwings and returns the one closest to the mapmarker used to request the support
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 local function selectNearestAirwing(capableAirwings, Event) -- Selects the airfield closes to the EventMarker which can provide the requested Support
   info("Select Nearest Airwings Capable to support.")
   local _capableAirwings = capableAirwings
@@ -257,7 +258,11 @@ local function selectNearestAirwing(capableAirwings, Event) -- Selects the airfi
   return closest
 end
 
-
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Iterates over all known AIRWING and returns a table of AIRWING which includes the ones that can provide the requested support.
+-- Afterwards the closest AIRWING will be selected.
+-- E.g. if 4 Airwings are defined but only 2 of them can provide a boom tanker, only those 2 will be returned here.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 local function provideAirwingsCapableToSupport(support, Event) -- Returns all Airwings capable of the requested Support
 info("Provide Airwings Capable to Support the type: " .. support)
   local capableAirwings = {}
@@ -266,20 +271,21 @@ info("Provide Airwings Capable to Support the type: " .. support)
       -- Über die Liste iterieren. Wenn Airwing bei einem Support-Tag "TRUE" hat, zur Liste "capableAirwings" hinzufügen.
       for airwing in pairs(airwings) do 
           local valueSupportAvailable = airwings[airwing][_requestedSupportType]
-          
           info(airwing:GetAirbaseName() .. " Suche nach Airwing fuer " .._requestedSupportType .. " und habe gefunden ".. tostring(valueSupportAvailable))
           if valueSupportAvailable then
             table.insert(capableAirwings, airwing) -- Here add the airwing to the list.
           end
       end
       info("I have found the Airwings#: " .. #capableAirwings)
-      
-      
       local closestAirwing = selectNearestAirwing(capableAirwings, Event)
       
   return closestAirwing
 end
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Error method, if invalid requests are entered.
+-- HINT: This does not check the values, only the keys.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 local function errorMarkerNoValidSupportRequested(Event)
      info(id..string.format(" Deleting marker with EventID:\n%s", Event.idx)) -- debug
      trigger.action.removeMark(Event.idx)
@@ -360,11 +366,16 @@ local function _CreateTankerMission(_options, Event, _selectedAirwing)
             _selectedAirwing:AddMission(missionTanker)
 end
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Creates an AUFTRAG:NewAWACS() with moose depending on the map marker information.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 local function _CreateAwacsMission(options, Event)
   local _options = options
 
 end
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Checks which Support is requested by an F10 MapMarker and returns the value as string.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 local function _determineSupportType(options, Event)
   info("Determining the requested support by F10 Mapmarker " .. tostring(options.awacs))
   local _supportType = nil
@@ -385,6 +396,9 @@ local function _determineSupportType(options, Event)
   return _supportType
 end
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Tries to end a mission, specified by mission name.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 local function _endMission(options, Event)
   local _options = options
   local _missionName = _options.delete:lower()
@@ -404,7 +418,6 @@ end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Event handler functions.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------- 
-
 local function _OnEventMarkChange(Event)
   -- If the event contains "Tanker Keyphrase", so player requests a tanker (Boom or basket decided later)
   if Event.text~=nil and Event.text:lower():find(keyphrase) then
@@ -417,19 +430,19 @@ local function _OnEventMarkChange(Event)
       else  -- No mission to be ended, so check which support is requested.
           local _requestedSupportType = _determineSupportType(_options, Event)  -- Returns the support Type
           -- We know which type of support is requested, now find an airwing capable of.
-          local _selectedAirwing = provideAirwingsCapableToSupport(_requestedSupportType, Event)
-          
-          
-          if (_selectedAirwing ~=nil) then -- If we have found an airwing, we can check which mission to create depending on support type.
-            if _options.tankerType then
-              _CreateTankerMission(_options, Event, _selectedAirwing) -- if ~= nil, create a mission. 
-            elseif _options.awacs then
-              _CreateAwacsMission(_options, Event)
-            elseif _options.cap then
-            
-            end
+          if (_requestedSupportType) then
+            local _selectedAirwing = provideAirwingsCapableToSupport(_requestedSupportType, Event)
+  
+            if (_selectedAirwing ~=nil) then -- If we have found an airwing, we can check which mission to create depending on support type.
+              if _options.tankerType then
+                _CreateTankerMission(_options, Event, _selectedAirwing) -- if ~= nil, create a mission. 
+              elseif _options.awacs then
+                _CreateAwacsMission(_options, Event)
+              elseif _options.cap then
+              
+              end
           end
-      
+        end
       end -- End Support Request
       --#endregion
   end
