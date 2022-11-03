@@ -29,14 +29,43 @@
   local keyphraseTimeStart  = "start"
   local keyphraseTimeEnd    = "end"
   local keyphraseLeg        = "leg"
+  local keyphraseEscort     = "escort"
+  local keyphraseTacan      = "tacan"
+  local keyphraseRadio      = "radio"
+  local keyphraseEndmission = "endmission"
 
-  local tankerDefaultSpeed      = 400
+  local tankerDefaultSpeed      = 240
   local tankerDefaultAlt        = 18000
   local tankerDefaultHeading    = 0
   local tankerDefaultType       = "boom"
   local tankerDefaultLeg        = 15
+  local tankerDefaultTacan      = 21
+  local tankerDefaultRadio      = 121
+  
+  local defaultEscort           = 1
+  
+  local missionNames = {"Neptun" ,"Poseidon", "Nimrod", "Fedex"}
+  local missionCounter = 1
 
   local debug = true
+  
+  local activeTaskings = {} -- Add the Mapmarker and the mission to this tasking.
+  
+-- Dann ist nix anderes in der Tabelle. Wenn Du die nach und nach füllen willst, machst Du das so:
+--airwings[AWNalchik] = {airbase = nil, hasTanker = false, hasCAS = false}
+--Du kannst das auch so füllen:
+--airwings[AWNalchik][airbase] = nil
+
+--Sehr gut. Genau so. Die Werte bekommst Du mit:
+--local withBoom = airwings[airwing].hasTankerBoom
+--local withBasket = airwings[airwing].hasTankerBasket
+--
+--Oder 
+--
+--local theData =  airwings[airwing]
+--local withBoom = theData.hasTankerBoom
+--local withBasket = theData.hasTankerBasket
+--Value ist ja die Tabelle pro Airwing die Du reingesteckt hast
   local airwings = {
                       [AWNavyBoys] = {boom = false, basket = true, basketbig = false,
                           awacs = true,
@@ -151,9 +180,24 @@ local function _MarkTextAnalysis(text)
           info(id..string.format(" Value leg = %s", switch.leg))
         end
         
+        if key:lower():find(keyphraseTacan) then
+          switch.tacan = tonumber(val)
+          info(id..string.format(" Value tacan = %s", switch.tacan))
+        end
+        
+        if key:lower():find(keyphraseRadio) then
+          switch.radio = tonumber(val)
+          info(id..string.format(" Value radio = %s", switch.radio))
+        end
+        
         if key:lower():find(keyphraseAWACS) then
         switch.awacs = true
         info(id..string.format(" Value awacs = %s", tostring(switch.awacs)))
+        end
+        
+        if key:lower():find(keyphraseEndmission) then
+        switch.delete = tonumber(val)
+        info(id..string.format(" Value delete = %s", tostring(switch.delete)))
         end
 
         
@@ -162,15 +206,51 @@ local function _MarkTextAnalysis(text)
   return switch
 end
 
+local function _createMissionName()
+  local _missionName =""
+  _missionName = missionNames[math.random(#missionNames)] .. missionCounter
+  missionCounter = missionCounter + 1
+  
+  return _missionName
+end
 
 local function selectNearestAirwing(capableAirwings, Event) -- Selects the airfield closes to the EventMarker which can provide the requested Support
   info("Select Nearest Airwings Capable to support.")
   local _capableAirwings = capableAirwings
-  local airwing = nil
-    for key in _capableAirwings do
+  local positionOfMapMarker = {x = Event.pos.x, y = Event.pos.y, z = Event.pos.z }    -- The position of the MapMarker used to create the Event of SupportRequest
+  local closest=nil
+  local distmin=nil
         -- Bestimme Distanz zum Marker
+        -- Siehe bspw function COORDINATE:GetClosestAirbase(Category, Coalition) in Moose
+
+
+    for _,_airwing in pairs(_capableAirwings) do
+    local airwing = _airwing -- Wrapper.Airwing
+      if airwing then
+        local airbaseName = airwing:GetAirbaseName()
+        local airwingPosition = airwing:GetCoordinate()
+        if airbaseName  and airwingPosition then
+          info("Checking airwing ".. airwing:GetAirbaseName() .. " at Position " .. airwingPosition.x )
+          
+          local dist = airwingPosition:Get2DDistance(positionOfMapMarker)
+          
+            if closest == nil then
+              distmin=dist
+              closest=airwing
+            else
+              if dist<distmin then
+                distmin=dist
+                closest=airwing
+              end
+            end
+            info("Distance is " .. dist)
+        end
+      end
     end
-  return airwing
+    if closest then
+      info("The closes airwing is " .. closest:GetAirbaseName())
+    end
+  return closest
 end
 
 
@@ -203,13 +283,24 @@ local function errorMarkerNoValidSupportRequested(Event)
      MARKER:New(_coordinate, "No valid support type was requested. Please check."):ToAll()
 end
 
-local function _CreateTankerMission(_options, Event)
+local function createTextForMarkerTanker(options)
+  local stringForMarker =""
+  local _options = options
+  
+  stringForMarker = string.format("Tanker Details are\nTacan:%s\nRadio:%s", options.tacan, options.radio)
+  
+  return stringForMarker
+end
+
+local function _CreateTankerMission(_options, Event, _selectedAirwing)
 
             local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z) -- Coordinate of F10Marker
             local _altitude = tankerDefaultAlt    -- Default values for a tanker, used when nothing specified in marker
             local _speed = tankerDefaultSpeed
             local _heading = tankerDefaultHeading
             local _leg = tankerDefaultLeg
+            local _tacan = tankerDefaultTacan
+            local _radio = tankerDefaultRadio
             local _type = -1
   
             if _options.altitude then
@@ -224,6 +315,16 @@ local function _CreateTankerMission(_options, Event)
             if _options.leg then
                 _leg = _options.leg
             end
+            if _options.tacan then
+                _tacan = _options.tacan
+            else
+               _options.tacan = tankerDefaultTacan     
+            end
+            if _options.radio then
+                _radio = _options.radio
+            else
+              _options.radio = tankerDefaultRadio
+            end
             if _options.tankerType then
               if _options.tankerType:find("boom") then
                   _type = 0
@@ -234,22 +335,30 @@ local function _CreateTankerMission(_options, Event)
             info(id..string.format(" Creating tanker task with type:\n%s", _type)) -- debug
    
             local missionTanker = AUFTRAG:NewTANKER(_coordinate, _altitude, _speed, _heading, _leg, _type)
+            local markOfTasking = nil
+            local nameOfMission = _createMissionName()
             
             if missionTanker then
                 -- Remove Mark to avoid creating multiple missions
                 info(id..string.format(" Deleting marker with EventID:\n%s", Event.idx)) -- debug
                 trigger.action.removeMark(Event.idx)
                 
-
-                local markOfTasking = MARKER:New(_coordinate, "Tanker tasking started."):ToAll() -- Diesen Marker muss man nun mit dem Auftrag mappen.
+                local stringForMarker = createTextForMarkerTanker(_options)
+                markOfTasking = MARKER:New(_coordinate, "Tanker tasking started.\n" .. "Mission:".. nameOfMission .."\n" .. stringForMarker):ToAll() -- Diesen Marker muss man nun mit dem Auftrag mappen.
             end
-            missionTanker:SetTACAN(41, "ARC")
-            missionTanker:SetRadio(141)
+            missionTanker:SetTACAN(_tacan, "REF")
+            missionTanker:SetRadio(_radio)
             missionTanker:SetRepeat(99)
-            missionTanker:SetRequiredEscorts(1, 2)
-            airwing:AddMission(missionTanker)
+            missionTanker:SetRequiredEscorts(1, 1, AUFTRAG.Type.ESCORT, {"AIR"}, 60)
+            activeTaskings[nameOfMission]["mission"] = missionTanker  -- Here the AUFTRAG is grouped to the mission name.
+            activeTaskings[nameOfMission]["marker"] = markOfTasking   -- Here the MARKER is grouped to the mission name.
+            _selectedAirwing:AddMission(missionTanker)
 end
 
+local function _CreateAwacsMission(options, Event)
+  local _options = options
+
+end
 -- Checks which Support is requested by an F10 MapMarker and returns the value as string.
 local function _determineSupportType(options, Event)
   info("Determining the requested support by F10 Mapmarker " .. tostring(options.awacs))
@@ -271,6 +380,15 @@ local function _determineSupportType(options, Event)
   return _supportType
 end
 
+local function _endMission(options)
+  local _options = options
+  local _missionName = _options.delete
+  if (activeTaskings[_missionName]) then
+    activeTaskings[_missionName]:Done()
+  end
+
+end
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Event handler functions.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------- 
@@ -279,20 +397,28 @@ local function _OnEventMarkChange(Event)
   -- If the event contains "Tanker Keyphrase", so player requests a tanker (Boom or basket decided later)
   if Event.text~=nil and Event.text:lower():find(keyphrase) then
       info(id..string.format("USD Tag found.")) -- debug
-      local _options=_MarkTextAnalysis(Event.text)
+      local _options=_MarkTextAnalysis(Event.text)      -- Extracts the options from the marker Text
       
-      local _requestedSupportType = _determineSupportType(_options, Event)
-      
-      
-      -- We know which type of support is requested, now find an airwing capable of.
-      local _selectedAirwing = provideAirwingsCapableToSupport(_requestedSupportType, Event)
+      if _options.delete then -- A mission shall be ended
       
       
-      if (_selectedAirwing ~=nil) then -- If we have found an airwing, we can check which mission to create depending on support type.
-        if _options.tankerType then
-          _CreateTankerMission(_options, Event) -- if ~= nil, create a mission. 
-         end 
-      end
+      else  -- No mission to be ended, so check which support is requested.
+          local _requestedSupportType = _determineSupportType(_options, Event)  -- Returns the support Type
+          -- We know which type of support is requested, now find an airwing capable of.
+          local _selectedAirwing = provideAirwingsCapableToSupport(_requestedSupportType, Event)
+          
+          
+          if (_selectedAirwing ~=nil) then -- If we have found an airwing, we can check which mission to create depending on support type.
+            if _options.tankerType then
+              _CreateTankerMission(_options, Event, _selectedAirwing) -- if ~= nil, create a mission. 
+            elseif _options.awacs then
+              _CreateAwacsMission(_options, Event)
+            elseif _options.cap then
+            
+            end
+          end
+      
+      end -- End Support Request
       --#endregion
   end
 end
