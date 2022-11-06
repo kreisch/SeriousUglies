@@ -47,54 +47,24 @@ local function OnEnterGuardedDoCZ1()
 end
 
 
+local sectorConfig = {
+  ["RF_CZ01_Observe_Zone"] = { airwing = AWFARP_RF_CZ02_02, opszones = {"CombatZone-1", "CombatZone-2", "CombatZone-3"}}, -- easy
+  ["RF_CZ02_Observe_Zone"] = {airwing =  AWNalchik, opszones = {"CombatZone-4", "CombatZone-5"}}, -- easy
+}
+
 local zoneConfigs = {
-  ["CombatZone-1"] = { airwing = AWNalchik, Zone = nil, OpsZone = nil, 
-                       OnAfterCapturedDo =  OnAfterCapturedCZ1,
+  ["CombatZone-1"] = { OnAfterCapturedDo =  OnAfterCapturedCZ1,
                        OnEnterAttackedDo = OnEnterAttackedDoCZ1, 
                        OnAfterAttackedDo = OnAfterAttackedDoCZ1, 
                        OnEnterGuardedDo = OnEnterGuardedDoCZ1 }, -- easy
-  ["CombatZone-2"] = {airwing = AWFARP_RF_CZ02_02, Zone = nil, OpsZone = nil}, -- easy
-  ["CombatZone-3"] = {airwing = AWNalchik, Zone = nil, OpsZone = nil}, -- medium
-  ["CombatZone-4"] = {airwing = AWNalchik, Zone = nil, OpsZone = nil}, -- medium
-  ["CombatZone-5"] = {airwing = AWNalchik, Zone = nil, OpsZone = nil}, -- medium
+  ["CombatZone-2"] = {}, -- easy
+  ["CombatZone-3"] = {}, -- medium
+  ["CombatZone-4"] = {}, -- medium
+  ["CombatZone-5"] = {}, -- medium
 }
 
-
--- Concept:
--- AI is using recce troops to gain INTEL (Moose)
--- All placed units of a ZONE will be read into a GROUPSET (Moose)
--- All TARGETS acquired by INTEL will result in an AUFTRAG to kill them
--- Respawn of destroyed RED Units will be handled by SKYFIRE-FRAMEWORK-TM
--- #region define Airwings for RED
---[[
-local airwingErcan = AIRWING:New("Warehouse_Ercan", "Arwing Ercan")
-airwingErcan:Start()
-local Ercan1st = SQUADRON:New("RU_Su25_Template", 8, "Ercan 1st")
-Ercan1st:AddMissionCapability({AUFTRAG.Type.SEAD, AUFTRAG.Type.BAI, AUFTRAG.Type.CAS})
-Ercan1st:SetGrouping(2)
-Ercan1st:SetSkill(AI.Skill.EXCELLENT)
-airwingErcan:AddSquadron(Ercan1st)
-airwingErcan:NewPayload(GROUP:FindByName("SU25_Template_SEAD"), 20, {AUFTRAG.Type.SEAD, AUFTRAG.Type.BAI, AUFTRAG.Type.CAS}, 80)
-airwingErcan:SetTakeoffAir()
-
-local airwingGecitkale = AIRWING:New("Warehouse_Gecitkale", "Arwing Gecitkale")
-airwingGecitkale:Start()
-local Gecitkale1st = SQUADRON:New("RU_Mi28_Template", 8, "Gecitkale 1st")
-Gecitkale1st:AddMissionCapability({AUFTRAG.Type.CAS})
-Gecitkale1st:SetGrouping(2)
-Gecitkale1st:SetSkill(AI.Skill.EXCELLENT)
-airwingGecitkale:AddSquadron(Gecitkale1st)
-airwingGecitkale:NewPayload(GROUP:FindByName("Mi28_Template_CAS"), 20, {AUFTRAG.Type.CAS}, 80)
-airwingGecitkale:SetTakeoffAir()
--- #endregion
-]]
-
-
 local function initZone(_name)
-  env.info("initZone - " .. _name)
   local theZone = ZONE:New(_name)
-  zoneConfigs[_name]["Zone"] = theZone
-
   local theOpsZone = OPSZONE:New(theZone, coalition.side.NEUTRAL)
   theOpsZone:SetDrawZone(true)
   theOpsZone:__Start(2)
@@ -102,7 +72,6 @@ local function initZone(_name)
   zoneConfigs[_name]["OpsZone"] = theOpsZone
   zoneConfigs[_name]["OpsZone"]:SetObjectCategories({Object.Category.UNIT}) -- Ensure, that no leftover statics will count as part of eg. red coalition 
 
-  DoPatrolsInZone(theZone)
 
   -- wenn diese Methoden drin sind, werden die Zonen nicht richtig gezeichnet.
   function theOpsZone:OnAfterCaptured(From, Event, To, Coalition)
@@ -146,6 +115,18 @@ local function initZone(_name)
   end
 end
 
+local function initSector(_name)
+  env.info("initSector - " .. _name)
+  local theSecZone = ZONE:New(_name)
+--  sectorConfig[_name]["Zone"] = theSecZone
+
+  DoPatrolsInZone(theSecZone)
+
+  for i = 1, #sectorConfig[_name]["opszones"] do
+    initZone(sectorConfig[_name]["opszones"][i])
+  end
+end
+
 
 local function doActionForZone(_inZone, _contact)
   MESSAGE:New("TargetTaskingCombatZone " .. _inZone:GetName(), 20, "Debug"):ToAll()
@@ -158,8 +139,6 @@ local function doActionForZone(_inZone, _contact)
     -- Spawn Groundattack
     MESSAGE:New("GroundTarget is found in " .. _inZone:GetName() .. "\n Starting Tankattack", 20, "Debug"):ToAll()
     env.info("GroundTarget is found in " .. _inZone:GetName() .. "\n Starting Tankattack")
-
-    local actionZone = zoneConfigs[_inZone:GetName()]["Zone"]
 
     local SetGroupsGround = SET_GROUP:New():FilterCoalitions("red"):FilterZones({_inZone}):FilterPrefixes("QRF")
       :FilterCategoryGround():FilterActive():FilterOnce() -- Todo: Nur lebende enthalten? Laut Applevangelist ja; Active notwendig?
@@ -182,7 +161,7 @@ local function doActionForZone(_inZone, _contact)
     elseif (true) then -- Hier abfragen ob CAS aktiviert werden soll fuer rot.
       local mission = AUFTRAG:NewBAI(targetGroup, nil)
       mission:SetRepeatOnFailure(6)
-      zoneConfigs[_inZone:GetName()]["airwing"]:AddMission(mission)
+      sectorConfig[_inZone:GetName()]["airwing"]:AddMission(mission)
       MESSAGE:New("Added mission to airwing"):ToAll()
       env.info("GroundTarget is found in " .. _inZone:GetName() .. "\n Starting CAS-ATTACK")
     end
@@ -195,7 +174,7 @@ local function doActionForZone(_inZone, _contact)
       mission:SetRepeatOnFailure(6)
       -- local zone = ZONE_GROUP:New("SEAD Zone", targetGroup, 500)
       -- local mission = AUFTRAG:NewCAS(zone)
-      zoneConfigs[_inZone:GetName()]["airwing"]:AddMission(mission)
+      sectorConfig[_inZone:GetName()]["airwing"]:AddMission(mission)
       MESSAGE:New("Added mission to airwing"):ToAll()
 
     end
@@ -220,7 +199,7 @@ RedIntel:SetClusterAnalysis(true, true)
 RedIntel:SetVerbosity(2)
 RedIntel:__Start(2)
 -- Restrict to Combat_Zones to avoid cluttering of contacts.
-local SetCombatZones = SET_ZONE:New():FilterPrefixes("CombatZone"):FilterOnce()
+local SetCombatZones = SET_ZONE:New():FilterPrefixes("RF_CZ"):FilterOnce()
 RedIntel:SetAcceptZones(SetCombatZones)
 
 -- Events to create AUFTRAG
@@ -246,6 +225,7 @@ function RedIntel:OnAfterNewContact(From, Event, To, contact)
   end
 end
 
+-- Initialize AWACS
 local Red_DetectionSetGroupAWACS = SET_GROUP:New():FilterCoalitions("red"):FilterActive():FilterPrefixes( { "RU_Recce","RU_EWR" } ):FilterStart()
 local RedIntelAwacs = INTEL:New(Red_DetectionSetGroupAWACS, "red", "KGB AWACS")
 RedIntelAwacs:SetClusterAnalysis(true, true)
@@ -262,13 +242,16 @@ function RedIntelAwacs:OnAfterNewContact(From, Event, To, contact)
   AWMozdok:AddMission(mIntercept)
 end
 
+
+
 -- Initialize combat zones from config
-for zoneItName, zoneItConfig in pairs( zoneConfigs ) do
-  initZone(zoneItName)
+for secItName, secItConfig in pairs( sectorConfig ) do
+  initSector(secItName)
 end
 
--- Make all red units ALARMSTATE RED
 
+
+-- Make all red units ALARMSTATE RED
 local SetGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterOnce()
 
 SetGroups:ForEachGroup(function(groupMakeAngry)

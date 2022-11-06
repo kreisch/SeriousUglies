@@ -375,8 +375,10 @@ local function checkRespawnFromFactory()
     nextRespawn = nextRespawn + 1
 
     local willRespawn = math.random(1, 100)
+    UglyPrintDebug("WillRespawn: " .. willRespawn)
+
     if willRespawn > respawnPropability then
-      UglyPrintDebug("Sorry, unlucky group - will not be respawned (willRespawn): " .. willRespawn)
+      UglyPrintDebug("Sorry, unlucky group - will not be respawned.")
       TIMER:New(checkRespawnFromFactory):Start(respawnInterval)
       return
     end
