@@ -120,6 +120,8 @@ local function initSector(_name)
   local theSecZone = ZONE:New(_name)
 --  sectorConfig[_name]["Zone"] = theSecZone
 
+  theSecZone:DrawZone(-1, {0,0,0}, 1, {0,0,0}, 0.2, 1, true)
+
   DoPatrolsInZone(theSecZone)
 
   for i = 1, #sectorConfig[_name]["opszones"] do
@@ -144,11 +146,19 @@ local function doActionForZone(_inZone, _contact)
       :FilterCategoryGround():FilterActive():FilterOnce() -- Todo: Nur lebende enthalten? Laut Applevangelist ja; Active notwendig?
 
     MESSAGE:New("We have " .. SetGroupsGround:Count() .. " groups available as QRF."):ToAll()
+    env.info("We have " .. SetGroupsGround:Count() .. " groups available as QRF.")
+
     local groupForTasking = SetGroupsGround:GetRandom()
 
-    if groupForTasking ~= nil then
+    local useGroundTroops = false
+    if math.random(1,100) > 75 then
+      useGroundTroops = true
+    end
+
+    if groupForTasking ~= nil and useGroundTroops == true then
+      env.info("GroundTarget is found in " .. _inZone:GetName() .. "\nStarting Tankattack")
       --    MESSAGE:New("Attacking group is: " .. groupForTasking:GetName(), 20, "Debug"):ToAll()
-      env.info("Attacking group is: " .. groupForTasking:GetName() .. ", available are " .. SetGroupsGround:Count())
+      env.info("Attacking group is: " .. groupForTasking:GetName())
       groupForTasking = respawnAtCurrentPosition(groupForTasking)
       --    MESSAGE:New("Attacking group changed to: " .. groupForTasking:GetName(), 20, "Debug"):ToAll()
       env.info("Attacking group changed to: " .. groupForTasking:GetName())
@@ -163,7 +173,7 @@ local function doActionForZone(_inZone, _contact)
       mission:SetRepeatOnFailure(6)
       sectorConfig[_inZone:GetName()]["airwing"]:AddMission(mission)
       MESSAGE:New("Added mission to airwing"):ToAll()
-      env.info("GroundTarget is found in " .. _inZone:GetName() .. "\n Starting CAS-ATTACK")
+      env.info("GroundTarget is found in " .. _inZone:GetName() .. "\nStarting CAS-ATTACK")
     end
 
   elseif (_contact.attribute == "Ground_EWR") or (_contact.attribute == "Ground_SAM") or
