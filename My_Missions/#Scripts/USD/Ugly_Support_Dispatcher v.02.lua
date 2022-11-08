@@ -368,7 +368,7 @@ local function _updateMapMarkerForMission(flightgroup, generatedMissionName)
   local _radio        = _flightgroup:GetRadio()
   local _tacan        = _flightgroup:GetTACAN()
   
-  local _text = string.format("Mission Name: %s\nMission Type %s\nFlightgroup Name: %s\nRadio %s\nTacan %s\nLasercode %s", _generatedMissionName,_missiontype, _flightgroup:GetName() ,_radio, _tacan, _lasercode)
+  local _text = string.format("Mission Name: %s Mission Type %s\nRadio %s\nTacan %s\nLasercode %s", _generatedMissionName,_missiontype,_radio, _tacan, _lasercode)
   
   activeTaskingsUSD[_generatedMissionName]["marker"]:UpdateText(_text)
 
@@ -438,7 +438,7 @@ local function _CreateTankerMission(_options, Event, _selectedAirwing)
             missionTanker:SetRequiredEscorts(1, 1, AUFTRAG.Type.ESCORT, {"AIR"}, 60)
 --            activeTaskingsUSD[nameOfMission]["mission"] = missionTanker  -- Here the AUFTRAG is grouped to the mission name.
 --            activeTaskingsUSD[nameOfMission]["marker"] = markOfTasking   -- Here the MARKER is grouped to the mission name.
-            local missionData = {mission = missionTanker, marker = markOfTasking, line = lineOfTasking, group = nil, missiontype = "tanker"}
+            local missionData = {mission = missionTanker, marker = markOfTasking, line = lineOfTasking, group = nil, missiontype = "tanker", scheduler = nil}
             activeTaskingsUSD[nameOfMission:lower()] = missionData
             _selectedAirwing:AddMission(missionTanker)
 end
@@ -468,12 +468,13 @@ local function _CreateAfacMission(options, Event, _selectedAirwing)
   local orbitTask = AUFTRAG:NewORBIT_CIRCLE(_coordinate, afacDefaultAlt, afacDefaultSpeed)
   
   local stringForMarker = _createTextForMarkerAFAC(_options)
-
-  local missionData = {mission = orbitTask, marker = markOfTasking, group = nil, missiontype ="afac"}
+  markOfTasking = MARKER:New(_coordinate, "AFAC tasking started.\n" .. "Mission:".. nameOfMission .."\n" .. stringForMarker):ReadOnly():ToAll()
+  
+  local missionData = {mission = orbitTask, marker = markOfTasking, group = nil, missiontype ="afac", scheduler = nil}
   activeTaskingsUSD[nameOfMission:lower()] = missionData
   _selectedAirwing:AddMission(orbitTask)
   trigger.action.removeMark(Event.idx) -- remove the old mark, since the task is created.
-  markOfTasking = MARKER:New(_coordinate, "AFAC tasking started.\n" .. "Mission:".. nameOfMission .."\n" .. stringForMarker):ReadOnly():ToAll()
+  
 
 end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -510,6 +511,13 @@ local function _endMission(options, Event)
   if (activeTaskingsUSD[_missionName]) then
     activeTaskingsUSD[_missionName]["mission"]:Cancel()
     activeTaskingsUSD[_missionName]["marker"]:Remove()
+    if (activeTaskingsUSD[_missionName]["group"]) then
+      activeTaskingsUSD[_missionName]["group"]:SetDetection(false)
+      activeTaskingsUSD[_missionName]["group"]:LaserOff()
+    end
+    if (activeTaskingsUSD[_missionName]["scheduler"]) then
+      activeTaskingsUSD[_missionName]["scheduler"]:Stop()
+    end
     --activeTaskingsUSD[_missionName]["line"]:Remove()
     trigger.action.removeMark(Event.idx)
   else
@@ -691,6 +699,7 @@ function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
       if _mission:GetType() == AUFTRAG.Type.ORBIT then
           info("Configuring AFAC Group " .. _flightgroupname)
           _flightgroup:SetDetection(true)
+          local _markerTarget = nil
           --- Function called when the LASER is switched on.
           function _flightgroup:OnAfterLaserOn(From, Event, To, Target)
             local text=string.format("Switching LASER On (code %d) at target %s", _flightgroup:GetLaserCode(), Target:GetName())
@@ -703,6 +712,9 @@ function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
             local text=string.format("Switching LASER Off")
             MESSAGE:New(text, 60):ToAll()
             env.info(text)
+            if(_markerTarget) then
+              _markerTarget:Remove()
+            end
           end
           
           -- Info on LASER target and code.
@@ -757,6 +769,11 @@ function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
                 end
                 env.info("FF New target "..newtarget:GetName())
                 _flightgroup:LaserOn(newtarget)
+                _markerTarget = MARKER:New(newtarget:GetCoordinate(),newtarget:GetTypeName()
+                .. " Coordinates\n" .. newtarget:GetCoordinate():ToStringLLDDM() .."\n" ..
+                 newtarget:GetCoordinate():ToStringLLDMS() .. "\n" ..
+                 newtarget:GetCoordinate():ToStringMGRS())
+                 :ReadOnly():ToAll()
               end
             
             end
@@ -777,7 +794,9 @@ function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
           end
           
           -- Timer to check threats every 30 sec.
-          TIMER:New(CheckThreats):Start(30, 30)
+          local scheduler = TIMER:New(CheckThreats)
+          activeTaskingsUSD[_generatedMissionName]["scheduler"] = scheduler
+          activeTaskingsUSD[_generatedMissionName]["scheduler"]:Start(30, 30)
           _updateMapMarkerForMission(_flightgroup, _generatedMissionName)
      end
 end
