@@ -63,7 +63,7 @@
                           hasSEAD = true, 
                       },
                       
-                      [AWIncirlik] = {boom = true, basket = true, basketbig = false,
+                      [AWIncirlik] = {boom = true, basket = false, basketbig = false,
                           awacs = false,
                           cas = false,
                           cap = true,
@@ -358,6 +358,23 @@ local function _createTextForMarkerAFAC(options)
 end
 
 
+
+local function _updateMapMarkerForMission(flightgroup, generatedMissionName)
+  local _flightgroup          = flightgroup
+  local _generatedMissionName = generatedMissionName
+  
+  local _missiontype  = activeTaskingsUSD[_generatedMissionName]["missiontype"]
+  local _lasercode    = _flightgroup:GetLaserCode()
+  local _radio        = _flightgroup:GetRadio()
+  local _tacan        = _flightgroup:GetTACAN()
+  
+  local _text = string.format("Mission Name: %s\nMission Type %s\nFlightgroup Name: %s\nRadio %s\nTacan %s\nLasercode %s", _generatedMissionName,_missiontype, _flightgroup:GetName() ,_radio, _tacan, _lasercode)
+  
+  activeTaskingsUSD[_generatedMissionName]["marker"]:UpdateText(_text)
+
+end
+
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Creates an AUFTRAG for a tanker.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -421,7 +438,7 @@ local function _CreateTankerMission(_options, Event, _selectedAirwing)
             missionTanker:SetRequiredEscorts(1, 1, AUFTRAG.Type.ESCORT, {"AIR"}, 60)
 --            activeTaskingsUSD[nameOfMission]["mission"] = missionTanker  -- Here the AUFTRAG is grouped to the mission name.
 --            activeTaskingsUSD[nameOfMission]["marker"] = markOfTasking   -- Here the MARKER is grouped to the mission name.
-            local missionData = {mission = missionTanker, marker = markOfTasking, line = lineOfTasking, group = nil}
+            local missionData = {mission = missionTanker, marker = markOfTasking, line = lineOfTasking, group = nil, missiontype = "tanker"}
             activeTaskingsUSD[nameOfMission:lower()] = missionData
             _selectedAirwing:AddMission(missionTanker)
 end
@@ -451,11 +468,12 @@ local function _CreateAfacMission(options, Event, _selectedAirwing)
   local orbitTask = AUFTRAG:NewORBIT_CIRCLE(_coordinate, afacDefaultAlt, afacDefaultSpeed)
   
   local stringForMarker = _createTextForMarkerAFAC(_options)
-  markOfTasking = MARKER:New(_coordinate, "AFAC tasking started.\n" .. "Mission:".. nameOfMission .."\n" .. stringForMarker):ReadOnly():ToAll()
-  
-  local missionData = {mission = orbitTask, marker = markOfTasking, group = nil}
+
+  local missionData = {mission = orbitTask, marker = markOfTasking, group = nil, missiontype ="afac"}
   activeTaskingsUSD[nameOfMission:lower()] = missionData
   _selectedAirwing:AddMission(orbitTask)
+  trigger.action.removeMark(Event.idx) -- remove the old mark, since the task is created.
+  markOfTasking = MARKER:New(_coordinate, "AFAC tasking started.\n" .. "Mission:".. nameOfMission .."\n" .. stringForMarker):ReadOnly():ToAll()
 
 end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -504,7 +522,7 @@ local function _endMission(options, Event)
 end
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Tries to end a mission, specified by mission name.
+-- Tries to change the mission data (like lasercode or radio frequency, tacan,...), specified by mission name.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 local function _changeMission (options, Event)
   local _options = options
@@ -519,6 +537,16 @@ local function _changeMission (options, Event)
       _auftragGroup:SetLaser(_options.lasercode, true, false, 30) -- (Code, CheckLOS, IROff, UpdateTime)
       info("Group " .. _auftragGroup:GetName() .. " changing Laser to " .. _options.lasercode)
   end
+  if (_options.radio) then
+      _auftragGroup:SwitchRadio(_options.radio)
+      info("Group " .. _auftragGroup:GetName() .. " changing radio to " .. _options.radio)
+  end
+  if (_options.tacan) then
+      _auftragGroup:SwitchTACAN(_options.tacan, "XXX", _auftragGroup:GetUnit(1), "Y")
+      info("Group " .. _auftragGroup:GetName() .. " changing tacan to " .. _options.tacan)
+  end
+  --trigger.action.removeMark(Event.idx)
+  _updateMapMarkerForMission(_auftragGroup,_missionName)
   
 end
 
@@ -646,12 +674,15 @@ function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
       local _flightgroup = Flightgroup -- Ops.FlightGroup#FLIGHTGROUP
       local _mission = Mission -- Ops.Auftrag#AUFTRAG
       local _flightgroupname = _flightgroup:GetName()
+      local _generatedMissionName = nil
       
       for _missionName, secItConfig in pairs( activeTaskingsUSD ) do
           if activeTaskingsUSD[_missionName]["mission"] == _mission then
             info("I have found the mission in the USD table " .. _mission:GetName())
             activeTaskingsUSD[_missionName]["group"] = _flightgroup
             info("Assigned flightgroup " .. _flightgroupname .. " to mission " .. _mission:GetName())
+            _generatedMissionName = _missionName
+            info("The generated mission name is " .. _generatedMissionName)
           else
             info ("I did not find the mission in the USD table, compared to " ..activeTaskingsUSD[_missionName]["mission"]:GetName())
           end
@@ -660,7 +691,6 @@ function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
       if _mission:GetType() == AUFTRAG.Type.ORBIT then
           info("Configuring AFAC Group " .. _flightgroupname)
           _flightgroup:SetDetection(true)
-          
           --- Function called when the LASER is switched on.
           function _flightgroup:OnAfterLaserOn(From, Event, To, Target)
             local text=string.format("Switching LASER On (code %d) at target %s", _flightgroup:GetLaserCode(), Target:GetName())
@@ -748,6 +778,27 @@ function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
           
           -- Timer to check threats every 30 sec.
           TIMER:New(CheckThreats):Start(30, 30)
-          
+          _updateMapMarkerForMission(_flightgroup, _generatedMissionName)
      end
+end
+
+function AWIncirlik:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
+local _flightgroup = Flightgroup -- Ops.FlightGroup#FLIGHTGROUP
+      local _mission = Mission -- Ops.Auftrag#AUFTRAG
+      local _flightgroupname = _flightgroup:GetName()
+      local _generatedMissionName = nil
+      
+      for _missionName, secItConfig in pairs( activeTaskingsUSD ) do
+          if activeTaskingsUSD[_missionName]["mission"] == _mission then
+            info("I have found the mission in the USD table " .. _mission:GetName())
+            activeTaskingsUSD[_missionName]["group"] = _flightgroup
+            info("Assigned flightgroup " .. _flightgroupname .. " to mission " .. _mission:GetName())
+            _generatedMissionName = _missionName
+            info("The generated mission name is " .. _generatedMissionName)
+          else
+            info ("I did not find the mission in the USD table, compared to " ..activeTaskingsUSD[_missionName]["mission"]:GetName())
+          end
+      end
+      _updateMapMarkerForMission(_flightgroup, _generatedMissionName)
+
 end
