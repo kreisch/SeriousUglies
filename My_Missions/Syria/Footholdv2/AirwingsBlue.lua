@@ -27,12 +27,12 @@ local recoveryTankers=SQUADRON:New("RecoveryTanker", 8, "recoveryTankers") --Ops
 recoveryTankers:SetCallsign(CALLSIGN.Tanker.Shell)
 recoveryTankers:SetRadio(251.0)
 recoveryTankers:SetSkill(AI.Skill.HIGH)
-recoveryTankers:AddMissionCapability({AUFTRAG.Type.RECOVERYTANKER},100)
+recoveryTankers:AddMissionCapability({AUFTRAG.Type.RECOVERYTANKER, AUFTRAG.Type.TANKER},100)
 recoveryTankers:SetFuelLowRefuel(true)
 recoveryTankers:SetFuelLowThreshold(0.2)
 recoveryTankers:SetTurnoverTime(10,20)
 AWNavyBoys:AddSquadron(recoveryTankers)
-AWNavyBoys:NewPayload("RecoveryTanker",-1,{AUFTRAG.Type.RECOVERYTANKER},100)
+AWNavyBoys:NewPayload("RecoveryTanker",-1,{AUFTRAG.Type.RECOVERYTANKER, AUFTRAG.Type.TANKER},100)
 
 local boomTankers = SQUADRON:New("incirlik-aleppo-tanker", 8, "Incirlik-Tankers") --Ops.Squadron#SQUADRON
 boomTankers:SetCallsign(CALLSIGN.Tanker.Arco)
@@ -69,9 +69,9 @@ testawacs:SetAwacsDetails(CALLSIGN.AWACS.Focus,1,30,300,88,25)
 testawacs:SetModernEra()
 testawacs:__Start(5)
 
-local auftragRecoveryTanker = AUFTRAG:NewRECOVERYTANKER(UNIT:FindByName("GeorgeWashington"))
-auftragRecoveryTanker:SetRepeat(99)
-AWNavyBoys:AddMission(auftragRecoveryTanker)
+--local auftragRecoveryTanker = AUFTRAG:NewRECOVERYTANKER(UNIT:FindByName("GeorgeWashington"))
+--auftragRecoveryTanker:SetRepeat(99)
+--AWNavyBoys:AddMission(auftragRecoveryTanker)
 
 local ArcoLeg = ZONE:New("Arco-Leg")
 -- Enable the tanker tasking for the north sector.

@@ -7,7 +7,8 @@
 -- "USD, Tanker Boom, Alt 24000, Speed 350, Heading 030, Leg 15"
 -- "USD, Tanker Boom, Alt 24000, Speed 350, Heading 030, Start 1300, End 1400"
 
-  local debug = true
+  local debug     = true
+  local autolase  = false
 
   local keyphrase ="usd"
   local keyphraseAltitude = "alt"
@@ -18,15 +19,18 @@
   local keyphraseAWACS  = "awacs"
   local keyphraseCAS    = "cas"
   local keyphraseCAP    = "cap"
+  local keyphraseAFAC   = "afac"
   
-  local keyphraseBoom       = "boom"
-  local keyphraseBasket     = "basket"
-  local keyphraseBasketBig  = "heavybasket"
-  local keyphraseLeg        = "leg"
-  local keyphraseEscort     = "escort"
-  local keyphraseTacan      = "tacan"
-  local keyphraseRadio      = "radio"
-  local keyphraseEndmission = "stopmission"
+  local keyphraseBoom           = "boom"
+  local keyphraseBasket         = "basket"
+  local keyphraseBasketBig      = "heavybasket"
+  local keyphraseLeg            = "leg"
+  local keyphraseEscort         = "escort"
+  local keyphraseTacan          = "tacan"
+  local keyphraseRadio          = "radio"
+  local keyphraseEndmission     = "stopmission"
+  local keyphraseChangemission  = "changemission"
+  local keyphraseLaserCode      = "lasercode"
 --  Time is not being used currently
 --  local keyphraseTimeStart  = "start"
 --  local keyphraseTimeEnd    = "end"
@@ -39,9 +43,18 @@
   local tankerDefaultTacan      = 21
   local tankerDefaultRadio      = 121
   
+  local afacDefaultRadio        = 254
+  
+  local afacDefaultSpeed        = 250
+  local afacDefaultAlt          = 18000
+  
   local defaultEscort           = 1
   
   local missionNames = {"Neptun" ,"Poseidon", "Nimrod", "Fedex", "Brewmaster"}
+  
+  --- Known shortcomings:
+  -- Currently the task ORBIT is a subtask of Tanker, which means a tanker WILL respond to a afac task.
+  -- Therefore use a single Airwing for AFACs only.
   local airwings = {
                       [AWNavyBoys] = {boom = false, basket = true, basketbig = false,
                           awacs = true,
@@ -52,10 +65,19 @@
                       
                       [AWIncirlik] = {boom = true, basket = true, basketbig = false,
                           awacs = false,
-                          hasCAS = false,
-                          hasCAP = true,
-                          hasSEAD = true, 
+                          cas = false,
+                          cap = true,
+                          sead = true,
+                          afac = false, 
                       },
+                      
+                      [AwAfacs] = {boom = false, basket = false, basketbig = false,
+                          awacs = false,
+                          cas = false,
+                          cap = false,
+                          sead = false,
+                          afac = true, 
+                       },
   }
   
   -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -193,11 +215,25 @@ local function _MarkTextAnalysis(text)
         info(id..string.format(" Value awacs = %s", tostring(switch.awacs)))
         end
         
+        if key:lower():find(keyphraseAFAC) then
+        switch.afac = true
+        info(id..string.format(" Value afac = %s", tostring(switch.afac)))
+        end
+        
         if key:lower():find(keyphraseEndmission) then
         switch.delete = val:lower()
         info(id..string.format(" Value delete = %s", tostring(switch.delete)))
         end
 
+        if key:lower():find(keyphraseChangemission) then
+        switch.missionToChange = val:lower()
+        info(id..string.format(" Value missionToChange = %s", tostring(switch.missionToChange)))
+        end
+        
+        if key:lower():find(keyphraseLaserCode) then
+        switch.lasercode = val:lower()
+        info(id..string.format(" Value lasercode = %s", tostring(switch.lasercode)))
+        end
         
       end
 
@@ -293,6 +329,16 @@ local function errorMarkerNoValidSupportRequested(Event)
      MARKER:New(_coordinate, "No valid support type was requested. Please check."):ToAll()
 end
 
+local function _LineViaOffset(coordinate, bearing, range)
+  local _coordinate = coordinate
+  info("Drawing line on F10 map...")
+  -- COORDINATE:LineToAll(Endpoint,Coalition,Color,Alpha,LineType,ReadOnly,Text)
+  local _line = nil
+  -- Wie bekomme ich die Coordinate, wenn ich Richtung und Distanz habe?
+  --_line = _coordinate:LineToAll(Endpoint,Coalition,Color,Alpha,LineType,ReadOnly,Text)
+  return _line
+end
+
 local function _createTextForMarkerTanker(options)
   local stringForMarker =""
   local _options = options
@@ -302,6 +348,19 @@ local function _createTextForMarkerTanker(options)
   return stringForMarker
 end
 
+local function _createTextForMarkerAFAC(options)
+  local stringForMarker =""
+  local _options = options
+  
+  stringForMarker = string.format("AFAC Details are\nRadio:%s", options.radio)
+  
+  return stringForMarker
+end
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Creates an AUFTRAG for a tanker.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
 local function _CreateTankerMission(_options, Event, _selectedAirwing)
             local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z) -- Coordinate of F10Marker
             local _altitude = tankerDefaultAlt    -- Default values for a tanker, used when nothing specified in marker
@@ -344,6 +403,7 @@ local function _CreateTankerMission(_options, Event, _selectedAirwing)
             info(id..string.format(" Creating tanker task with type:\n%s", _type)) -- debug
    
             local missionTanker = AUFTRAG:NewTANKER(_coordinate, _altitude, _speed, _heading, _leg, _type)
+            local lineOfTasking = _LineViaOffset(_coordinate,_heading,_leg)
             local markOfTasking = nil
             local nameOfMission = _createMissionName()
             
@@ -361,7 +421,7 @@ local function _CreateTankerMission(_options, Event, _selectedAirwing)
             missionTanker:SetRequiredEscorts(1, 1, AUFTRAG.Type.ESCORT, {"AIR"}, 60)
 --            activeTaskingsUSD[nameOfMission]["mission"] = missionTanker  -- Here the AUFTRAG is grouped to the mission name.
 --            activeTaskingsUSD[nameOfMission]["marker"] = markOfTasking   -- Here the MARKER is grouped to the mission name.
-            local missionData = {mission = missionTanker, marker = markOfTasking}
+            local missionData = {mission = missionTanker, marker = markOfTasking, line = lineOfTasking, group = nil}
             activeTaskingsUSD[nameOfMission:lower()] = missionData
             _selectedAirwing:AddMission(missionTanker)
 end
@@ -369,15 +429,40 @@ end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Creates an AUFTRAG:NewAWACS() with moose depending on the map marker information.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
-local function _CreateAwacsMission(options, Event)
+local function _CreateAwacsMission(options, Event, _selectedAirwing)
   local _options = options
+
+end
+
+local function _CreateAfacMission(options, Event, _selectedAirwing)
+  local _options = options
+  local markOfTasking = nil
+  local nameOfMission = _createMissionName()
+  --- Vorgehen:
+  -- 1. Orbit als Auftrag erstellen mittels Zone um den Mapmarker herum
+  -- 2. Zone markieren auf F10 map
+  -- 3. Marker mit Daten erstellen
+  -- Problem: Erstmal an die Group kommen, die den Auftrag bekommt. AUFTRAG:GetOpsGroups() ?
+  -- 4. AFAC Fähigkeiten verleihen, sobald Unit in Zone angekommen ist
+  if not _options.radio then
+    _options.radio = afacDefaultRadio
+  end
+  local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z) -- Coordinate of F10Marker
+  local orbitTask = AUFTRAG:NewORBIT_CIRCLE(_coordinate, afacDefaultAlt, afacDefaultSpeed)
+  
+  local stringForMarker = _createTextForMarkerAFAC(_options)
+  markOfTasking = MARKER:New(_coordinate, "AFAC tasking started.\n" .. "Mission:".. nameOfMission .."\n" .. stringForMarker):ReadOnly():ToAll()
+  
+  local missionData = {mission = orbitTask, marker = markOfTasking, group = nil}
+  activeTaskingsUSD[nameOfMission:lower()] = missionData
+  _selectedAirwing:AddMission(orbitTask)
 
 end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Checks which Support is requested by an F10 MapMarker and returns the value as string.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 local function _determineSupportType(options, Event)
-  info("Determining the requested support by F10 Mapmarker " .. tostring(options.awacs))
+  info("Determining the requested support by F10 Mapmarker ")
   local _supportType = nil
   local _options = options
       -- Analyse the mark point text and extract the keywords to define the task related stuff
@@ -389,6 +474,8 @@ local function _determineSupportType(options, Event)
         _supportType = keyphraseCAS
       elseif _options.cap then        -- if ~nil, CAP is requested
         _supportType = keyphraseCAP
+      elseif _options.afac then        -- if ~nil, CAP is requested
+        _supportType = keyphraseAFAC
       else
         info("No valid support type is requested.")
         errorMarkerNoValidSupportRequested(Event)
@@ -405,6 +492,7 @@ local function _endMission(options, Event)
   if (activeTaskingsUSD[_missionName]) then
     activeTaskingsUSD[_missionName]["mission"]:Cancel()
     activeTaskingsUSD[_missionName]["marker"]:Remove()
+    --activeTaskingsUSD[_missionName]["line"]:Remove()
     trigger.action.removeMark(Event.idx)
   else
     info(_missionName .. " is not included in the active mission list.")
@@ -413,6 +501,25 @@ local function _endMission(options, Event)
      MARKER:New(_coordinate, _missionName .. " is not included in the active mission list."):ToAll()
   end
 
+end
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Tries to end a mission, specified by mission name.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+local function _changeMission (options, Event)
+  local _options = options
+  local _missionName = _options.missionToChange:lower()
+  local _auftrag = activeTaskingsUSD[_missionName]["mission"]     -- The AUFTRAG
+  local _auftragGroup = activeTaskingsUSD[_missionName]["group"]  -- The OpsGroup
+  local _auftragName  = _auftrag:GetName()
+  info("Changing mission " .. _missionName .. " AuftragName " .. _auftragName)
+  info("The mission " .. _missionName .. " has assigned the group " .. _auftragGroup:GetName())
+  
+  if (_options.lasercode) then
+      _auftragGroup:SetLaser(_options.lasercode, true, false, 30) -- (Code, CheckLOS, IROff, UpdateTime)
+      info("Group " .. _auftragGroup:GetName() .. " changing Laser to " .. _options.lasercode)
+  end
+  
 end
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -426,24 +533,31 @@ local function _OnEventMarkChange(Event)
       
       if _options.delete then -- A mission shall be ended
         _endMission(_options, Event)
-      
-      else  -- No mission to be ended, so check which support is requested.
-          local _requestedSupportType = _determineSupportType(_options, Event)  -- Returns the support Type
-          -- We know which type of support is requested, now find an airwing capable of.
-          if (_requestedSupportType) then
-            local _selectedAirwing = provideAirwingsCapableToSupport(_requestedSupportType, Event)
-  
-            if (_selectedAirwing ~=nil) then -- If we have found an airwing, we can check which mission to create depending on support type.
-              if _options.tankerType then
-                _CreateTankerMission(_options, Event, _selectedAirwing) -- if ~= nil, create a mission. 
-              elseif _options.awacs then
-                _CreateAwacsMission(_options, Event)
-              elseif _options.cap then
-              
-              end
+      else  
+      if _options.missionToChange then
+          _changeMission (_options, Event)
+      else
+        
+        -- No mission to be ended, so check which support is requested.
+            local _requestedSupportType = _determineSupportType(_options, Event)  -- Returns the support Type
+            -- We know which type of support is requested, now find an airwing capable of.
+            if (_requestedSupportType) then
+              local _selectedAirwing = provideAirwingsCapableToSupport(_requestedSupportType, Event)
+    
+              if (_selectedAirwing ~=nil) then -- If we have found an airwing, we can check which mission to create depending on support type.
+                if _options.tankerType then
+                  _CreateTankerMission(_options, Event, _selectedAirwing) -- if ~= nil, create a mission. 
+                elseif _options.awacs then
+                  _CreateAwacsMission(_options, Event)
+                elseif _options.cap then
+                
+                elseif _options.afac then
+                  _CreateAfacMission(_options,Event,_selectedAirwing)
+                end
+            end
           end
-        end
-      end -- End Support Request
+        end -- End Support Request
+      end
       --#endregion
   end
 end
@@ -487,3 +601,153 @@ function eventHandlerUSD:onEvent(Event)
 end
 
 world.addEventHandler(eventHandlerUSD)
+
+if (autolase) then
+info("Loading Autolase")
+  local afacSet = SET_GROUP:New():FilterPrefixes("AFAC"):FilterCoalitions("blue"):FilterCategoryAirplane():FilterStart()
+  local Pilotset = SET_CLIENT:New():FilterCoalitions("blue"):FilterActive(true):FilterStart()
+  local autolaser = AUTOLASE:New(afacSet,coalition.side.BLUE,"AFAC",Pilotset)
+  autolaser:SetNotifyPilots(true) -- defaults to true, also shown if debug == true
+  autolaser:SetPilotMenu(true)
+else
+--info("Loading complex AFAC")
+--    local RecceSetGroup = SET_GROUP:New():FilterPrefixes( "AFAC" ):FilterStart()
+--    
+--    local HQ = GROUP:FindByName( "HQ" )
+--    
+--    local CC = COMMANDCENTER:New( HQ, "HQ" )
+--    
+--    -- Let the RecceSetGroup vehicles in the collection detect targets and group them in AREAS of 1000 meters.
+--    local RecceDetection = DETECTION_AREAS:New( RecceSetGroup, 1000 )
+--    
+--    -- Create a Attack Set, which contains the human player client slots and CA vehicles.
+--    local AttackSet = SET_CLIENT:New():FilterCoalitions("blue"):FilterActive(true):FilterStart()
+--    
+--    local RecceDesignation = DESIGNATE:New( CC, RecceDetection, AttackSet )
+--    
+--    -- This sets the threat level prioritization on
+--    RecceDesignation:SetThreatLevelPrioritization( true )
+--    
+--    -- Set the possible laser codes.
+--    RecceDesignation:GenerateLaserCodes()
+--    
+--    RecceDesignation:AddMenuLaserCode( 1113, "Lase with %d for Su-25T" )
+--    RecceDesignation:AddMenuLaserCode( 1680, "Lase with %d for A-10A" )
+--    
+--    -- Start the detection process in 5 seconds.
+--    RecceDesignation:__Detect( -5 )
+
+end
+
+function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
+      self:E({From, Event, To, Flightgroup, Mission})
+      info("AW AFACS is launching a flight")
+      
+      local _flightgroup = Flightgroup -- Ops.FlightGroup#FLIGHTGROUP
+      local _mission = Mission -- Ops.Auftrag#AUFTRAG
+      local _flightgroupname = _flightgroup:GetName()
+      
+      for _missionName, secItConfig in pairs( activeTaskingsUSD ) do
+          if activeTaskingsUSD[_missionName]["mission"] == _mission then
+            info("I have found the mission in the USD table " .. _mission:GetName())
+            activeTaskingsUSD[_missionName]["group"] = _flightgroup
+            info("Assigned flightgroup " .. _flightgroupname .. " to mission " .. _mission:GetName())
+          else
+            info ("I did not find the mission in the USD table, compared to " ..activeTaskingsUSD[_missionName]["mission"]:GetName())
+          end
+      end
+      
+      if _mission:GetType() == AUFTRAG.Type.ORBIT then
+          info("Configuring AFAC Group " .. _flightgroupname)
+          _flightgroup:SetDetection(true)
+          
+          --- Function called when the LASER is switched on.
+          function _flightgroup:OnAfterLaserOn(From, Event, To, Target)
+            local text=string.format("Switching LASER On (code %d) at target %s", _flightgroup:GetLaserCode(), Target:GetName())
+            MESSAGE:New(text, 60):ToAll()
+            env.info(text)        
+          end
+          
+          --- Function called when the LASER is switched off.
+          function _flightgroup:OnAfterLaserOff(From, Event, To)
+            local text=string.format("Switching LASER Off")
+            MESSAGE:New(text, 60):ToAll()
+            env.info(text)
+          end
+          
+          -- Info on LASER target and code.
+          local function CheckThreats()
+          
+            -- Get the highst (detected) threat to the group.
+            local threatunit,threatlevel=_flightgroup:GetHighestThreat()
+            
+            -- Set of detected units.
+            local detectedset=_flightgroup:GetDetectedUnits()
+            
+            -- Cound number of alive detected units. 
+            local ndetected=detectedset:CountAlive()
+            
+            -- Info on detected units.
+            local text=string.format("Detected units (%d):", ndetected)
+            if ndetected>0 then  
+              for _,_unit in pairs(detectedset:GetSet()) do
+                local unit=_unit --Wrapper.Unit#UNIT
+                text=text..string.format("\n- %s [threat level=%d]", unit:GetName(), unit:GetThreatLevel())
+              end
+            else
+              text=text.." None"
+            end
+            
+            -- We got a threat to the group.
+            if threatunit then
+          
+              text=text..string.format("\nHighest detected threat %s with threat level %d", threatunit:GetName(), threatlevel)
+              
+              -- Current laser target.
+              local target=_flightgroup:GetLaserTarget()
+              
+              local newtarget=nil --Wrapper.Unit#UNIT
+              if target then
+              
+                local currentthreatlevel=target:GetThreatLevel()
+                
+                if threatlevel>currentthreatlevel then
+                  env.info("FF higher threat detected!")
+                  newtarget=threatunit
+                end
+              
+              else
+                env.info("FF no current target using this one")
+                newtarget=threatunit
+              end
+              
+              if newtarget then
+                if _flightgroup:IsLasing() then
+                  _flightgroup:LaserOff()
+                end
+                env.info("FF New target "..newtarget:GetName())
+                _flightgroup:LaserOn(newtarget)
+              end
+            
+            end
+          
+          
+            -- Get current laser target.
+            local unit=_flightgroup:GetLaserTarget()
+            if unit then
+              text=text..string.format("\nLasing target %s at code %d", unit:GetName(), _flightgroup:GetLaserCode())
+            else
+              text=text.."\nNot lasing any target"
+            end
+            text=text..string.format(" (ON=%s, LOS=%s)", tostring(_flightgroup:IsLasing()), tostring(_flightgroup.spot.LOS))
+          
+            -- Info message.
+            MESSAGE:New(text, 25):ToAll()
+            env.info(text)
+          end
+          
+          -- Timer to check threats every 30 sec.
+          TIMER:New(CheckThreats):Start(30, 30)
+          
+     end
+end
