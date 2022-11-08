@@ -5,6 +5,7 @@ recoveryTanker:SetRadio(122)
 recoveryTanker:SetModex(912)
 recoveryTanker:SetTACAN(22, "SHL21")
 recoveryTanker:SetTakeoffCold()
+recoveryTanker:SetCallsign(CALLSIGN.Tanker.Shell,1)
 recoveryTanker:Start()
 
 rescuehelo=RESCUEHELO:New("USS Rafael Peralta", "RescueHelo")
