@@ -235,8 +235,8 @@ local function onDSMCRunSave(recall)
     end
   end
 
-  -- Reset and run normal again after 120s
-  TIMER:New(reinitCheckMovement):Start(120)
+  -- Reset and run normal again after 5s
+  TIMER:New(reinitCheckMovement):Start(5)
 end
 
 -- Add helper for DSMC saving
