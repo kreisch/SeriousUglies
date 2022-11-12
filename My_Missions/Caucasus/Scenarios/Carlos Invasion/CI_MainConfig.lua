@@ -142,7 +142,8 @@ local function checkSector(_sector)
   end
 
   local theSecZone = ZONE:New(_sector)
-  theSecZone:UndrawZone()
+  theSecZone:DrawZone(-1, {0,0,1}, 1, {0,0,1}, 0.2, 1, true)
+--  theSecZone:UndrawZone()
 
   trigger.action.outText("Hooyah!!! Sector " .. sectorConfig[_sector]["name"] .. " was liberated.", 30)
 end
@@ -163,7 +164,8 @@ local function initSector(_name)
   registerFactory(sectorConfig[_name]["factoryPrefix"])
 
   local theSecZone = ZONE:New(_name)
-  theSecZone:DrawZone(-1, {0,0,0}, 1, {0,0,0}, 0.2, 1, true)
+--  theSecZone:DrawZone(-1, {0,0,0}, 1, {0,0,0}, 0.2, 1, true)
+  theSecZone:DrawZone(-1, {1,0,0}, 1, {1,0,0}, 0.2, 1, true)
 
   DoPatrolsInZone(theSecZone)
 
