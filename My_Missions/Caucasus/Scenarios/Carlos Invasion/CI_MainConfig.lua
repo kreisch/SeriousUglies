@@ -116,11 +116,23 @@ end
 local function checkSector(_sector)
   env.info("Checking sector state for (" .. _sector .. ")")
 
+  -- First check, if HQ is still there - if so, wait for another 10s
   local theHQ = sectorConfig[_sector]["sectorHQObj"]
   if theHQ:IsAlive() == true then
     env.info("Sector HQ is still alive...")
     TIMER:New(checkSector, _sector):Start(10)
     return
+  end
+
+  -- HQ is dead, so check that no OpsZone is not blue
+  for i = 1, #sectorConfig[_sector]["opszones"] do
+    local theZoneName = sectorConfig[_sector]["opszones"][i]
+    env.info("Checking if OpsZone is blue: " .. theZoneName)
+
+    if zoneConfigs[theZoneName]["OpsZone"]:IsBlue() ~= true then
+      TIMER:New(checkSector, _sector):Start(10)
+      return
+    end
   end
 
   for i = 1, #sectorConfig[_sector]["opszones"] do
