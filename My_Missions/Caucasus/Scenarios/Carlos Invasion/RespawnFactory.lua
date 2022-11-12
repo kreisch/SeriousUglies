@@ -111,7 +111,6 @@ end
 -- Get random alive factory for factory prefix
 -----------------------------------------------------------------------------------
 
-
 local function getRandomFactoryZone(_facPref)
   UglyPrintDebug("getRandomFactoryZone...")
 
@@ -192,7 +191,6 @@ function registerFactory(_facName)
       local facData = {object = theFactory, zone = ZONE:FindByName(theFactory:GetName() .. respawnZonePostfix)}
       factoryRegistration[_facName][theCount] = facData
       theCount = theCount + 1
-      Scoring:AddStaticScore( theFactory, 100 )
     end
   )
 
@@ -211,8 +209,6 @@ function registerFactory(_facName)
         theCount = theCount + 1
 
         UglyPrintDebug("theID: " .. theID .. ", zoneName: " .. zoneName)
-
-        Scoring:AddZoneScore( theZone, 100 )
       end
     end
   )

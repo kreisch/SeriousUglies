@@ -1,31 +1,5 @@
 
 
--- Initialize Scoring
-Scoring = SCORING:New( "ScoringTest" )
-Scoring:SetScaleDestroyScore( 100 )
-Scoring:SetScaleDestroyPenalty( 400 )
-Scoring:SetMessagesToAll()
-Scoring:SetMessagesScore(true)
---Scoring:SetMessagesHit(true)
-Scoring:SetMessagesDestroy(true)
-Scoring:SwitchFratricide(false) -- has to be turned off, as the loading of troups counts as blue on blue (blue groups are destroyed)
-Scoring:SwitchTreason(false) -- switching from blue to red is allowed. 
-
---CIconfig {
---    useTankersBlue = true,
---    useTankersRed = true,
---    useAWACsSRS = true
---}
-
--- Register all factories in the zones (todo: switch to work automatically when initializing a zone)
-
---registerFactory(factoryConfigs["CombatZone-1"])
-registerFactory("RF_CZ01")
-registerFactory("RF_CZ02")
-
-
-Scoring:AddStaticScore( STATIC:FindByName( "Ru_Zone1_HQ" ), 100 )
-
 -- #region OPTIONS
 local useEnemyAir = true
 -- #endregion
@@ -48,8 +22,30 @@ end
 
 
 local sectorConfig = {
-  ["RF_CZ01_Observe_Zone"] = { airwing = AWFARP_RF_CZ02_02, opszones = {"CombatZone-1", "CombatZone-2", "CombatZone-3"}}, -- easy
-  ["RF_CZ02_Observe_Zone"] = {airwing =  AWNalchik, opszones = {"CombatZone-4", "CombatZone-5"}}, -- easy
+  ["RF_CZ01_Observe_Zone"] = 
+    {
+      name = "Sector South", 
+      airwing = AWFARP_RF_CZ02_02, 
+      opszones = {"CombatZone-1", "CombatZone-2", "CombatZone-3"}, 
+      factoryPrefix = "RF_CZ01",
+      sectorHQ = "Ru_Sector1_HQ"
+    }, -- easy
+  ["RF_CZ02_Observe_Zone"] = 
+    {
+      name = "Sector North", 
+      airwing =  AWNalchik, 
+      opszones = {"CombatZone-4", "CombatZone-5"}, 
+      factoryPrefix = "RF_CZ02",
+      sectorHQ = "Ru_Sector2_HQ"
+    }, -- easy
+    ["Test Sector - Offline"] = 
+    {
+      name = "Test Sector", 
+      airwing =  nil, 
+      opszones = {}, 
+      factoryPrefix = "TestZone",
+      sectorHQ = "TestHQ_NotPresent"
+    }, -- easy
 }
 
 local zoneConfigs = {
@@ -115,11 +111,46 @@ local function initZone(_name)
   end
 end
 
-local function initSector(_name)
-  env.info("initSector - " .. _name)
-  local theSecZone = ZONE:New(_name)
---  sectorConfig[_name]["Zone"] = theSecZone
 
+-- Check if the sectors HQ is destroyed and that all OpsZones are currently blue
+local function checkSector(_sector)
+  env.info("Checking sector state for (" .. _sector .. ")")
+
+  local theHQ = sectorConfig[_sector]["sectorHQObj"]
+  if theHQ:IsAlive() == true then
+    env.info("Sector HQ is still alive...")
+    TIMER:New(checkSector, _sector):Start(10)
+    return
+  end
+
+  for i = 1, #sectorConfig[_sector]["opszones"] do
+    local theZoneName = sectorConfig[_sector]["opszones"][i]
+    env.info("Stopping OpsZone: " .. theZoneName)
+    zoneConfigs[theZoneName]["OpsZone"]:__Stop(2)
+  end
+
+  local theSecZone = ZONE:New(_sector)
+  theSecZone:UndrawZone()
+
+  trigger.action.outText("Hooyah!!! Sector " .. sectorConfig[_sector]["name"] .. " was liberated.", 30)
+end
+
+-- Initialize the sector from the name and by it's configuration
+local function initSector(_name)
+  env.info("InitSector - " .. _name)
+
+  local theHQ = STATIC:FindByName(sectorConfig[_name]["sectorHQ"], false)
+
+  if theHQ == nil then
+    env.info("Sector " .. _name .. " seems to be finished already. Ignoring!")
+    return
+  end
+
+  sectorConfig[_name]["sectorHQObj"] = theHQ
+
+  registerFactory(sectorConfig[_name]["factoryPrefix"])
+
+  local theSecZone = ZONE:New(_name)
   theSecZone:DrawZone(-1, {0,0,0}, 1, {0,0,0}, 0.2, 1, true)
 
   DoPatrolsInZone(theSecZone)
@@ -127,6 +158,9 @@ local function initSector(_name)
   for i = 1, #sectorConfig[_name]["opszones"] do
     initZone(sectorConfig[_name]["opszones"][i])
   end
+
+  -- Init regular check if the sector is still contested
+  TIMER:New(checkSector, _name):Start(10)
 end
 
 
@@ -269,3 +303,5 @@ SetGroups:ForEachGroup(function(groupMakeAngry)
     groupMakeAngry:OptionAlarmStateRed()
   end
 )
+
+-- We use the callback for DSCM preSave to intercept the DSMC save routine in the DISMOUNT Script to remove the mounted dismounts before saving.
