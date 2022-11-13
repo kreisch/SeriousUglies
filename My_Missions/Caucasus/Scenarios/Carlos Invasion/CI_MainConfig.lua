@@ -84,7 +84,11 @@ local function initZone(_name)
   end
 
   function theOpsZone:OnEnterAttacked(From, Event, To)
-    local m = MESSAGE:New(theOpsZone:GetName() .. " OnEnterAttacked! ", 15, "Blue Chief"):ToAll()
+--    local m = MESSAGE:New(theOpsZone:GetName() .. " OnEnterAttacked! ", 15, "Blue Chief"):ToAll()
+
+    if Coalition == coalition.side.BLUE then
+      local m = MESSAGE:New("Zone " .. theOpsZone:GetName() .. " is under attack! Fight back to regain control! ", 15, "Blue Chief"):ToAll()
+    end
 
     if zoneConfigs[_name]["OnEnterAttackedDo"] then
       zoneConfigs[_name]["OnEnterAttackedDo"]()
@@ -93,7 +97,7 @@ local function initZone(_name)
   end
 
   function theOpsZone:OnAfterAttacked(From, Event, To, AttackerCoalition)
-    local m = MESSAGE:New(theOpsZone:GetName() .. " OnAfterAttacked! ", 15, "Blue Chief"):ToAll()
+--    local m = MESSAGE:New(theOpsZone:GetName() .. " OnAfterAttacked! ", 15, "Blue Chief"):ToAll()
 
     if zoneConfigs[_name]["OnAfterAttackedDo"] then
       zoneConfigs[_name]["OnAfterAttackedDo"]()
@@ -102,7 +106,7 @@ local function initZone(_name)
   end
 
   function theOpsZone:OnEnterGuarded(From, Event, To)
-    local m = MESSAGE:New(theOpsZone:GetName() .. " Guarded ", 15, "Blue Chief"):ToAll()
+--    local m = MESSAGE:New(theOpsZone:GetName() .. " Guarded ", 15, "Blue Chief"):ToAll()
 
     if zoneConfigs[_name]["OnEnterGuardedDo"] then
       zoneConfigs[_name]["OnEnterGuardedDo"]()
