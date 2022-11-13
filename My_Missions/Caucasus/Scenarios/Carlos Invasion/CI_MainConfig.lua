@@ -5,19 +5,19 @@ local useEnemyAir = true
 -- #endregion
 
 local function OnAfterCapturedCZ1()
-  trigger.action.outText("On After Captured CombatZone-1", 30)
+--  trigger.action.outText("On After Captured CombatZone-1", 30)
 end
 
 local function OnEnterAttackedDoCZ1()
-  trigger.action.outText("On Enter Attack CombatZone-1", 30)
+--  trigger.action.outText("On Enter Attack CombatZone-1", 30)
 end
 
 local function OnAfterAttackedDoCZ1()
-  trigger.action.outText("On After Attack CombatZone-1", 30)
+  --trigger.action.outText("On After Attack CombatZone-1", 30)
 end
 
 local function OnEnterGuardedDoCZ1()
-  trigger.action.outText("On Enter Guarded CombatZone-1", 30)
+--  trigger.action.outText("On Enter Guarded CombatZone-1", 30)
 end
 
 
@@ -178,22 +178,26 @@ local function initSector(_name)
 end
 
 
-local function doActionForZone(_inZone, _contact)
-  MESSAGE:New("TargetTaskingCombatZone " .. _inZone:GetName(), 20, "Debug"):ToAll()
-  MESSAGE:New("TargetTaskingCombatZone Type " .. _inZone.ClassName, 20, "Debug"):ToAll()
+local function doActionForSector(_inZone, _contact)
+--  MESSAGE:New("DoActionForSector " .. _inZone:GetName(), 20, "Debug"):ToAll()
+  env.info("DoActionForSector " .. _inZone:GetName())
+
+--  MESSAGE:New("DoActionForSector Type " .. _inZone.ClassName, 20, "Debug"):ToAll()
+  env.info("DoActionForSector Type " .. _inZone.ClassName)
+
   local targetGroup = GROUP:FindByName(_contact.groupname)
 
   if (_contact.attribute == "Ground_APC") or (_contact.attribute == "Ground_Artillery") or
     (_contact.attribute == "Ground_Truck") or (_contact.attribute == "Ground_Tank") or
     (_contact.attribute == "Ground_IFV") then
     -- Spawn Groundattack
-    MESSAGE:New("GroundTarget is found in " .. _inZone:GetName() .. "\n Starting Tankattack", 20, "Debug"):ToAll()
+--    MESSAGE:New("GroundTarget is found in " .. _inZone:GetName() .. "\n Starting Tankattack", 20, "Debug"):ToAll()
     env.info("GroundTarget is found in " .. _inZone:GetName() .. "\n Starting Tankattack")
 
     local SetGroupsGround = SET_GROUP:New():FilterCoalitions("red"):FilterZones({_inZone}):FilterPrefixes("QRF")
       :FilterCategoryGround():FilterActive():FilterOnce() -- Todo: Nur lebende enthalten? Laut Applevangelist ja; Active notwendig?
 
-    MESSAGE:New("We have " .. SetGroupsGround:Count() .. " groups available as QRF."):ToAll()
+--    MESSAGE:New("We have " .. SetGroupsGround:Count() .. " groups available as QRF."):ToAll()
     env.info("We have " .. SetGroupsGround:Count() .. " groups available as QRF.")
 
     local groupForTasking = SetGroupsGround:GetRandom()
@@ -220,7 +224,7 @@ local function doActionForZone(_inZone, _contact)
       local mission = AUFTRAG:NewBAI(targetGroup, nil)
       mission:SetRepeatOnFailure(6)
       sectorConfig[_inZone:GetName()]["airwing"]:AddMission(mission)
-      MESSAGE:New("Added mission to airwing"):ToAll()
+--      MESSAGE:New("Added mission to airwing"):ToAll()
       env.info("GroundTarget is found in " .. _inZone:GetName() .. "\nStarting CAS-ATTACK")
     end
 
@@ -233,7 +237,7 @@ local function doActionForZone(_inZone, _contact)
       -- local zone = ZONE_GROUP:New("SEAD Zone", targetGroup, 500)
       -- local mission = AUFTRAG:NewCAS(zone)
       sectorConfig[_inZone:GetName()]["airwing"]:AddMission(mission)
-      MESSAGE:New("Added mission to airwing"):ToAll()
+--      MESSAGE:New("Added mission to airwing"):ToAll()
 
     end
   elseif (_contact.attribute == "Air_Fighter") or (_contact.attribute == "Air_AttackHelo") or
@@ -272,14 +276,14 @@ RedIntel:SetAcceptZones(SetCombatZones)
 -- Ground_OtherGround
 function RedIntel:OnAfterNewContact(From, Event, To, contact)
   local trgtGrp = contact.group
-  trigger.action.outText("KGB: I found a " .. contact.attribute .. " called " .. contact.groupname, 30)
+--  trigger.action.outText("KGB: I found a " .. contact.attribute .. " called " .. contact.groupname, 30)
 
   -- Find zone where contact happened and react
   local cpos = contact.position or contact.group:GetCoordinate() 
   local inZone = SetCombatZones:IsCoordinateInZone(cpos)
 
   if inZone ~= nil then
-    doActionForZone(inZone, contact)  
+    doActionForSector(inZone, contact)  
   end
 end
 
@@ -294,7 +298,7 @@ RedIntelAwacs:SetAcceptZones(SetCombatZonesAWACS)
 
 function RedIntelAwacs:OnAfterNewContact(From, Event, To, contact)
   local trgtGrp = contact.group
-  trigger.action.outText("KGB AWACS: I found a " .. contact.attribute .. " called " .. contact.groupname, 30)
+--  trigger.action.outText("KGB AWACS: I found a " .. contact.attribute .. " called " .. contact.groupname, 30)
   local targetGroup = GROUP:FindByName(_contact.groupname)
   local mIntercept = AUFTRAG:NewINTERCEPT(targetGroup)
   AWMozdok:AddMission(mIntercept)
