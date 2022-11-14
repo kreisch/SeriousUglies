@@ -19,6 +19,19 @@ AwAfacs:SetRespawnAfterDestroyed(900)
 AwAfacs:SetTakeoffCold()
 AwAfacs:__Start(2)
 
+AwRotary = AIRWING:New("FarpResupplyLager","Airwing Helo Supply1")
+AwRotary:SetMarker(false)
+AwRotary:SetAirbase(AIRBASE:FindByName("FarpResupply"))
+AwRotary:SetRespawnAfterDestroyed(900)
+AwRotary:SetTakeoffCold()
+AwRotary:__Start(2)
+
+local squadronTransportHelo1 = SQUADRON:New("FrpSplyHelo", 8, "FrpSplyHelo") --Ops.Squadron#SQUADRON
+squadronTransportHelo1:SetSkill(AI.Skill.HIGH)
+squadronTransportHelo1:AddMissionCapability({AUFTRAG.Type.ORBIT, AUFTRAG.Type.HOVER},100)
+AwRotary:AddSquadron(squadronTransportHelo1)
+AwRotary:NewPayload("FrpSplyHelo",-1,{AUFTRAG.Type.ORBIT, AUFTRAG.Type.HOVER},100)
+
 local squadAFACs = SQUADRON:New("AFAC Incirlik_Reaper", 8, "AFAC Incirlik_Reaper") --Ops.Squadron#SQUADRON
 squadAFACs:SetSkill(AI.Skill.HIGH)
 squadAFACs:AddMissionCapability({AUFTRAG.Type.ORBIT},100)

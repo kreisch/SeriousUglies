@@ -88,7 +88,7 @@ local airwings = {
                         cap = true,
                         sead = true,
                         afac = false,
-                        farp  = true, 
+                        farp  = false, 
                     },
                     
                     [AwAfacs] = {boom = false, basket = false, basketbig = false,
@@ -97,6 +97,8 @@ local airwings = {
                         cap = false,
                         sead = false,
                         afac = true, 
+                      },
+                    [AwRotary] = {farp = true,
                       },
 }
   
@@ -467,7 +469,8 @@ end
 
 --- Spawns a FARP at the current mapmarker
 local function _spawnFARP(Event)
-    local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z)
+    --local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z)
+    local _coordinate = Event.coordinate
     local farp = SPAWNSTATIC:NewFromStatic("farp"):SpawnFromCoordinate(_coordinate,0)
     --local supportGroup = SPAWN:New("Template_Blue_FARP_Support"):SpawnFromCoordinate(_coordinate)
     local id = math.random(1,9999)
@@ -475,7 +478,9 @@ local function _spawnFARP(Event)
 end
 
 local function _RequestFarpSupplyRun(options, Event, _selectedAirwing)
-
+    local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z) -- Coordinate of F10Marker
+    local _auftrag = AUFTRAG:NewHOVER(_coordinate, 3,30,300, 900)
+    _selectedAirwing:AddMission(_auftrag)
 end
 
 local function _CreateAfacMission(options, Event, _selectedAirwing)
@@ -624,7 +629,8 @@ local function _OnEventMarkChange(Event)
             elseif _options.afac then
               _CreateAfacMission(_options, Event, _selectedAirwing)
               elseif _options.farp then
-                _spawnFARP(Event)
+                --_spawnFARP(Event)
+                _RequestFarpSupplyRun(_options,Event,_selectedAirwing)
             end
           end
         end
@@ -859,5 +865,41 @@ function AWIncirlik:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission
   end
   
   _updateMapMarkerForMission(_flightgroup, _generatedMissionName)
+
+end
+
+function AwRotary:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
+info("Rotaries on mission")
+  local _flightgroup = Flightgroup -- Ops.FlightGroup#FLIGHTGROUP
+  local _mission = Mission -- Ops.Auftrag#AUFTRAG
+  local _flightgroupname = _flightgroup:GetName()
+  --local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z) -- Coordinate of F10Marker
+
+    --- Function called after helo is ordered to land at a coordinate.
+    function _flightgroup:OnAfterLandAt(From, Event, To, Coordinate, Duration)
+    
+      -- Note that the coordinate must not be passed like in this example. If it is not given in the :LandAt() command the helo will land at is current position.
+      if Coordinate then
+      
+        -- Send a message.
+        local mgrs=Coordinate:ToStringMGRS()
+        local text=string.format("We are landing at %s and will remain there for %d seconds", mgrs, Duration or 60)
+        MESSAGE:New(text, 120):ToAll()
+        env.info(text)
+        
+      end
+        --_flightgroup:GetGroup():Destroy()
+        local airbase = _flightgroup:GetAirwing():GetAirbase()
+        _flightgroup:RTB(airbase)
+      
+    end
+    
+        --- Function called when the group has passed a waypoint.
+    function _flightgroup:OnAfterPassingWaypoint(From, Event, To, Waypoint)
+      if _flightgroup:HasPassedFinalWaypoint() then
+        _flightgroup:__LandAt(10, nil, 1*60)
+        _spawnFARP(Waypoint)
+      end
+    end
 
 end
