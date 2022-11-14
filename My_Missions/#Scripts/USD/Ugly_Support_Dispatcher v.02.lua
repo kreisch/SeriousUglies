@@ -39,6 +39,7 @@ local keyphraseCAS    = "cas"
 local keyphraseCAP    = "cap"
 local keyphraseAFAC   = "afac"
 local keyphraseFARP   = "farp"
+local keyphraseGodFrp = "godfrp"
 
 local keyphraseBoom           = "boom"
 local keyphraseBasket         = "basket"
@@ -230,9 +231,14 @@ local function _MarkTextAnalysis(text)
           info(string.format(" Value lasercode = %s", tostring(switch.lasercode)))
         end
         
-          if key:lower():find(keyphraseFARP) then
+        if key:lower():find(keyphraseFARP) then
           switch.farp = true
           info(string.format(" Value FARP = %s", tostring(switch.farp)))
+        end
+        
+        if key:lower():find(keyphraseGodFrp) then
+          switch.godfrp = true
+          info(string.format(" Value FARP = %s", tostring(switch.godfrp)))
         end
         
       end
@@ -468,9 +474,13 @@ end
 
 
 --- Spawns a FARP at the current mapmarker
-local function _spawnFARP(Event)
-    --local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z)
-    local _coordinate = Event.coordinate
+local function _spawnFARP(Event, godfarp)
+    local _coordinate = nil 
+    if godfarp then
+      _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z)
+      else
+      _coordinate = Event.coordinate
+    end
     local farp = SPAWNSTATIC:NewFromStatic("farp"):SpawnFromCoordinate(_coordinate,0)
     --local supportGroup = SPAWN:New("Template_Blue_FARP_Support"):SpawnFromCoordinate(_coordinate)
     local id = math.random(1,9999)
@@ -609,9 +619,12 @@ local function _OnEventMarkChange(Event)
     if _options.delete then -- A mission shall be ended
       _endMission(_options, Event)
     else
-      if _options.missionToChange then
+    if _options.missionToChange then
         _changeMission(_options, Event)
-      else
+    else
+    if _options.godfrp then
+        _spawnFARP(Event, true)
+    else
 
         -- No mission to be ended, so check which support is requested.
         local _requestedSupportType = _determineSupportType(_options, Event) -- Returns the support Type
@@ -619,18 +632,19 @@ local function _OnEventMarkChange(Event)
         if (_requestedSupportType) then
           local _selectedAirwing = provideAirwingsCapableToSupport(_requestedSupportType, Event)
 
-          if (_selectedAirwing ~= nil) then -- If we have found an airwing, we can check which mission to create depending on support type.
-            if _options.tankerType then
-              _CreateTankerMission(_options, Event, _selectedAirwing) -- if ~= nil, create a mission. 
-            elseif _options.awacs then
-              _CreateAwacsMission(_options, Event, _selectedAirwing)
-            elseif _options.cap then
-              _CreateCAPMission(_options, Event, _selectedAirwing)
-            elseif _options.afac then
-              _CreateAfacMission(_options, Event, _selectedAirwing)
+            if (_selectedAirwing ~= nil) then -- If we have found an airwing, we can check which mission to create depending on support type.
+              if _options.tankerType then
+                _CreateTankerMission(_options, Event, _selectedAirwing) -- if ~= nil, create a mission. 
+              elseif _options.awacs then
+                _CreateAwacsMission(_options, Event, _selectedAirwing)
+              elseif _options.cap then
+                _CreateCAPMission(_options, Event, _selectedAirwing)
+              elseif _options.afac then
+                _CreateAfacMission(_options, Event, _selectedAirwing)
               elseif _options.farp then
-                --_spawnFARP(Event)
+                  --_spawnFARP(Event)
                 _RequestFarpSupplyRun(_options,Event,_selectedAirwing)
+              end
             end
           end
         end
