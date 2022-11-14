@@ -92,6 +92,13 @@ function my_ctld:OnAfterCratesBuild(From,Event,To,Group,Unit,Vehicle)
     local zone = ZONE_UNIT:New(vname,vunit,100)
     my_ctld:AddCTLDZone(vname,CTLD.CargoZoneType.LOAD,SMOKECOLOR.Blue,true,true)
     MessageToAll("A new FOB has been created!")
+    else if (string.match(vunitname, "farp")) then
+        MessageToAll("A new FARP has been created!")
+        local _coordinate = vunit:GetPosition()
+        local farp = SPAWNSTATIC:NewFromStatic("farp"):SpawnFromCoordinate(_coordinate,0)
+        local id = math.random(1,9999)
+        local supportGroup = SPAWN:NewWithAlias("Template_Blue_FARP_Support","Farp" .. id):SpawnFromCoordinate(_coordinate)
+    end
   end
 end
 
