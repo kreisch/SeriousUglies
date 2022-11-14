@@ -25,7 +25,8 @@
 -----------------------------------------------------------------------------------
 
 local debug     = true
-local autolase  = false
+local autolase  = true
+local autolaser = nil
 
 local keyphrase ="usd"
 local keyphraseAltitude = "alt"
@@ -37,6 +38,7 @@ local keyphraseAWACS  = "awacs"
 local keyphraseCAS    = "cas"
 local keyphraseCAP    = "cap"
 local keyphraseAFAC   = "afac"
+local keyphraseFARP   = "farp"
 
 local keyphraseBoom           = "boom"
 local keyphraseBasket         = "basket"
@@ -64,7 +66,7 @@ local afacDefaultRadio        = 254
 
 local afacDefaultSpeed        = 250
 local afacDefaultAlt          = 18000  -- wiki says: Operational altitude: 25,000 ft (7.5 km)
-
+local jtacLasercodeDefault    = 1688
 local defaultEscort           = 1
 
 local missionNames = {"Neptun" ,"Poseidon", "Nimrod", "Fedex", "Brewmaster"}
@@ -85,7 +87,8 @@ local airwings = {
                         cas = false,
                         cap = true,
                         sead = true,
-                        afac = false, 
+                        afac = false,
+                        farp  = true, 
                     },
                     
                     [AwAfacs] = {boom = false, basket = false, basketbig = false,
@@ -107,6 +110,7 @@ local id = "USD" --- Identifier. All output in DCS.log will start with this.
 local activeTaskingsUSD = {}
 local missionCounter = 1
 local eventHandlerUSD={}
+local lasedTargets = {}
 
 --- Debug output to dcs.log file.
 local function info(text)
@@ -222,6 +226,11 @@ local function _MarkTextAnalysis(text)
         if key:lower():find(keyphraseLaserCode) then
           switch.lasercode = val:lower()
           info(string.format(" Value lasercode = %s", tostring(switch.lasercode)))
+        end
+        
+          if key:lower():find(keyphraseFARP) then
+          switch.farp = true
+          info(string.format(" Value FARP = %s", tostring(switch.farp)))
         end
         
       end
@@ -355,11 +364,19 @@ end
 local function _updateMapMarkerForMission(flightgroup, generatedMissionName)
   local _flightgroup          = flightgroup
   local _generatedMissionName = generatedMissionName
+  local _lasercode    = 0
   
-  local _missiontype  = activeTaskingsUSD[_generatedMissionName]["missiontype"]
-  local _lasercode    = _flightgroup:GetLaserCode()
-  local _radio        = _flightgroup:GetRadio()
-  local _tacan        = _flightgroup:GetTACAN()
+  if autolase then
+      info("Getting code of Unit " .. _flightgroup:GetUnit(1):GetName())
+      _lasercode= autolaser:GetLaserCode(_flightgroup:GetUnit(1):GetName())
+  else
+      _lasercode    = _flightgroup:GetLaserCode()    
+  end
+  
+    local _missiontype  = activeTaskingsUSD[_generatedMissionName]["missiontype"]
+
+    local _radio        = _flightgroup:GetRadio()
+    local _tacan        = _flightgroup:GetTACAN()
   
   local _text = string.format("Mission Name: %s Mission Type %s\nRadio %s\nTacan %s\nLasercode %s", _generatedMissionName,_missiontype,_radio, _tacan, _lasercode)
   
@@ -447,6 +464,20 @@ local function _CreateCAPMission(options, Event, _selectedAirwing)
   local _options = options
 end
 
+
+--- Spawns a FARP at the current mapmarker
+local function _spawnFARP(Event)
+    local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z)
+    local farp = SPAWNSTATIC:NewFromStatic("farp"):SpawnFromCoordinate(_coordinate,0)
+    --local supportGroup = SPAWN:New("Template_Blue_FARP_Support"):SpawnFromCoordinate(_coordinate)
+    local id = math.random(1,9999)
+    local supportGroup = SPAWN:NewWithAlias("Template_Blue_FARP_Support","Farp" .. id):SpawnFromCoordinate(_coordinate)
+end
+
+local function _RequestFarpSupplyRun(options, Event, _selectedAirwing)
+
+end
+
 local function _CreateAfacMission(options, Event, _selectedAirwing)
   local _options = options
   local markOfTasking = nil
@@ -490,6 +521,8 @@ local function _determineSupportType(options, Event)
     _supportType = keyphraseCAP
   elseif _options.afac then -- if ~nil, CAP is requested
     _supportType = keyphraseAFAC
+  elseif _options.farp then
+    _supportType = keyphraseFARP  
   else
     info("No valid support type is requested.")
     errorMarkerNoValidSupportRequested(Event)
@@ -537,7 +570,13 @@ local function _changeMission (options, Event)
   info("The mission " .. _missionName .. " has assigned the group " .. _auftragGroup:GetName())
   
   if (_options.lasercode) then
-      _auftragGroup:SetLaser(_options.lasercode, true, false, 30) -- (Code, CheckLOS, IROff, UpdateTime)
+      if not autolase then
+          _auftragGroup:SetLaser(_options.lasercode, true, false, 30) -- (Code, CheckLOS, IROff, UpdateTime)
+      else
+          info("Trying to change lasercode of unit " .. _auftragGroup:GetUnit(1):GetName() .. " to " .. _options.lasercode)
+          autolaser:SetRecceLaserCode(_auftragGroup:GetUnit(1):GetName(),_options.lasercode)
+          info("Changed lasercode of unit " .. _auftragGroup:GetUnit(1):GetName() .. " to " .. autolaser:GetLaserCode(_auftragGroup:GetUnit(1):GetName()))
+      end
       info("Group " .. _auftragGroup:GetName() .. " changing Laser to " .. _options.lasercode)
   end
   if (_options.radio) then
@@ -584,6 +623,8 @@ local function _OnEventMarkChange(Event)
               _CreateCAPMission(_options, Event, _selectedAirwing)
             elseif _options.afac then
               _CreateAfacMission(_options, Event, _selectedAirwing)
+              elseif _options.farp then
+                _spawnFARP(Event)
             end
           end
         end
@@ -634,41 +675,40 @@ end
 
 world.addEventHandler(eventHandlerUSD)
 
+
+--- Configuriung AUTOLASE if activated. Otherwise OPS-Lasing will be used.
 if (autolase) then
   info("Loading Autolase")
-  local afacSet = SET_GROUP:New():FilterPrefixes("AFAC"):FilterCoalitions("blue"):FilterCategoryAirplane():FilterStart()
+  local afacSet = SET_GROUP:New():FilterPrefixes({"AFAC", "JTAC", "afac", "jtac","Jtac","Afac"}):FilterCoalitions("blue"):FilterStart()
   local Pilotset = SET_CLIENT:New():FilterCoalitions("blue"):FilterActive(true):FilterStart()
-  local autolaser = AUTOLASE:New(afacSet, coalition.side.BLUE, "AFAC", Pilotset)
+  autolaser = AUTOLASE:New(afacSet, coalition.side.BLUE, "AFAC", Pilotset)
   autolaser:SetNotifyPilots(true) -- defaults to true, also shown if debug == true
   autolaser:SetPilotMenu(true)
-else
-  -- info("Loading complex AFAC")
-  --    local RecceSetGroup = SET_GROUP:New():FilterPrefixes( "AFAC" ):FilterStart()
-  --    
-  --    local HQ = GROUP:FindByName( "HQ" )
-  --    
-  --    local CC = COMMANDCENTER:New( HQ, "HQ" )
-  --    
-  --    -- Let the RecceSetGroup vehicles in the collection detect targets and group them in AREAS of 1000 meters.
-  --    local RecceDetection = DETECTION_AREAS:New( RecceSetGroup, 1000 )
-  --    
-  --    -- Create a Attack Set, which contains the human player client slots and CA vehicles.
-  --    local AttackSet = SET_CLIENT:New():FilterCoalitions("blue"):FilterActive(true):FilterStart()
-  --    
-  --    local RecceDesignation = DESIGNATE:New( CC, RecceDetection, AttackSet )
-  --    
-  --    -- This sets the threat level prioritization on
-  --    RecceDesignation:SetThreatLevelPrioritization( true )
-  --    
-  --    -- Set the possible laser codes.
-  --    RecceDesignation:GenerateLaserCodes()
-  --    
-  --    RecceDesignation:AddMenuLaserCode( 1113, "Lase with %d for Su-25T" )
-  --    RecceDesignation:AddMenuLaserCode( 1680, "Lase with %d for A-10A" )
-  --    
-  --    -- Start the detection process in 5 seconds.
-  --    RecceDesignation:__Detect( -5 )
-
+  autolaser:SetMaxLasingTargets(1)
+  
+  function autolaser:OnAfterLasing(From, Event, To, LaserSpot)
+    local _lasingUnit       = LaserSpot.lasingunit
+    local _lasedTarget      = LaserSpot.lasedunit
+    local _lasedCoordinate  = LaserSpot.coordinate
+    info(string.format("%s is lasing %s", _lasingUnit:GetName(), _lasedTarget:GetName()))
+    
+    lasedTargets[_lasingUnit] = MARKER:New(_lasedTarget:GetCoordinate(),
+            _lasedTarget:GetTypeName() .. " Coordinates\n" .. _lasedTarget:GetCoordinate():ToStringLLDDM() .. "\n" ..
+              _lasedTarget:GetCoordinate():ToStringLLDMS() .. "\n" .. _lasedTarget:GetCoordinate():ToStringMGRS()):ReadOnly()
+            :ToAll()
+  
+  end
+  
+  function autolaser:OnAfterLaserTimeout(From, Event, To, UnitName, RecceName)
+    local _lasingUnit     = RecceName
+    lasedTargets[_lasingUnit]:Remove()
+  end
+  
+  function autolaser:OnAfterRecceKIA(From, Event, To, RecceName)
+      local _lasingUnit     = RecceName
+      lasedTargets[_lasingUnit]:Remove()
+  end
+  
 end
 
 function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
@@ -680,6 +720,7 @@ function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
   local _flightgroupname = _flightgroup:GetName()
   local _generatedMissionName = nil
 
+  --- Mapping of OPS-Auftrag to missionname of USD
   for _missionName, secItConfig in pairs(activeTaskingsUSD) do
     if activeTaskingsUSD[_missionName]["mission"] == _mission then
       info("I have found the mission in the USD table " .. _mission:GetName())
@@ -693,7 +734,7 @@ function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
     end
   end
 
-  if _mission:GetType() == AUFTRAG.Type.ORBIT then
+  if _mission:GetType() == AUFTRAG.Type.ORBIT and not autolase then
     info("Configuring AFAC Group " .. _flightgroupname)
     _flightgroup:SetDetection(true)
     local _markerTarget = nil
@@ -790,8 +831,12 @@ function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
     local scheduler = TIMER:New(CheckThreats)
     activeTaskingsUSD[_generatedMissionName]["scheduler"] = scheduler
     activeTaskingsUSD[_generatedMissionName]["scheduler"]:Start(30, 30)
-    _updateMapMarkerForMission(_flightgroup, _generatedMissionName)
+    
+  else
+    info("Autolase is on, setting Default code to unit " .. _flightgroup:GetUnit(1):GetName())
+    autolaser:SetRecceLaserCode(_flightgroup:GetUnit(1):GetName(), jtacLasercodeDefault)
   end
+  _updateMapMarkerForMission(_flightgroup, _generatedMissionName)
 end
 
 function AWIncirlik:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
