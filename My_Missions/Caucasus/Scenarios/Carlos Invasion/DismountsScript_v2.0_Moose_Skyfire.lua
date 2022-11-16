@@ -214,6 +214,7 @@ end
 
 local function reinitCheckMovement()
   env.info("Reinit Dismounts checking...")
+  trigger.action.outText("Running Dismounts postSaveCallback...", 30)
   stopDismounts = false
   CheckMovement() 
 end
@@ -236,7 +237,8 @@ local function onDSMCRunSave(recall)
   end
 
   -- Reset and run normal again after 5s
-  TIMER:New(reinitCheckMovement):Start(5)
+  TIMER:New(reinitCheckMovement):Start(30)
+  env.info("Running Dismounts preSaveCallback...done!")
 end
 
 -- Add helper for DSMC saving
