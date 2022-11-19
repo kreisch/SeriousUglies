@@ -23,10 +23,26 @@
 -----------------------------------------------------------------------------------
 -- Default settings
 -----------------------------------------------------------------------------------
-
+--
+--REQUIRED STATICS
+-- 1. invisible FARP named "farp"
+-- 2. The support Group "Template_Blue_FARP_Support"
+-- 
+-- 
+-- 
+-- 
+-- Known shortcomings:
+-- 1. When a FARP is requested, marker is not removed
+-- 2. Currently the task ORBIT is a subtask of Tanker, which means a tanker WILL respond to an afac task.
+--    Therefore use a single Airwing for AFACs only.
+-- 3. No Feedback if no airwing is capable to provide support request.
+-- 4. A check shall be implemented to assure all required statics and units are available.
+-- 5. The subroutines like "function AWAfacs:OnaFterFlight..." shall be run for each airwing, that has e.g. AFACs available.
+--    Otherwise it must be adapted manually --> Error prone.
+--6. Currently only AFAC missions can be altered (Lasercode, Radio) - other tasks shall follow.
 local debug     = true
 local autolase  = true
-local autolaser = nil
+
 
 local keyphrase ="usd"
 local keyphraseAltitude = "alt"
@@ -72,9 +88,7 @@ local defaultEscort           = 1
 
 local missionNames = {"Neptun" ,"Poseidon", "Nimrod", "Fedex", "Brewmaster"}
 
---- Known shortcomings:
--- Currently the task ORBIT is a subtask of Tanker, which means a tanker WILL respond to an afac task.
--- Therefore use a single Airwing for AFACs only.
+
 local airwings = {
                     [AWNavyBoys] = {boom = false, basket = true, basketbig = false,
                         awacs = true,
@@ -99,7 +113,7 @@ local airwings = {
                         sead = false,
                         afac = true, 
                       },
-                    [AwRotary] = {farp = true,
+                    [AwRotary] = {farp = true, -- requires AUFTRAG.Type.ORBIT, AUFTRAG.Type.HOVER
                       },
 }
   
@@ -114,6 +128,7 @@ local activeTaskingsUSD = {}
 local missionCounter = 1
 local eventHandlerUSD={}
 local lasedTargets = {}
+local autolaser = nil
 
 --- Debug output to dcs.log file.
 local function info(text)
@@ -123,7 +138,7 @@ local function info(text)
 end
 
 -- Version info.
-info(string.format(" Loading version %s", version))
+env.info(string.format(" Loading version %s " .. "of %s", version, className))
 
 --- Split string. C.f. http://stackoverflow.com/questions/1426954/split-string-in-lua
 local function _split(str, sep)
@@ -485,11 +500,14 @@ local function _spawnFARP(Event, godfarp)
     --local supportGroup = SPAWN:New("Template_Blue_FARP_Support"):SpawnFromCoordinate(_coordinate)
     local id = math.random(1,9999)
     local supportGroup = SPAWN:NewWithAlias("Template_Blue_FARP_Support","Farp" .. id):SpawnFromCoordinate(_coordinate)
+    local marker = MARKER:New(_coordinate, "FARP"):ReadOnly():ToAll()
 end
 
 local function _RequestFarpSupplyRun(options, Event, _selectedAirwing)
     local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z) -- Coordinate of F10Marker
     local _auftrag = AUFTRAG:NewHOVER(_coordinate, 3,30,300, 900)
+    trigger.action.removeMark(Event.idx)
+    local marker = MARKER:New(_coordinate, "A FARP is requested..."):ReadOnly():ToAll()
     _selectedAirwing:AddMission(_auftrag)
 end
 
