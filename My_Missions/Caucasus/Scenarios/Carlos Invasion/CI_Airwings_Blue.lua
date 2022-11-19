@@ -1,4 +1,4 @@
-local AWNavyBoys = AIRWING:New("GeorgeWashington","NavyBoys")
+AWNavyBoys = AIRWING:New("GeorgeWashington","NavyBoys")
 AWNavyBoys:SetAirbase(AIRBASE:FindByName("GeorgeWashington"))
 AWNavyBoys:SetRespawnAfterDestroyed(900)
 AWNavyBoys:SetTakeoffCold()
@@ -20,12 +20,12 @@ local recoveryTankers=SQUADRON:New("RecoveryTanker", 8, "recoveryTankers") --Ops
 recoveryTankers:SetCallsign(CALLSIGN.Tanker.Shell)
 recoveryTankers:SetRadio(251.0)
 recoveryTankers:SetSkill(AI.Skill.HIGH)
-recoveryTankers:AddMissionCapability({AUFTRAG.Type.RECOVERYTANKER},100)
+recoveryTankers:AddMissionCapability({AUFTRAG.Type.RECOVERYTANKER, AUFTRAG.Type.TANKER},100)
 recoveryTankers:SetFuelLowRefuel(true)
 recoveryTankers:SetFuelLowThreshold(0.2)
 recoveryTankers:SetTurnoverTime(10,20)
 AWNavyBoys:AddSquadron(recoveryTankers)
-AWNavyBoys:NewPayload("RecoveryTanker",-1,{AUFTRAG.Type.RECOVERYTANKER},100)
+AWNavyBoys:NewPayload("RecoveryTanker",-1,{AUFTRAG.Type.RECOVERYTANKER, AUFTRAG.Type.TANKER},100)
 
 
 local Squad_Two = SQUADRON:New("Escorts",12,"Escorts Navy")
@@ -54,3 +54,16 @@ testawacs:SetModernEra()
 testawacs:__Start(5)
 testawacs.AllowMarkers = false
 --testawacs.debug = false
+
+AwRotary = AIRWING:New("Kutaisi","Kutaisi FARP Supply")
+AwRotary:SetAirbase(AIRBASE:FindByName("Kutaisi"))
+AwRotary:SetRespawnAfterDestroyed(900)
+AwRotary:SetTakeoffCold()
+AwRotary:__Start(2)
+
+local squadronTransportHelo1 = SQUADRON:New("FrpSplyHelo", 8, "FrpSplyHelo") --Ops.Squadron#SQUADRON
+squadronTransportHelo1:SetSkill(AI.Skill.HIGH)
+squadronTransportHelo1:AddMissionCapability({AUFTRAG.Type.ORBIT, AUFTRAG.Type.HOVER},100)
+AwRotary:AddSquadron(squadronTransportHelo1)
+AwRotary:NewPayload("FrpSplyHelo",-1,{AUFTRAG.Type.ORBIT, AUFTRAG.Type.HOVER},100)
+
