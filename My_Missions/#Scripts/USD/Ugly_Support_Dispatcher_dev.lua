@@ -36,7 +36,7 @@
 -- 2. Currently the task ORBIT is a subtask of Tanker, which means a tanker WILL respond to an afac task.
 --    Therefore use a single Airwing for AFACs only.
 -- 3. No Feedback if no airwing is capable to provide support request.
--- 4. A check shall be implemented to assure all required statics and units are available.
+-- 4. A check shall be implemented to assure all required statics and units are available. --> Not possible, because Moose does not return nil.
 -- 5. The subroutines like "function AWAfacs:OnaFterFlight..." shall be run for each airwing, that has e.g. AFACs available.
 --    Otherwise it must be adapted manually --> Error prone.
 --6. Currently only AFAC missions can be altered (Lasercode, Radio) - other tasks shall follow.
@@ -86,7 +86,9 @@ local afacDefaultAlt          = 18000  -- wiki says: Operational altitude: 25,00
 local jtacLasercodeDefault    = 1688
 local defaultEscort           = 1
 
-local missionNames = {"Neptun" ,"Poseidon", "Nimrod", "Fedex", "Brewmaster"}
+local missionNames          = {"Neptun" ,"Poseidon", "Nimrod", "Fedex", "Brewmaster"}
+local farpStaticName        = "farp2"
+local farpSupportGroupName  = "Template_Blue_FARP_Support2"
 
 
 local airwings = {
@@ -122,18 +124,19 @@ local airwings = {
 -------------------------------------------------------------------------------------
 
 local className = "Ugly Support Dispatcher"
-local version ="0.2"
+local version ="0.3"
 local id = "USD" --- Identifier. All output in DCS.log will start with this.
 local activeTaskingsUSD = {}
 local missionCounter = 1
 local eventHandlerUSD={}
-local lasedTargets = {}
+local lasedTargets = {} -- Table that includes the markers of all lased targets.
 local autolaser = nil
+
 
 --- Debug output to dcs.log file.
 local function info(text)
   if debug then
-    env.info(id..text)
+    env.info(id.. " " .. text)
   end
 end
 
@@ -148,6 +151,26 @@ local function _split(str, sep)
     table.insert(result, each)
   end
   return result
+end
+
+local function getOPSmission(_missionName)
+  return activeTaskingsUSD[_missionName:lower()]["mission"]
+end
+
+local function getMarkerOfMission (_missionName)
+  return activeTaskingsUSD[_missionName:lower()]["marker"]
+end
+
+local function getGroupOfMission (_missionName)
+  return activeTaskingsUSD[_missionName:lower()]["group"]
+end
+
+local function getTypeOfMission (_missionName)
+  return activeTaskingsUSD[_missionName:lower()]["missiontype"]
+end
+
+local function getSchedulerOfMission (_missionName)
+  return activeTaskingsUSD[_missionName:lower()]["scheduler"]
 end
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -329,7 +352,7 @@ local function provideAirwingsCapableToSupport(support, Event) -- Returns all Ai
   local capableAirwings = {}
   local _requestedSupportType = support
 
-  -- Über die Liste iterieren. Wenn Airwing bei einem Support-Tag "TRUE" hat, zur Liste "capableAirwings" hinzufügen.
+  -- Ãœber die Liste iterieren. Wenn Airwing bei einem Support-Tag "TRUE" hat, zur Liste "capableAirwings" hinzufÃ¼gen.
   for airwing in pairs(airwings) do
     local valueSupportAvailable = airwings[airwing][_requestedSupportType]
     info(airwing:GetAirbaseName() .. " Looking for Airwing for " .. _requestedSupportType .. " and have found: " .. tostring(valueSupportAvailable))
@@ -385,25 +408,43 @@ end
 
 
 local function _updateMapMarkerForMission(flightgroup, generatedMissionName)
+if generatedMissionName ~=nil then
   local _flightgroup          = flightgroup
   local _generatedMissionName = generatedMissionName
   local _lasercode    = 0
+  local _missiontype  = activeTaskingsUSD[_generatedMissionName]["missiontype"]
+  local _radio        = nil
+  local _tacan        = nil
+  local _text         = "If you can read this, kreisch fucked it up! Specification error."
   
-  if autolase then
-      info("Getting code of Unit " .. _flightgroup:GetUnit(1):GetName())
-      _lasercode= autolaser:GetLaserCode(_flightgroup:GetUnit(1):GetName())
-  else
-      _lasercode    = _flightgroup:GetLaserCode()    
+  if (_missiontype == "tanker") then
+    _radio        = _flightgroup:GetRadio()
+    _tacan        = _flightgroup:GetTACAN()
+    _text = string.format("Mission Name: %s Mission Type %s\nRadio %s\nTacan %s", _generatedMissionName,_missiontype,_radio, _tacan)
   end
   
-    local _missiontype  = activeTaskingsUSD[_generatedMissionName]["missiontype"]
-
-    local _radio        = _flightgroup:GetRadio()
-    local _tacan        = _flightgroup:GetTACAN()
+  if (_missiontype == "awacs") then
+    _text = string.format("Mission Name: %s Mission Type %s\nRadio %s", _generatedMissionName,_missiontype,_radio)
+  end
   
-  local _text = string.format("Mission Name: %s Mission Type %s\nRadio %s\nTacan %s\nLasercode %s", _generatedMissionName,_missiontype,_radio, _tacan, _lasercode)
+  if (_missiontype == "afac") then
+    if autolase then
+      info("Getting code of Unit " .. _flightgroup:GetUnit(1):GetName())
+      _lasercode= autolaser:GetLaserCode(_flightgroup:GetUnit(1):GetName())
+    else
+        _lasercode    = _flightgroup:GetLaserCode()    
+    end
+    if _lasercode == nil then
+      _lasercode = -1
+    end
+    _radio        = _flightgroup:GetRadio()
+    _text = string.format("Mission Name: %s Mission Type %s\nRadio %s\nLasercode %s", _generatedMissionName,_missiontype,_radio, _lasercode)
+  end
   
-  activeTaskingsUSD[_generatedMissionName]["marker"]:UpdateText(_text)
+    activeTaskingsUSD[_generatedMissionName]["marker"]:UpdateText(_text)
+  else
+    --env.error("Error in updating mission marker.")
+  end
 
 end
 
@@ -496,18 +537,26 @@ local function _spawnFARP(Event, godfarp)
       else
       _coordinate = Event.coordinate
     end
-    local farp = SPAWNSTATIC:NewFromStatic("farp"):SpawnFromCoordinate(_coordinate,0)
+    local farp = SPAWNSTATIC:NewFromStatic(farpStaticName):SpawnFromCoordinate(_coordinate,0)
     --local supportGroup = SPAWN:New("Template_Blue_FARP_Support"):SpawnFromCoordinate(_coordinate)
     local id = math.random(1,9999)
-    local supportGroup = SPAWN:NewWithAlias("Template_Blue_FARP_Support","Farp" .. id):SpawnFromCoordinate(_coordinate)
+    local supportGroup = SPAWN:NewWithAlias(farpSupportGroupName,"Farp" .. id):SpawnFromCoordinate(_coordinate)
     local marker = MARKER:New(_coordinate, "FARP"):ReadOnly():ToAll()
 end
 
 local function _RequestFarpSupplyRun(options, Event, _selectedAirwing)
+    local _options = options
+    local markOfTasking = nil
+    local nameOfMission = _createMissionName()
     local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z) -- Coordinate of F10Marker
+    
+    
     local _auftrag = AUFTRAG:NewHOVER(_coordinate, 3,30,300, 900)
     trigger.action.removeMark(Event.idx)
-    local marker = MARKER:New(_coordinate, "A FARP is requested..."):ReadOnly():ToAll()
+    markOfTasking = MARKER:New(_coordinate, "A FARP is requested..."):ReadOnly():ToAll()
+    local missionData = {mission = _auftrag, marker = markOfTasking, group = nil, missiontype ="farp", scheduler = nil}
+    activeTaskingsUSD[nameOfMission:lower()] = missionData
+  
     _selectedAirwing:AddMission(_auftrag)
 end
 
@@ -520,7 +569,7 @@ local function _CreateAfacMission(options, Event, _selectedAirwing)
   -- 2. Zone markieren auf F10 map
   -- 3. Marker mit Daten erstellen
   -- Problem: Erstmal an die Group kommen, die den Auftrag bekommt. AUFTRAG:GetOpsGroups() ?
-  -- 4. AFAC Fähigkeiten verleihen, sobald Unit in Zone angekommen ist
+  -- 4. AFAC Fï¿½higkeiten verleihen, sobald Unit in Zone angekommen ist
   if not _options.radio then
     _options.radio = afacDefaultRadio
   end
@@ -730,7 +779,7 @@ if (autolase) then
     local _lasedCoordinate  = LaserSpot.coordinate
     info(string.format("%s is lasing %s", _lasingUnit:GetName(), _lasedTarget:GetName()))
     
-    lasedTargets[_lasingUnit] = MARKER:New(_lasedTarget:GetCoordinate(),
+    lasedTargets[_lasingUnit:GetName()] = MARKER:New(_lasedTarget:GetCoordinate(),
             _lasedTarget:GetTypeName() .. " Coordinates\n" .. _lasedTarget:GetCoordinate():ToStringLLDDM() .. "\n" ..
               _lasedTarget:GetCoordinate():ToStringLLDMS() .. "\n" .. _lasedTarget:GetCoordinate():ToStringMGRS()):ReadOnly()
             :ToAll()
@@ -749,30 +798,37 @@ if (autolase) then
   
 end
 
-function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
-  self:E({From, Event, To, Flightgroup, Mission})
-  info("AW AFACS is launching a flight")
 
-  local _flightgroup = Flightgroup -- Ops.FlightGroup#FLIGHTGROUP
-  local _mission = Mission -- Ops.Auftrag#AUFTRAG
+--- Searches all active taskings for the specified AUFTRAG.
+--- If the AUFTRAG is found, the mission name and the GROUP is mapped to it.
+--- This method must be called for each AIRWING after ASSETS are started, otherwise it is not possible to control them afterwards.
+---@param _mission the OPS_AUFTRAG.
+---@param _flightgroup the OPS_FLIGHTGROUP
+---@return _generatedMissionName The USD-MISSION-NAME of the OPS_AUFTRAG.
+local function _mapOPSgroupToMissionAndReceiveInternalMissionName(_mission, _flightgroup)
   local _flightgroupname = _flightgroup:GetName()
   local _generatedMissionName = nil
 
-  --- Mapping of OPS-Auftrag to missionname of USD
-  for _missionName, secItConfig in pairs(activeTaskingsUSD) do
+  
+    for _missionName, secItConfig in pairs(activeTaskingsUSD) do
     if activeTaskingsUSD[_missionName]["mission"] == _mission then
       info("I have found the mission in the USD table " .. _mission:GetName())
       activeTaskingsUSD[_missionName]["group"] = _flightgroup
       info("Assigned flightgroup " .. _flightgroupname .. " to mission " .. _mission:GetName())
       _generatedMissionName = _missionName
       info("The generated mission name is " .. _generatedMissionName)
-    else
-      info("I did not find the mission in the USD table, compared to " ..
-             activeTaskingsUSD[_missionName]["mission"]:GetName())
+      return _generatedMissionName -- returns the specific content of the created mission.
     end
   end
+  if _generatedMissionName == nil then
+    env.error("Could not find a mission to match " .. _mission:GetName())
+  end
+end
 
-  if _mission:GetType() == AUFTRAG.Type.ORBIT and not autolase then
+local function _airwingHandlesAFACS(_mission, _flightgroup, _generatedMissionName)
+local _flightgroupname = _flightgroup:GetName()
+  
+ if _mission:GetType() == AUFTRAG.Type.ORBIT and not autolase then --- This section is only relevant to create AFACs with OPSGROUP. Autolase is another function.
     info("Configuring AFAC Group " .. _flightgroupname)
     _flightgroup:SetDetection(true)
     local _markerTarget = nil
@@ -870,10 +926,22 @@ function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
     activeTaskingsUSD[_generatedMissionName]["scheduler"] = scheduler
     activeTaskingsUSD[_generatedMissionName]["scheduler"]:Start(30, 30)
     
-  else
+  elseif _mission:GetType() == AUFTRAG.Type.ORBIT and autolase then
     info("Autolase is on, setting Default code to unit " .. _flightgroup:GetUnit(1):GetName())
     autolaser:SetRecceLaserCode(_flightgroup:GetUnit(1):GetName(), jtacLasercodeDefault)
   end
+end
+
+function AwAfacs:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission)
+  self:E({From, Event, To, Flightgroup, Mission})
+  info("AW AFACS is launching a flight")
+
+  local _flightgroup = Flightgroup -- Ops.FlightGroup#FLIGHTGROUP
+  local _mission = Mission -- Ops.Auftrag#AUFTRAG
+  local _flightgroupname = _flightgroup:GetName()
+  local _generatedMissionName = _mapOPSgroupToMissionAndReceiveInternalMissionName(_mission, _flightgroup)
+  _airwingHandlesAFACS(_mission, _flightgroup, _generatedMissionName)
+ 
   _updateMapMarkerForMission(_flightgroup, _generatedMissionName)
 end
 
@@ -881,21 +949,7 @@ function AWIncirlik:OnAfterFlightOnMission(From, Event, To, Flightgroup, Mission
   local _flightgroup = Flightgroup -- Ops.FlightGroup#FLIGHTGROUP
   local _mission = Mission -- Ops.Auftrag#AUFTRAG
   local _flightgroupname = _flightgroup:GetName()
-  local _generatedMissionName = nil
-
-  for _missionName, secItConfig in pairs(activeTaskingsUSD) do
-    if activeTaskingsUSD[_missionName]["mission"] == _mission then
-      info("I have found the mission in the USD table " .. _mission:GetName())
-      activeTaskingsUSD[_missionName]["group"] = _flightgroup
-      info("Assigned flightgroup " .. _flightgroupname .. " to mission " .. _mission:GetName())
-      _generatedMissionName = _missionName
-      info("The generated mission name is " .. _generatedMissionName)
-    else
-      info("I did not find the mission in the USD table, compared to " ..
-             activeTaskingsUSD[_missionName]["mission"]:GetName())
-    end
-  end
-  
+  local _generatedMissionName = _mapOPSgroupToMissionAndReceiveInternalMissionName(_mission, _flightgroup)
   _updateMapMarkerForMission(_flightgroup, _generatedMissionName)
 
 end
@@ -905,7 +959,9 @@ info("Rotaries on mission")
   local _flightgroup = Flightgroup -- Ops.FlightGroup#FLIGHTGROUP
   local _mission = Mission -- Ops.Auftrag#AUFTRAG
   local _flightgroupname = _flightgroup:GetName()
-  --local _coordinate = COORDINATE:New(Event.pos.x, Event.pos.y, Event.pos.z) -- Coordinate of F10Marker
+  local _generatedMissionName = _mapOPSgroupToMissionAndReceiveInternalMissionName(_mission, _flightgroup)
+  local _markerOfMission = getMarkerOfMission(_generatedMissionName)
+
 
     --- Function called after helo is ordered to land at a coordinate.
     function _flightgroup:OnAfterLandAt(From, Event, To, Coordinate, Duration)
@@ -931,6 +987,7 @@ info("Rotaries on mission")
       if _flightgroup:HasPassedFinalWaypoint() then
         _flightgroup:__LandAt(10, nil, 1*60)
         _spawnFARP(Waypoint)
+        _markerOfMission:Remove()
       end
     end
 

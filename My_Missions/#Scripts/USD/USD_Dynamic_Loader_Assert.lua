@@ -1,1 +1,1 @@
-assert(loadfile("D:\\DCS\\Repositories\\Serious Uglies\\My_Missions\\#Scripts\\USD\\Ugly_Support_Dispatcher v.02.lua"))()
+assert(loadfile("D:\\DCS\\Repositories\\Serious Uglies\\My_Missions\\#Scripts\\USD\\Ugly_Support_Dispatcher_dev.lua"))()
