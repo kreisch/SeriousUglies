@@ -18,8 +18,11 @@
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local defaultSpeed = 40
-local routeFrequency = 2 -- in seconds
-local groupsPerStep = 2 -- how many units are moved each iteration
+
+-- slightly off time to avoid conflict with other scheduled tasks
+local routeFrequency = 1.7 -- in seconds
+
+local groupsPerStep = 1 -- how many units are moved each iteration
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Check for Moose
@@ -84,7 +87,6 @@ theList = RouteList.new()
 
 local function ExecuteRerouting()
   env.info("Start ExecuteRerouting...")
-  --  local gotoData = {group = groupToMove, dest = destVec2, speed}
 
   for i = 1, groupsPerStep do
     local gotoData = RouteList.popleft(theList)

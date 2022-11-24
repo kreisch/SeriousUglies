@@ -62,7 +62,7 @@ local maxRespawn = 1000
 local observeZonePostfix = "_Observe_Zone"
 local respawnZonePostfix = "_RZ"
 local sceneryIDPostfix = "_ID"
-local respawnInterval = 60
+local respawnInterval = 61 -- slightly off time to avoid conflict with other scheduled tasks
 local respawnPropability = 80  -- probability in which a vehicle is rebuild
 local redInfantryVehicleTemplate = "TEMPLATE_RED_INF_SCOUT_BRDM"
 

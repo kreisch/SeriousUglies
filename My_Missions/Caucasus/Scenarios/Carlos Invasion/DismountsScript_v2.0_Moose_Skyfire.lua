@@ -28,7 +28,7 @@
 local dismPrefix = "DISM_"
 local templatePrefix = "TEMPLATE_" -- TEMPLATE_RED_, TEMPLATE_BLUE_
 local dismTypes = {"RIFLE", "RFLRPG", "AAA", "IGLA"} 
-local checkIntervall = 10  -- check the dismount state every X seconds f
+local checkIntervall = 11  -- check the dismount state every X seconds f
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Internal data - don't change!
