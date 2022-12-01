@@ -749,7 +749,7 @@ world.addEventHandler(eventHandlerUSD)
 --- Configuriung AUTOLASE if activated. Otherwise OPS-Lasing will be used.
 if (autolase) then
   info("Loading Autolase")
-  local afacSet = SET_GROUP:New():FilterPrefixes({"AFAC", "JTAC", "afac", "jtac","Jtac","Afac"}):FilterCoalitions("blue"):FilterStart()
+  local afacSet = SET_GROUP:New():FilterPrefixes({"AFAC", "JTAC", "afac", "jtac","Jtac","JTac","Afac"}):FilterCoalitions("blue"):FilterStart()
   local Pilotset = SET_CLIENT:New():FilterCoalitions("blue"):FilterActive(true):FilterStart()
   autolaser = AUTOLASE:New(afacSet, coalition.side.BLUE, "AFAC", Pilotset)
   autolaser:SetNotifyPilots(true) -- defaults to true, also shown if debug == true

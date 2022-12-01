@@ -62,7 +62,7 @@ my_ctld:AddTroopsCargo("Infantry Mortar-Team",  {"Template_CTLD_Blue_Mortar"},CT
 my_ctld:AddTroopsCargo("Infantry JTac Widow",   {"Template_CTLD_Blue_JTac"},CTLD_CARGO.Enum.TROOPS,2,80)
 my_ctld:AddTroopsCargo("Infantry Stinger Pair",   {"Template_CTLD_Blue_Stinger"},CTLD_CARGO.Enum.TROOPS,2,80)
 
-my_ctld:AddCratesCargo("JTAC HUMVEE",  {"TEMPLATE_CTLD_Blue_ATGM_HUMVEE"}, CTLD_CARGO.Enum.VEHICLE, 1, 2000)
+my_ctld:AddCratesCargo("JTAC HUMVEE",  {"TEMPLATE_CTLD_Blue_Jtac_HUMVEE"}, CTLD_CARGO.Enum.VEHICLE, 1, 2000)
 my_ctld:AddCratesCargo("IFV M2A2",  {"TEMPLATE_CTLD_Blue_ATGM_IFV_M2A2"}, CTLD_CARGO.Enum.VEHICLE, 1, 2000)
 my_ctld:AddCratesCargo("ATGM STRYKER",  {"TEMPLATE_CTLD_Blue_ATGM_Stryker"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
 
@@ -73,7 +73,7 @@ my_ctld:AddCratesCargo("AAA Gepard",  {"TEMPLATE_CTLD_Blue_AAA_Gepard"}, CTLD_CA
 my_ctld:AddCratesCargo("AAA Vulcan",  {"TEMPLATE_CTLD_Blue_AAA_Vulcan"}, CTLD_CARGO.Enum.VEHICLE, 1, 2500)
 
 my_ctld:AddCratesCargo("SAM NASM",  {"TEMPLATE_CTLD_Blue_SAM_NASM"}, CTLD_CARGO.Enum.VEHICLE, 4, 2500)
-my_ctld:AddCratesCargo("SAM HAWK",  {"TEMPLATE_CTLD_Blue_SAM_Hawk"}, CTLD_CARGO.Enum.VEHICLE, 6, 2500)
+--my_ctld:AddCratesCargo("SAM HAWK",  {"TEMPLATE_CTLD_Blue_SAM_Hawk"}, CTLD_CARGO.Enum.VEHICLE, 6, 2500)
 
 my_ctld:AddCratesCargo("MBT Leopard 1",  {"TEMPLATE_CTLD_Blue_MBT_LEO1"}, CTLD_CARGO.Enum.VEHICLE, 2, 3000)
 
@@ -98,8 +98,15 @@ function my_ctld:OnAfterCratesBuild(From,Event,To,Group,Unit,Vehicle)
         local farp = SPAWNSTATIC:NewFromStatic("farp"):SpawnFromCoordinate(_coordinate,0)
         local id = math.random(1,9999)
         local supportGroup = SPAWN:NewWithAlias("Template_Blue_FARP_Support","Farp" .. id):SpawnFromCoordinate(_coordinate)
+    else if (string.match(vunitname, "JTac")) then
+      if (autolaser ~= nil) then
+        autolaser:SetRecceLaserCode(vunitname, jtacLasercodeDefault)
+      else
+        env.warning("Error setting jtacLasercodeDefault, autolaser is nil")
+      end
     end
   end
+end
 end
 
 
