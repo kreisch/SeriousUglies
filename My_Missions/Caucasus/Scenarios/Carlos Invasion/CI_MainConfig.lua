@@ -303,7 +303,7 @@ RedIntelAwacs:SetAcceptZones(SetCombatZonesAWACS)
 function RedIntelAwacs:OnAfterNewContact(From, Event, To, contact)
   local trgtGrp = contact.group
 --  trigger.action.outText("KGB AWACS: I found a " .. contact.attribute .. " called " .. contact.groupname, 30)
-  local targetGroup = GROUP:FindByName(_contact.groupname)
+  local targetGroup = GROUP:FindByName(contact.groupname)
   local mIntercept = AUFTRAG:NewINTERCEPT(targetGroup)
   AWMozdok:AddMission(mIntercept)
 end

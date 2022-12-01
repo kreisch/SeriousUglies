@@ -4,7 +4,8 @@
         "Group",
         "timer",
         "MANTIS",
-        "lfs"
+        "lfs",
+        "env"
     ],
     "Lua.workspace.library": [
         "${3rd}/lfs/library"

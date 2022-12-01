@@ -40,7 +40,7 @@
 -- 5. The subroutines like "function AWAfacs:OnaFterFlight..." shall be run for each airwing, that has e.g. AFACs available.
 --    Otherwise it must be adapted manually --> Error prone.
 --6. Currently only AFAC missions can be altered (Lasercode, Radio) - other tasks shall follow.
-local debug     = false
+local debug     = true
 local autolase  = true
 
 
