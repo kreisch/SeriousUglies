@@ -30,7 +30,7 @@ end
 function CheckGotosForZone(_zone)
   env.info("CheckGotosForZone: " .. _zone:GetName())
 
-  local SetGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterPrefixes(_zone:GetName()):FilterOnce()
+  local SetGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterPrefixes(_zone:GetName()):FilterActive():FilterOnce()
   
   SetGroups:ForEachGroupNotInZone(_zone, function(groupToMove)
     env.info("Rerouting group: " .. groupToMove:GetName())

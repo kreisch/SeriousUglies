@@ -236,8 +236,8 @@ local function onDSMCRunSave(recall)
     end
   end
 
-  -- Reset and run normal again after 5s
-  TIMER:New(reinitCheckMovement):Start(30)
+  -- Reset and run normal again after 15s
+  TIMER:New(reinitCheckMovement):Start(15)
   env.info("Running Dismounts preSaveCallback...done!")
 end
 

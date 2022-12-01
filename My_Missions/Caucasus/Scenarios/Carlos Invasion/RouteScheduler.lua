@@ -94,7 +94,7 @@ local function ExecuteRerouting()
       if gotoData.group ~= nil then
         env.info("Execute reroute for: " .. gotoData.group:GetName())
         local gotoSpeed = gotoData.speed or defaultSpeed
-        if COORDINATE:NewFromVec2(gotoData.dest) == nil then -- Das passiert nicht reproduzierbar
+        if gotoData.group:IsAlive() ~= true and COORDINATE:NewFromVec2(gotoData.dest) == nil then -- Das passiert nicht reproduzierbar
           env.error("Rerouting Error, COORDINATE:NewFromVec2(gotoData.dest) ist nil")
         else
           gotoData.group:RouteGroundOnRoad(COORDINATE:NewFromVec2(gotoData.dest), gotoSpeed)
