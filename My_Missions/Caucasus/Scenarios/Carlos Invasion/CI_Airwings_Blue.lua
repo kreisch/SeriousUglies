@@ -9,12 +9,12 @@ local e2Hawkers=SQUADRON:New("US_E2Hawkers", 8, "US_Hawkers") --Ops.Squadron#SQU
 e2Hawkers:SetCallsign(CALLSIGN.AWACS.Darkstar)
 e2Hawkers:SetRadio(251.0)
 e2Hawkers:SetSkill(AI.Skill.HIGH)
-e2Hawkers:AddMissionCapability({AUFTRAG.Type.ORBIT},100)
+e2Hawkers:AddMissionCapability({AUFTRAG.Type.ORBIT, AUFTRAG.Type.AWACS},100)
 e2Hawkers:SetFuelLowRefuel(true)
 e2Hawkers:SetFuelLowThreshold(0.2)
 e2Hawkers:SetTurnoverTime(10,20)
 AWNavyBoys:AddSquadron(e2Hawkers)
-AWNavyBoys:NewPayload("US_E2Hawkers",-1,{AUFTRAG.Type.ORBIT},100)
+AWNavyBoys:NewPayload("US_E2Hawkers",-1,{AUFTRAG.Type.ORBIT, AUFTRAG.Type.AWACS},100)
 
 local recoveryTankers=SQUADRON:New("RecoveryTanker", 8, "recoveryTankers") --Ops.Squadron#SQUADRON
 recoveryTankers:SetCallsign(CALLSIGN.Tanker.Shell)
@@ -44,7 +44,7 @@ local auftragRecoveryTanker = AUFTRAG:NewRECOVERYTANKER(UNIT:FindByName("GeorgeW
 auftragRecoveryTanker:SetRepeat(99)
 AWNavyBoys:AddMission(auftragRecoveryTanker)
 
-local testawacs = AWACS:New("AWACS South",AWNavyBoys,"blue","GeorgeWashington","Awacs Orbit South",ZONE:FindByName("FEZ_ROCK"),"Fremont",251,radio.modulation.AM )
+local testawacs = AWACS:New("AWACS South",AWNavyBoys,"blue","GeorgeWashington","Awacs Orbit South",ZONE:FindByName("FEZ_ROCK"),"Fremont",252,radio.modulation.AM )
 testawacs:SetEscort(1)
 testawacs:SetAwacsDetails(CALLSIGN.AWACS.Focus,1,25,350,120)
 --testawacs:SetSRS("C:\\DCS_DATA\\SRS","female","en-GB",5010)
@@ -54,6 +54,20 @@ testawacs:SetModernEra()
 testawacs:__Start(5)
 testawacs.AllowMarkers = false
 --testawacs.debug = false
+
+
+-- Patrol zone.
+local zoneAlpha=ZONE:New("Awacs Orbit Coast")
+-- AWACS mission. Orbit at 15000 ft, 350 KIAS, heading 270 for 20 NM.
+local auftrag=AUFTRAG:NewAWACS(zoneAlpha:GetCoordinate(), 23000, 350, 145, 20)
+auftrag:SetRadio(251)       -- Set radio to 225 MHz AM.
+auftrag:SetRequiredEscorts(1, 1, AUFTRAG.Type.ESCORT, "Planes", 40)
+auftrag:SetRepeat(99)
+-- Assign mission to pilot.
+AWNavyBoys:AddMission(auftrag)
+
+
+
 
 AwRotary = AIRWING:New("Kutaisi","Kutaisi FARP Supply")
 AwRotary:SetAirbase(AIRBASE:FindByName("Kutaisi"))
