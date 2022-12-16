@@ -214,7 +214,7 @@ end
 
 local function reinitCheckMovement()
   env.info("Reinit Dismounts checking...")
-  trigger.action.outText("Running Dismounts postSaveCallback...", 30)
+  trigger.action.outText("..", 30)
   stopDismounts = false
   CheckMovement() 
 end
@@ -222,7 +222,7 @@ end
 -- Register at DSMC save callback to cleanup all before they are unnecessarily saved 
 local function onDSMCRunSave(recall)
   env.info("Running Dismounts preSaveCallback...")
-  trigger.action.outText("Running Dismounts preSaveCallback...", 30)
+  trigger.action.outText(".", 30)
 
   stopDismounts = true
   local dsmCount = #DismountsCarrier
