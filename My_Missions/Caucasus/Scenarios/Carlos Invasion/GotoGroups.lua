@@ -20,8 +20,8 @@ local gotoFrequency = 611 -- in seconds - 600s equals 10min
 -- Check for RouteList
 
 if RouteList == nil then
-  env.info("RouteList is missing - cannot live without it! Goto Groups is not loaded!")
-  trigger.action.outText("RouteList is missing - cannot live without it! Goto Groups is not loaded!", 600, false)
+  env.info("Route Scheduler is missing - cannot live without it! Goto Groups is not loaded!")
+  trigger.action.outText("Route Scheduler is missing - cannot live without it! Goto Groups is not loaded!", 600, false)
   return
 end
 
