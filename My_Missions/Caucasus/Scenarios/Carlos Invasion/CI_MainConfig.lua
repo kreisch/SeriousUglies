@@ -34,7 +34,7 @@ local sectorConfig = {
     {
       name = "Sector North", 
       airwing =  AWNalchik, 
-      opszones = {"CombatZone-4", "CombatZone-5"}, 
+      opszones = {"CombatZone-4", "CombatZone-5", "CombatZone-6", "CombatZone-7", "CombatZone-8"}, 
       factoryPrefix = "RF_CZ02",
       sectorHQ = "Ru_Sector2_HQ"
     }, -- easy
@@ -57,6 +57,9 @@ local zoneConfigs = {
   ["CombatZone-3"] = {}, -- medium
   ["CombatZone-4"] = {}, -- medium
   ["CombatZone-5"] = {}, -- medium
+  ["CombatZone-6"] = {}, -- medium
+  ["CombatZone-7"] = {}, -- medium
+  ["CombatZone-8"] = {}, -- medium
 }
 
 local function initZone(_name)
@@ -327,3 +330,25 @@ SetGroups:ForEachGroup(function(groupMakeAngry)
 )
 
 -- We use the callback for DSCM preSave to intercept the DSMC save routine in the DISMOUNT Script to remove the mounted dismounts before saving.
+
+local function removeAllDSMCStatics()
+  local SetStatics = SET_STATIC:New():FilterCoalitions("red"):FilterPrefixes("DSMC_CreatedStatic"):FilterOnce()
+
+  SetStatics:ForEachStatic(function(theStatic)
+      env.info("Removing Static: " .. theStatic:GetName())
+      trigger.action.outTextForCoalition(coalition.side.RED, "Removing Static: " .. theStatic:GetName(), 1)
+      theStatic:Destroy()
+    end
+  )
+end
+
+local function doNotRemoveAllDSMCStatics()
+  env.info("Keeping all DSMC Statics!")
+  trigger.action.outTextForCoalition(coalition.side.RED, "Keeping all DSMC Statics!", 30)
+end
+
+-- This would create a menu for the red coalition under the main DCS "Others" menu.
+local MenuCoalitionRed = MENU_COALITION:New( coalition.side.RED, "Mission Control Menus" )
+local MenuCoalitionRedRemoveAllStatics = MENU_COALITION:New( coalition.side.RED, "Remove All DSMC Statics", MenuCoalitionRed )
+local MenuAddNo = MENU_COALITION_COMMAND:New( coalition.side.RED, "Don't remove all DSMC statics!", MenuCoalitionRedRemoveAllStatics, doNotRemoveAllDSMCStatics )
+local MenuAddYes = MENU_COALITION_COMMAND:New( coalition.side.RED, "Really remove all DSMC statics!", MenuCoalitionRedRemoveAllStatics, removeAllDSMCStatics )
