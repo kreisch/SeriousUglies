@@ -117,8 +117,44 @@ function my_ctld:OnAfterCratesBuild(From,Event,To,Group,Unit,Vehicle)
 end
 end
 
-
-
 my_ctld:__Start(5)
 
+
+env.info("Collecting old CTLD crates")
+MessageToAll("Collecting old CTLD crates")
+
+local SetStatics = SET_STATIC:New():FilterCoalitions("blue"):FilterPrefixes("-Container-"):FilterOnce()
+
+SetStatics:ForEachStatic(function(theStatic)
+  -- get name from static
+  local _name,_rest = theStatic:GetName():match("(.+)-Container-(.+)")
+
+  env.info("Found _name: " .. _name .. ", _rest: " .. _rest)
+  MessageToAll("Found _name: " .. _name .. ", _rest: " .. _rest)
+
+  local cargoTypes = my_ctld.Cargo_Crates
+  for _id,_cargo in pairs (cargoTypes) do -- #number, #CTLD_CARGO
+    if _cargo.Name == _name then
+      local cgoname = _cargo.Name
+      local cgotemp = _cargo.Templates
+      local cgotype = _cargo.CargoType
+      local cgoneed = _cargo.CratesNeeded
+      local cgomass = _cargo.PerCrateMass
+      local subcat = cgotype.Subcategory
+      my_ctld.CrateCounter = my_ctld.CrateCounter + 1
+      my_ctld.CargoCounter = my_ctld.CargoCounter + 1
+      my_ctld.Spawned_Crates[my_ctld.CrateCounter] = theStatic
+      local newCargo = CTLD_CARGO:New(my_ctld.CargoCounter, cgoname, cgotemp, cgotype, true, false, cgoneed, my_ctld.Spawned_Crates[my_ctld.CrateCounter], true, cgomass, nil, subcat)
+      table.insert(my_ctld.Spawned_Cargo, newCargo)
+
+      newCargo:SetWasDropped(true)
+      newCargo:SetHasMoved(true)
+  
+      env.info("Readded cargo: _id" .. _id .. ", _cargo.Name: " .. _cargo.Name)
+    end
+  end
+end
+)
+
 MessageToAll("Added CTLD Menu")
+
