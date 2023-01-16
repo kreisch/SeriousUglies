@@ -23,6 +23,14 @@ my_ctld.FlareColor = FLARECOLOR.Red -- color to use when flaring from heli
 my_ctld.basetype = "container_cargo" -- default shape of the cargo container
 
 
+--[[ 
+my_ctld.enableLoadSave = true -- allow auto-saving and loading of files
+my_ctld.saveinterval = 10 -- save every 10 minutes
+my_ctld.filename = "missionsave.csv" -- example filename
+my_ctld.filepath = "C:\\temp" -- example path
+]]
+
+
 -- update unit capabilities for testing - allow 5 crates
 --[[
 my_ctld:UnitCapabilities("UH-1H", true, true, 5, 12, 15)

@@ -21,6 +21,8 @@ my_csar.enableForAI             = true
 my_csar.rescuehoverheight       = 30
 my_csar.rescuehoverdistance     = 20
 my_csar.messageTime             = 20
+my_csar.smokecolor              = 3 -- Color of smokemarker, 0 is green, 1 is red, 2 is white, 3 is orange and 4 is blue.
+my_csar.loadDistance            = 15 -- configure distance for pilots to get into helicopter in meters.
 
 my_csar.useSRS = false -- Use FF\'s SRS integration
 --my_csar.SRSPath = STTS.DIRECTORY -- adjust your own path in your server(!)
@@ -36,11 +38,13 @@ function my_csar:OnAfterPilotDown(from, event, to, spawnedgroup, frequency, grou
   MessageToAll("Mayday Mayday Mayday, Pilot down! Contact at: " .. tostring(frequency) .. "kHz, coordinates: " .. coordinates_text)
 end
 
+--[[ 
 function my_csar:OnAfterApproach(from, event, to, heliname, groupname)
   --MessageToAll("my_csar:OnAfterApproach")
 --  MessageToAll("Approaching downed pilot. ".. heliname .. " request flare or smoke for assistance.")
   MESSAGE:New( "Approaching downed pilot - look out for smoke!"):ToGroup(UNIT:FindByName(heliname):GetGroup())  
-end
+end 
+]]
 
 function my_csar:OnAfterBoarded(from, event, to, heliname, groupname)
   --MessageToAll("my_csar:OnAfterBoarded")
@@ -60,6 +64,25 @@ function my_csar:OnAfterRescued(from, event, to, heliunit, heliname, pilotssaved
   MessageToAll("Downed pilot succesfully delivered to more capable hands in MASH. Thank you!")
   --MESSAGE:New( "We will take care of the patient, you are good to go!"):ToGroup(UNIT:FindByName(heliname):GetGroup())  
 end
+
+
+env.info("Exchanging old CSAR Groups")
+
+local SetGroups = SET_GROUP:New():FilterCoalitions("blue"):FilterCategoryGround():FilterPrefixes("Pilot "):FilterOnce()
+SetGroups:ForEachGroup(function(groupToMove)
+
+    env.info("Exchanging CSAR Group: " .. groupToMove:GetName())
+   
+    local csarPos = groupToMove:GetCoordinate() -- :GetVec2()
+    local freq = my_csar:_GenerateADFFrequency()
+
+--    env.info("groupToMove:GetCoordinate():GetVec2() x: " .. csarPos.x .. "y: " .. csarPos.y)
+    my_csar:_AddCsar(groupToMove:GetCoalition(), groupToMove:GetCountry(), csarPos, "Pilot " .. freq, "Pilot " .. freq, "", freq, true)
+
+    groupToMove:Destroy()
+
+  end
+)
 
 MessageToAll("Added CSAR Menu")
 
