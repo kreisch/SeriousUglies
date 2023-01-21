@@ -130,7 +130,6 @@ SetStatics:ForEachStatic(function(theStatic)
   local _name,_rest = theStatic:GetName():match("(.+)-Container-(.+)")
 
   env.info("Found _name: " .. _name .. ", _rest: " .. _rest)
-  MessageToAll("Found _name: " .. _name .. ", _rest: " .. _rest)
 
   local cargoTypes = my_ctld.Cargo_Crates
   for _id,_cargo in pairs (cargoTypes) do -- #number, #CTLD_CARGO
