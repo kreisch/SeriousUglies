@@ -752,7 +752,7 @@ if (autolase) then
   local afacSet = SET_GROUP:New():FilterPrefixes({"AFAC", "JTAC", "afac", "jtac","Jtac","JTac","Afac"}):FilterCoalitions("blue"):FilterStart()
   local Pilotset = SET_CLIENT:New():FilterCoalitions("blue"):FilterActive(true):FilterStart()
   autolaser = AUTOLASE:New(afacSet, coalition.side.BLUE, "AFAC", Pilotset)
-  autolaser:SetNotifyPilots(true) -- defaults to true, also shown if debug == true
+  autolaser:SetNotifyPilots(false) -- defaults to true, also shown if debug == true
   autolaser:SetPilotMenu(true)
   autolaser:SetMaxLasingTargets(1)
   
