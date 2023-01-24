@@ -63,7 +63,7 @@ my_ctld:UnitCapabilities("Hercules", true, true, 15, 64, 25)
 
 -- define statics cargo
 --my_ctld:AddCratesCargo("FOB",{"Template_FOB"},CTLD_CARGO.Enum.FOB,2,500,nil)
-my_ctld:AddCratesCargo("FOB",                   {"Template_Blue_FOB-1"},CTLD_CARGO.Enum.FOB, 5, 2000)
+my_ctld:AddCratesCargo("FOB",                   {"Template_Blue_FOB"},CTLD_CARGO.Enum.FOB, 5, 2000)
 my_ctld:AddTroopsCargo("Infantry Squad 12",     {"Template_CTLD_Blue_Inf12"},CTLD_CARGO.Enum.TROOPS,12,80)
 my_ctld:AddTroopsCargo("Infantry Squad 8",      {"Template_CTLD_Blue_Inf8"},CTLD_CARGO.Enum.TROOPS,8,80)
 my_ctld:AddTroopsCargo("Infantry Mortar-Team",  {"Template_CTLD_Blue_Mortar"},CTLD_CARGO.Enum.TROOPS,6,110)
@@ -154,6 +154,67 @@ SetStatics:ForEachStatic(function(theStatic)
   end
 end
 )
+
+
+env.info("Collecting previously dropped troops")
+MessageToAll("Collecting previously dropped troops")
+
+local SetGroups = SET_GROUP:New():FilterCoalitions("blue"):FilterPrefixes("Template"):FilterOnce()
+
+SetGroups:ForEachGroup(function(theGroup)
+  -- get name from group
+  local _name = theGroup:GetName()
+  env.info("Found old deployed group _name: " .. _name)
+  MessageToAll("Found old deployed group _name: " .. _name)
+
+  if theGroup:IsAlive() then
+    env.info("Group is alive and Active _name: " .. _name)
+    MessageToAll("Group is alive and Active _name: " .. _name)
+
+    local nameEnd = string.find(theGroup:GetName(), "-")
+
+    if nameEnd then
+      local groupType = string.sub(theGroup:GetName(), 1, nameEnd-1)
+      env.info("Grouptype found: " .. groupType)
+  
+      local theCargo = nil
+      for k,v in pairs(my_ctld.Cargo_Troops) do
+        local comparison = ""
+        if type(v.Templates) == "string" then comparison = v.Templates else comparison = v.Templates[1] end
+        if comparison then
+          env.info("comparison: " .. comparison)
+        end
+        if comparison == groupType then
+          theCargo = v
+          break
+        end
+      end
+    
+      if theCargo then
+        env.info("Found theCargo: " .. theCargo.Name)
+    
+        local cgoname = theCargo.Name
+        local cgotemp = theCargo.Templates
+        local cgotype = theCargo.CargoType
+        local cgoneed = theCargo.CratesNeeded
+        local cgomass = theCargo.PerCrateMass
+      
+        my_ctld.CargoCounter = my_ctld.CargoCounter + 1
+        my_ctld.TroopCounter = my_ctld.TroopCounter + 1
+        my_ctld.DroppedTroops[my_ctld.TroopCounter] = theGroup
+        
+        local newCargo = CTLD_CARGO:New(my_ctld.CargoCounter, cgoname, cgotemp, cgotype, true, true, cgoneed, nil, nil, cgomass)
+        newCargo:SetWasDropped(true)
+      
+        env.info("Readded cargo: theCargo.Name: " .. theCargo.Name)
+        MessageToAll("Readded cargo: theCargo.Name: " .. theCargo.Name)
+      end
+    end
+  end
+end
+)
+
+
 
 MessageToAll("Added CTLD Menu")
 
