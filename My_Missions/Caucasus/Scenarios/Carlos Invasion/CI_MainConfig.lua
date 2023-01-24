@@ -319,7 +319,7 @@ for secItName, secItConfig in pairs( sectorConfig ) do
 end
 
 
-
+--[[ 
 -- Make all red units ALARMSTATE RED
 local SetGroups = SET_GROUP:New():FilterCoalitions("red"):FilterCategoryGround():FilterOnce()
 
@@ -328,7 +328,9 @@ SetGroups:ForEachGroup(function(groupMakeAngry)
     groupMakeAngry:OptionAlarmStateRed()
   end
 )
+ ]]
 
+ 
 -- We use the callback for DSCM preSave to intercept the DSMC save routine in the DISMOUNT Script to remove the mounted dismounts before saving.
 
 local function removeAllDSMCStatics()
