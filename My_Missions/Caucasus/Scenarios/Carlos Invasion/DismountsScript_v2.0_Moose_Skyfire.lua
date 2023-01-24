@@ -27,7 +27,7 @@
 -- Settings
 local dismPrefix = "DISM_"
 local templatePrefix = "TEMPLATE_" -- TEMPLATE_RED_, TEMPLATE_BLUE_
-local dismTypes = {"RIFLE", "RFLRPG", "AAA", "IGLA"} 
+local dismTypes = {"RIFLE", "RFLRPG", "AAA", "IGLA", "MORTAR"} 
 local checkIntervall = 11  -- check the dismount state every X seconds f
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
