@@ -86,11 +86,11 @@ alert5:SetRequiredAssets(3)
 AWMozdok:AddMission(alert5)
 
 local zoneCAP=ZONE:New("RU_CAP_W")
-local mCAP=AUFTRAG:NewCAP(zoneCAP, 26000, 350, nil, nil, nil, {"Planes"}) --Planes nur für AIR? -- https://wiki.hoggitworld.com/view/DCS_enum_attributes
+local mCAP=AUFTRAG:NewCAP(zoneCAP, 26000, 350, nil, nil, nil, {"Planes", "Helicopters"}) --Planes nur für AIR? -- https://wiki.hoggitworld.com/view/DCS_enum_attributes
 mCAP:SetRepeat(99)
 AWBeslan:AddMission(mCAP)
 local zoneCAP=ZONE:New("RU_CAP_NW")
-local mCAP2=AUFTRAG:NewCAP(zoneCAP, 26000, 350, nil, nil, nil, {"Planes"}) --Planes nur für AIR? -- https://wiki.hoggitworld.com/view/DCS_enum_attributes
+local mCAP2=AUFTRAG:NewCAP(zoneCAP, 26000, 350, nil, nil, nil, {"Planes", "Helicopters"}) --Planes nur für AIR? -- https://wiki.hoggitworld.com/view/DCS_enum_attributes
 mCAP2:SetRepeat(99)
 AWMozdok:AddMission(mCAP2)
 
