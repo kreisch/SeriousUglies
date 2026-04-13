@@ -66,9 +66,6 @@ auftrag:SetRepeat(99)
 -- Assign mission to pilot.
 AWNavyBoys:AddMission(auftrag)
 
-
-
-
 AwRotary = AIRWING:New("Kutaisi","Kutaisi FARP Supply")
 AwRotary:SetAirbase(AIRBASE:FindByName("Kutaisi"))
 AwRotary:SetRespawnAfterDestroyed(900)
@@ -80,4 +77,7 @@ squadronTransportHelo1:SetSkill(AI.Skill.HIGH)
 squadronTransportHelo1:AddMissionCapability({AUFTRAG.Type.ORBIT, AUFTRAG.Type.HOVER},100)
 AwRotary:AddSquadron(squadronTransportHelo1)
 AwRotary:NewPayload("FrpSplyHelo",-1,{AUFTRAG.Type.ORBIT, AUFTRAG.Type.HOVER},100)
+
+
+
 
